@@ -116,5 +116,6 @@ helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAM
 --create-namespace --namespace port-k8s-exporter \
 --set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
 --set-file configMap.config=${temp_dir}/config.yaml
-
 echo ""
+
+echo "Finished installation!"
