@@ -37,6 +37,7 @@ HELM_K8S_CHART_NAME="port-k8s-exporter"
 
 TARGET_NAMESPACE=${TARGET_NAMESPACE:-"port-k8s-exporter"}
 DEPLOYMENT_NAME=${DEPLOYMENT_NAME:-"port-k8s-exporter"}
+CLUSTER_NAME=${CLUSTER_NAME:-"my-cluster"}
 
 echo "Checking for prerequisites..."
 
@@ -108,7 +109,8 @@ echo "Updating ${HELM_REPO_NAME} helm repository..."
 helm repo update ${HELM_REPO_NAME}
 echo ""
 
-echo "Deploying Port's Kubernetes exporter to ${kcontext} using helm."
+echo "Deploying Port's Kubernetes exporter to '${kcontext}' using helm."
+echo "*** The cluster will be referenced as '${CLUSTER_NAME}' in your Port Environment ***"
 echo ""
 echo "The exporter will be deployed to namespace: '${TARGET_NAMESPACE}', under the deployment name '${DEPLOYMENT_NAME}'."
 echo ""
