@@ -26,11 +26,11 @@
 # Global variables
 REPO_URL="https://github.com/port-labs/template-assets/blob/main"
 TEMPLATE_NAME="kubernetes"
-FULL_URL="${REPO_URL}/${TEMPLATE_NAME}"
+FULL_TEMPLATE_URL="${REPO_URL}/${TEMPLATE_NAME}"
 PORT_API_URL="https://api.getport.io"
 
 # Exporter installation variables
-CONFIG_YAML_URL="https://github.com/port-labs/template-assets/raw/main/kubernetes/config.yaml"
+CONFIG_YAML_URL="${FULL_TERMPLATE_URL}/config.yaml"
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
@@ -99,7 +99,14 @@ temp_dir=$(mktemp -d)
 
 
 # Download config.yaml file into temporary folder
-curl -s ${CONFIG_YAML_URL} -o "$temp_dir/config.yaml"
+curl -s ${CONFIG_YAML_URL} -o "${temp_dir}/config.yaml"
+exit 
+
+# Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
+sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" ${temp_dir}/config.yaml
+
+exit
+# TODO add clustgername to config.yaml
 
 echo "Adding ${HELM_REPO_NAME} repository to helm..."
 helm repo add port-labs ${HELM_REPO_URL}
