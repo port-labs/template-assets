@@ -7,7 +7,7 @@
 # Version: v1.0
 #
 # Description:
-#   This script is responsible for installing Port's Kuberenetes exporter.
+#   This script is responsible for installing Port's Kuberenetes exporter using helm.
 #   Documentation: https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/)
 # 
 # Prerequisites(https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/#prerequisites):
@@ -16,6 +16,8 @@
 #   - The variables 'PORT_CLIENT_ID' and 'PORT_CLIENT_SECRET' must be passed to the script
 # 
 # Variables:
+#   PORT_CLIENT_ID - Your Port organization Client ID (required)
+#   PORT_CLIENT_SECRET - Your Port organization Client Secret (required)
 #   TARGET_NAMESPACE - The namespace to install Port's Kubernetes exporter (default="port-k8s-exporter")
 #   DEPLOYMENT_NAME - The deployment name of the Kubernetes exporter (default="port-k8s-exporter")
 #
