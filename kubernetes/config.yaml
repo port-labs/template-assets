@@ -75,8 +75,8 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"node"'
             properties:
               creationTimestamp: .metadata.creationTimestamp
-              availableCPU: .status.allocatable.cpu
-              availableMemory: .status.allocatable.memory
+              totalCPU: .status.allocatable.cpu
+              totalMemory: .status.allocatable.memory
               labels: .metadata.labels
               kubeletVersion: .status.nodeInfo.kubeletVersion | split("-") | .[0]
               ready: .status.conditions[] | select(.type == "Ready") | .status
