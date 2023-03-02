@@ -14,6 +14,8 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
+
+# Defines cluster using the uniq 
   - kind: v1/namespaces
     selector:
       query: .metadata.name | contains("kube-system")
@@ -62,14 +64,14 @@ resources: # List of K8s resources to list, watch, and export to Port.
               conditions: .status.conditions
             relations:
               Deployment: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              Node: (.spec.nodeName) | (split(".")|join("_"))
+              Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   
   - kind: v1/nodes
     port:
       entity:
         mappings:
-          - identifier: (.metadata.name) | (split(".")|join("_"))
+          - identifier: (.metadata.name) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
             title: .metadata.name + "-" + "{CLUSTER_NAME}"
             icon: '"Node"'
             blueprint: '"node"'
