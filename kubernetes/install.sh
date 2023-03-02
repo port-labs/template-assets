@@ -99,7 +99,7 @@ temp_dir=$(mktemp -d)
 
 
 # Download config.yaml file into temporary folder
-curl -s ${CONFIG_YAML_URL} -o "${temp_dir}/config.yaml"
+curl ${CONFIG_YAML_URL} -o "${temp_dir}/config.yaml"
 cat "${temp_dir}/config.yaml"
 
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
