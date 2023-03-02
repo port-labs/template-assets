@@ -99,13 +99,12 @@ temp_dir=$(mktemp -d)
 
 
 # Download config.yaml file into temporary folder
-curl ${CONFIG_YAML_URL} -o "${temp_dir}/config.yaml"
+curl -s ${CONFIG_YAML_URL} -o "${temp_dir}/config.yaml"
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/config.yaml"
 
+exit
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/config.yaml" > "${temp_dir}/config.yaml"
-
-cat "${temp_dir}/config.yaml"
 
 echo "Adding ${HELM_REPO_NAME} repository to helm..."
 helm repo add port-labs ${HELM_REPO_URL}
