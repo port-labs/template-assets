@@ -64,25 +64,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
               Deployment: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_"))
 
-  - kind: v1/pods
-    selector:
-      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences == null)
-    port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            blueprint: '"Pod"'
-            properties:
-              startTime: .status.startTime
-              phase: .status.phase
-              labels: .metadata.labels
-              containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
-              conditions: .status.conditions
-            relations:
-              Node: (.spec.nodeName) | (split(".")|join("_"))
-              Namespace: .metadata.namespace
-
   
   - kind: v1/nodes
     port:
