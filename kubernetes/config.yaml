@@ -78,7 +78,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               availableCPU: .status.allocatable.cpu
               availableMemory: .status.allocatable.memory
               labels: .metadata.labels
-              kubeletVersion: .metadata.nodeInfo.kubeletVersion | split("-") | .[0]
+              kubeletVersion: .status.nodeInfo.kubeletVersion | split("-") | .[0]
               ready: .status.conditions[] | select(.type == "Ready") | .status
             relations:
               Cluster: '"{CLUSTER_NAME}"'
