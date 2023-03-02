@@ -61,7 +61,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              Deployment: .metadata.labels.app + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Deployment: (.metadata.ownerReferences[0].name as $str | $str | split("-") | .[:-1]) + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_"))
 
   
