@@ -91,7 +91,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
           - identifier: (.metadata.name) | (split(".")|join("_"))
             title: .metadata.name + "-" + "{CLUSTER_NAME}"
             icon: '"Node"'
-            blueprint: '"Node"'
+            blueprint: '"node"'
             properties:
               creationTimestamp: .metadata.creationTimestamp
               availableCpu: .status.allocatable.cpu
