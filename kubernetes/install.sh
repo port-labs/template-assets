@@ -104,7 +104,6 @@ curl -s ${CONFIG_YAML_URL} -o "${temp_dir}/template_config.yaml"
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
 
-exit
 
 echo "Adding ${HELM_REPO_NAME} repository to helm..."
 helm repo add port-labs ${HELM_REPO_URL}
