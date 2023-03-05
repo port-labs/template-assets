@@ -39,7 +39,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             properties:
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
-              hasPrivileged: .spec.template.spec.containers | [.[].privileged] | all
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               strategy: .spec.strategy.type
               availableReplicas: .status.availableReplicas
               labels: .metadata.labels
