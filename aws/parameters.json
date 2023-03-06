@@ -1,0 +1,38 @@
+[
+  {
+    "Name": "BucketName",
+    "Value": "<EXPORTER_BUCKET_NAME>"
+  },
+  {
+    "Name": "ConfigJsonFileKey",
+    "Value": "config.json"
+  },
+  {
+    "Name": "CreateBucket",
+    "Value": "<CREATE_BUCKET>"
+  },
+  {
+    "Name": "FunctionName",
+    "Value": "<EXPORTER_LAMBDA_NAME>"
+  },
+  {
+    "Name": "SecretName",
+    "Value": "<EXPORTER_SECRET_NAME>"
+  },
+  {
+    "Name": "CustomIAMPolicyARN",
+    "Value": "<EXPORTER_IAM_POLICY_NAME>"
+  },
+  {
+    "Name": "CustomPortCredentialsSecretARN",
+    "Value": "<EXISTING_SECRET_NAME>"
+  },
+  {
+    "Name": "ScheduleExpression",
+    "Value": "rate(1 hour)"
+  },
+  {
+    "Name": "ScheduleState",
+    "Value": "DISABLED"
+  }
+]
