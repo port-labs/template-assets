@@ -41,6 +41,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
               strategy: .spec.strategy.type
               availableReplicas: .status.availableReplicas
               labels: .metadata.labels
@@ -50,7 +51,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
 
   - kind: v1/pods
     selector:
-      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences[0].kind == "Deployment")
+      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences[0] != null)
     port:
       entity:
         mappings:
