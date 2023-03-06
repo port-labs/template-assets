@@ -9,7 +9,7 @@
   },
   {
     "Name": "CreateBucket",
-    "Value": "<CREATE_BUCKET>"
+    "Value": "true"
   },
   {
     "Name": "FunctionName",
