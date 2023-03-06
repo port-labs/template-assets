@@ -1,0 +1,114 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: The template used to create event rules for the Port AWS exporter.
+Parameters:
+  PortAWSExporterStackName:
+    Description: Name of the Port AWS exporter stack name
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+    AllowedPattern: ^[a-zA-Z][-a-zA-Z0-9]*$
+    Default: serverlessrepo-port-aws-exporter
+Resources:
+  EventRule0:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: default
+      EventPattern:
+        source:
+          - aws.lambda
+        detail-type:
+          - AWS API Call via CloudTrail
+        detail:
+          eventSource:
+            - lambda.amazonaws.com
+          eventName:
+            - prefix: UpdateFunctionConfiguration
+            - prefix: CreateFunction
+            - prefix: DeleteFunction
+      Name: port-aws-exporter-sync-lambda-trails
+      State: ENABLED
+      Targets:
+        - Id: PortAWSExporterEventsQueue
+          Arn:
+            Fn::ImportValue:
+              Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+          InputTransformer:
+            InputPathsMap:
+              awsRegion: $.detail.awsRegion
+              eventName: $.detail.eventName
+              requestFunctionName: $.detail.requestParameters.functionName
+              responseFunctionName: $.detail.responseElements.functionName
+            InputTemplate: >-
+              {
+                "resource_type": "AWS::Lambda::Function",
+                "region": "\"<awsRegion>\"",
+                "identifier": "if \"<responseFunctionName>\" != \"\" then \"<responseFunctionName>\" else \"<requestFunctionName>\" end",
+                "action": "if \"<eventName>\" | startswith(\"Delete\") then \"delete\" else \"upsert\" end"
+              }
+  EventRule1:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: default
+      EventPattern:
+        detail-type:
+          - AppRunner Service Operation Status Change
+        source:
+          - aws.apprunner
+      Name: port-aws-exporter-sync-apprunner-events
+      State: ENABLED
+      Targets:
+        - Id: PortAWSExporterEventsQueue
+          Arn:
+            Fn::ImportValue:
+              Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+          InputTransformer:
+            InputPathsMap:
+              operationStatus: $.detail.operationStatus
+              region: $.region
+              resource: $.resources[0]
+              serviceId: $.detail.serviceId
+            InputTemplate: >-
+              {
+                "resource_type": "AWS::AppRunner::Service",
+                "region": "\"<region>\"",
+                "identifier": "if \"<operationStatus>\" == \"DeleteServiceCompletedSuccessfully\" then \"<serviceId>\" else \"<resource>\" end",
+                "action": "if \"<operationStatus>\" == \"DeleteServiceCompletedSuccessfully\" then \"delete\" else \"upsert\" end"
+              }
+  EventRule2:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: default
+      EventPattern:
+        detail-type:
+          - AWS API Call via CloudTrail
+        source:
+          - aws.ecs
+        detail:
+          eventSource:
+            - ecs.amazonaws.com
+          eventName:
+            - prefix: CreateService
+            - prefix: UpdateService
+            - prefix: DeleteService
+      Name: port-aws-exporter-sync-ecs-trails
+      State: ENABLED
+      Targets:
+        - Id: PortAWSExporterEventsQueue
+          Arn:
+            Fn::ImportValue:
+              Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+          InputTransformer:
+            InputPathsMap:
+              awsRegion: $.detail.awsRegion
+              clusterArn: $.detail.responseElements.service.clusterArn
+              eventName: $.detail.eventName
+              serviceArn: $.detail.responseElements.service.serviceArn
+              serviceName: $.detail.responseElements.service.serviceName
+            InputTemplate: >-
+              {
+                "resource_type": "AWS::ECS::Service",
+                "region": "\"<awsRegion>\"",
+                "identifier": "if \"<eventName>\" | startswith(\"Delete\") then \"<serviceName>\" else \"<serviceArn>|<clusterArn>\" end",
+                "action": "if \"<eventName>\" | startswith(\"Delete\") then \"delete\" else \"upsert\" end"
+              }
