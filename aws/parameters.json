@@ -24,10 +24,6 @@
     "Value": "<EXPORTER_IAM_POLICY_ARN>"
   },
   {
-    "Name": "CustomPortCredentialsSecretARN",
-    "Value": "<EXISTING_SECRET_ARN>"
-  },
-  {
     "Name": "ScheduleExpression",
     "Value": "rate(1 hour)"
   },
