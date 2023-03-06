@@ -51,7 +51,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
 
   - kind: v1/pods
     selector:
-      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences[0].kind == "Deployment")
+      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences != null)
     port:
       entity:
         mappings:
