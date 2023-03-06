@@ -25,7 +25,7 @@
   },
   {
     "Name": "CustomPortCredentialsSecretARN",
-    "Value": "<EXISTING_SECRET_NAME>"
+    "Value": "<EXISTING_SECRET_ARN>"
   },
   {
     "Name": "ScheduleExpression",
