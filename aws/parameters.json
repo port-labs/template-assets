@@ -21,7 +21,7 @@
   },
   {
     "Name": "CustomIAMPolicyARN",
-    "Value": "<EXPORTER_IAM_POLICY_NAME>"
+    "Value": "<EXPORTER_IAM_POLICY_ARN>"
   },
   {
     "Name": "CustomPortCredentialsSecretARN",
