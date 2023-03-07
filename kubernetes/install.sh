@@ -29,7 +29,7 @@ REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/config.yaml}"
+CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/generic_config.yaml}"
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
@@ -91,9 +91,12 @@ echo ""
 echo "The exporter will be deployed to namespace: '${TARGET_NAMESPACE}', under the deployment name '${DEPLOYMENT_NAME}'."
 echo ""
 helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAME} \
---create-namespace --namespace port-k8s-exporter \
+--create-namespace --namespace ${TARGET_NAMESPACE} \
 --set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
 --set-file configMap.config=${temp_dir}/config.yaml
 echo ""
 
 echo "Finished installation!"
+echo ""
+echo "To check out the exporter's logs, run:"
+echo "kubectl logs deploy/${DEPLOYMENT_NAME} -n ${TARGET_NAMESPACE}"
