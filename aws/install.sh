@@ -50,7 +50,7 @@ temp_dir=$(mktemp -d)
 
 echo "Importing common functions..."
 curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
-source "${temp_dir}/common.sh"
+source "../common.sh"
 
 echo ""
 echo "Checking for prerequisites..."
@@ -77,6 +77,7 @@ EXPORTER_IAM_POLICY_ARN="arn:aws:iam::$(aws sts get-caller-identity | jq -r ".Ac
 
 echo ""
 echo "Preparing parameters json file"
+echo ""
 
 sed -i.backup \
 -e "s/\<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
@@ -90,7 +91,6 @@ echo ""
 
 echo ""
 echo "Deploying Port's AWS exporter application"
-echo ""
 
 CHANGE_SET_ID=$(aws serverlessrepo create-cloud-formation-change-set \
 --application-id arn:aws:serverlessrepo:eu-west-1:185657066287:applications/port-aws-exporter \
@@ -101,15 +101,18 @@ aws cloudformation wait change-set-create-complete --change-set-name "${CHANGE_S
 
 aws cloudformation execute-change-set --change-set-name "${CHANGE_SET_ID}"
 
-cloudformation_tail "${EXPORTER_APP_NAME}"
+echo ""
+cloudformation_tail "serverlessrepo-${EXPORTER_APP_NAME}"
 
 echo ""
 echo "Uploading config.json to S3 bucket"
+echo ""
 
 aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit 1
 
 echo ""
 echo "Updating Port credentials secret"
+echo ""
 
 aws secretsmanager put-secret-value --secret-id "${EXPORTER_SECRET_NAME}" --secret-string "{\"id\":\"${PORT_CLIENT_ID}\",\"clientSecret\":\"${PORT_CLIENT_SECRET}\"}" || exit 1
 
@@ -137,5 +140,6 @@ else
     aws lambda invoke --function-name "${EXPORTER_LAMBDA_NAME}" --invocation-type "Event" --payload "{}" "${temp_dir}/outfile"
     echo ""
     echo "Tail exporter's lambda logs, press CTRL+C to break"
+    echo ""
     sam logs --stack-name "serverlessrepo-${EXPORTER_APP_NAME}" --tail
 fi
