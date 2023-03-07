@@ -24,12 +24,12 @@
 ###################################################
 
 # Global variables
-REPO_URL="https://github.com/port-labs/template-assets/blob/main"
-TEMPLATE_NAME="kubernetes"
 PORT_API_URL="https://api.getport.io"
+REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
+COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-CONFIG_YAML_URL="https://raw.githubusercontent.com/port-labs/template-assets/main/kubernetes/config.yaml"
+CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/config.yaml}"
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
@@ -39,23 +39,21 @@ TARGET_NAMESPACE=${TARGET_NAMESPACE:-"port-k8s-exporter"}
 DEPLOYMENT_NAME=${DEPLOYMENT_NAME:-"port-k8s-exporter"}
 CLUSTER_NAME=${CLUSTER_NAME:-"my-cluster"}
 
+function cleanup {
+  rm -rf "${temp_dir}"
+}
+trap cleanup EXIT
+
+# Create temporary folder
+temp_dir=$(mktemp -d)
+
+echo "Importing common functions..."
+curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
+source "${temp_dir}/common.sh"
+
 echo "Checking for prerequisites..."
 
-# Checks if helm command is installed
-if ! command -v helm &> /dev/null
-then
-    echo "helm could not be found"
-    exit
-fi
-echo "helm command found!"
-
-# Check if kubectl command is installed
-if ! command -v kubectl &> /dev/null
-then
-    echo "kubectl could not be found"
-    exit
-fi
-echo "kubectl command found!"
+check_commands "helm" "kubectl"
 
 # Check if connected to Kubernetes cluster
 if ! kubectl cluster-info &> /dev/null
@@ -65,41 +63,15 @@ then
 fi
 kcontext=$(kubectl config current-context)
 echo "Connected to cluster ${kcontext}."
-
-
-# Check if PORT_CLIENT_ID and PORT_CLIENT_SECRET variables are defined
-if [[ -z "${PORT_CLIENT_ID}" ]] || [[ -z "${PORT_CLIENT_SECRET}" ]]
-then
-    echo "PORT_CLIENT_ID or PORT_CLIENT_SECRET variables are not defined"
-    exit
-fi
-
-response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/v1/auth/access_token" \
-    --header 'Content-Type: application/json' \
-     --data-raw "{\"clientId\": \"${PORT_CLIENT_ID}\", \"clientSecret\": \"${PORT_CLIENT_SECRET}\"}")
-
-# Check if PORT_CLIENT_ID and PORT_CLIENT_SECRET variables are valid
-if [[ ${response_code} != "200" ]]; then
-    echo "PORT_CLIENT_ID or PORT_CLIENT_SECRET are invalid, could not authenticate with Port API."
-    exit
-fi
-echo "Port credentials are valid!"
 echo ""
+
+check_port_credentials "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}"
 
 echo "Beginning setup..."
 echo ""
 
-function cleanup {
-  rm -rf "${temp_dir}"
-}
-trap cleanup EXIT
-
-# Create temporary folder
-temp_dir=$(mktemp -d)
-
-
 # Download config.yaml file into temporary folder
-curl -s ${CONFIG_YAML_URL} -o "${temp_dir}/template_config.yaml"
+save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
 
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
