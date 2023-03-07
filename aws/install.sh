@@ -67,7 +67,8 @@ then
     exit
 fi
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r ".Account")
-EXPORTER_BUCKET_NAME=${EXPORTER_BUCKET_NAME:-"port-aws-exporter-${AWS_ACCOUNT_ID}"}
+AWS_REGION=$(aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]')
+EXPORTER_BUCKET_NAME=${EXPORTER_BUCKET_NAME:-"port-aws-exporter-${AWS_ACCOUNT_ID}-${AWS_REGION}"}
 
 echo ""
 echo "Downloading configuration files..."
@@ -77,14 +78,13 @@ save_endpoint_to_file "${REPO_AWS_CONTENT_URL}/policy.json" "${temp_dir}/policy.
 save_endpoint_to_file "${REPO_AWS_CONTENT_URL}/parameters.json" "${temp_dir}/parameters.json"
 save_endpoint_to_file "${REPO_AWS_CONTENT_URL}/event_rules.yaml" "${temp_dir}/event_rules.yaml"
 
-echo ""
-echo "Creating IAM policy..."
-if ! aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json"
+EXPORTER_IAM_POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME}"
+if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo ""
-    echo "Warning: policy creation failed, might already exists. Skipping to the next step"
+    echo "Creating IAM policy..."
+    aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || exit 1
 fi
-EXPORTER_IAM_POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy\/${EXPORTER_IAM_POLICY_NAME}"
 
 echo ""
 echo "Preparing parameters json file..."
@@ -94,7 +94,7 @@ sed -i.backup \
 -e "s/\<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
 -e "s/\<EXPORTER_LAMBDA_NAME>/${EXPORTER_LAMBDA_NAME}/" \
 -e "s/\<EXPORTER_SECRET_NAME>/${EXPORTER_SECRET_NAME}/" \
--e "s/\<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN}/" \
+-e "s/\<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN//\//\\/}/" \
 "${temp_dir}/parameters.json"
 
 cat "${temp_dir}/parameters.json"
@@ -137,6 +137,12 @@ aws cloudformation deploy --template-file "${temp_dir}/event_rules.yaml" --stack
 
 echo ""
 echo "Finished installation!"
+
+echo ""
+echo "Creating Port entity for region: \"${AWS_REGION}\"..."
+echo ""
+
+upsert_port_entity "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "region" "{\"identifier\": \"${AWS_REGION}\", \"title\": \"${AWS_REGION}\", \"properties\": {}}"
 
 echo ""
 echo "Running exporter's lambda manually..."
