@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PORT_API_URL="https://api.getport.io"
+PORT_API_URL="https://api.getport.io/v1"
 
 check_port_credentials() {
     clientId=$1
@@ -13,9 +13,9 @@ check_port_credentials() {
         exit 1
     fi
 
-    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/v1/auth/access_token" \
+    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/auth/access_token" \
         --header 'Content-Type: application/json' \
-        --data-raw "{\"clientId\": \"${PORT_CLIENT_ID}\", \"clientSecret\": \"${PORT_CLIENT_SECRET}\"}")
+        --data-raw "{\"clientId\": \"${clientId}\", \"clientSecret\": \"${clientSecret}\"}")
 
     if [[ ${response_code} != "200" ]]; then
         echo "PORT_CLIENT_ID or PORT_CLIENT_SECRET are invalid, could not authenticate with Port API."
@@ -26,6 +26,29 @@ check_port_credentials() {
     echo ""
 }
 
+upsert_port_entity() {
+    clientId=$1
+    clientSecret=$2
+    blueprint=$3
+    entity=$4
+
+    accessToken=$(curl -s -X POST "${PORT_API_URL}/auth/access_token" \
+        --header 'Content-Type: application/json' \
+        --data-raw "{\"clientId\": \"${clientId}\", \"clientSecret\": \"${clientSecret}\"}" | jq -r ".accessToken")
+
+    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/blueprints/${blueprint}/entities?upsert=true&merge=true" \
+        --header 'Content-Type: application/json' \
+        --header "Authorization: Bearer ${accessToken}" \
+        --data-raw "${entity}")
+
+    if [[ ${response_code} != "201" ]]; then
+        echo "Upsert entity: '${entity}', to blueprint: '${blueprint}' failed, status code: ${response_code}"
+        return 1
+    fi
+
+    echo "Upsert entity: '${entity}' to blueprint: '${blueprint}' succeeded"
+    return 0
+}
 
 # Accepts list of strings and ensures each string is a valid command
 check_commands () {
