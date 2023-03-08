@@ -81,24 +81,26 @@ resources: # List of K8s resources to list, watch, and export to Port.
     selector:
       query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
     port:
-      mappings:
-        - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-          title: .metadata.name
-          blueprint: "'argoRepo'"
-          properties:
-            repoUrl: .data.url | @base64d
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argoRepo"'
+            properties:
+              repoUrl: .data.url | @base64d
   
   - kind: v1/secrets
     selector:
       query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repo-creds" })'
     port:
-      mappings:
-        - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-          title: .metadata.name
-          blueprint: "'argoRepoCredentials'"
-          properties:
-            repoUrl: .data.url | @base64d
-            credentialsType: .data.type | @base64d
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argoRepoCredentials"'
+            properties:
+              repoUrl: .data.url | @base64d
+              credentialsType: .data.type | @base64d
 
 
  
