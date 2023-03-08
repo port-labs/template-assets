@@ -74,6 +74,7 @@ AWS_REGION=$(aws ec2 describe-availability-zones --output text --query 'Availabi
 EXPORTER_BUCKET_NAME=${EXPORTER_BUCKET_NAME:-"port-aws-exporter-${AWS_ACCOUNT_ID}-${AWS_REGION}"}
 EXPORTER_IAM_POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME}"
 
+echo ""
 echo "Downloading configuration files..."
 echo ""
 save_endpoint_to_file "${REPO_AWS_CONTENT_URL}/config.json" "${temp_dir}/config.json" || exit
@@ -88,6 +89,7 @@ echo ""
 if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo "Policy not exists, creating..."
+    echo ""
     aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || exit
 else
     echo "Policy exists"
