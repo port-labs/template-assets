@@ -65,6 +65,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Deployment: .metadata.namespace as $namespace | .status.resources | map(select(.kind == "Deployment") | .name + "-" + $namespace + "-" + "{CLUSTER_NAME}")
               ArgoProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace
 
   - kind: argoproj.io/v1alpha1/appproject
     port:
