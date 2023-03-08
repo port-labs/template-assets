@@ -49,43 +49,28 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
-  - kind: v1/pods
+  - kind: v1/secrets
     selector:
-      query: (.metadata.namespace | startswith("kube") | not ) and (.metadata.ownerReferences[0] != null)
+      query: '.metadata.labels | contains({ "argocd.argoproj.io/secret-type": "repository" })'
     port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            icon: '"Microservices"'
-            blueprint: '"pod"'
-            properties:
-              startTime: .status.startTime
-              phase: .status.phase
-              labels: .metadata.labels
-              containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
-              conditions: .status.conditions
-            relations:
-              Deployment: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
-
+      mappings:
+        - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          title: .metadata.name
+          blueprint: "'argoRepo'"
+          properties:
+            repoUrl: .data.url | @base64d
   
-  - kind: v1/nodes
+  - kind: v1/secrets
+    selector:
+      query: '.metadata.labels | contains({ "argocd.argoproj.io/secret-type": "repo-creds" })'
     port:
-      entity:
-        mappings:
-          - identifier: (.metadata.name) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name + "-" + "{CLUSTER_NAME}"
-            icon: '"Node"'
-            blueprint: '"node"'
-            properties:
-              creationTimestamp: .metadata.creationTimestamp
-              totalCPU: .status.allocatable.cpu
-              totalMemory: .status.allocatable.memory
-              labels: .metadata.labels
-              kubeletVersion: .status.nodeInfo.kubeletVersion | split("-") | .[0]
-              ready: .status.conditions[] | select(.type == "Ready") | .status
-            relations:
-              Cluster: '"{CLUSTER_NAME}"'
+      mappings:
+        - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          title: .metadata.name
+          blueprint: "'argoRepoCredentials'"
+          properties:
+            repoUrl: .data.url | @base64d
+            credentialsType: .data.type | @base64d
 
-  
+
+ 
