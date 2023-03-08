@@ -43,10 +43,11 @@ upsert_port_entity() {
 
     if [[ ${response_code} != "201" ]]; then
         echo "Upsert entity: '${entity}', to blueprint: '${blueprint}' failed, status code: ${response_code}"
-        exit 1
+        return 1
     fi
 
     echo "Upsert entity: '${entity}' to blueprint: '${blueprint}' succeeded"
+    return 0
 }
 
 # Accepts list of strings and ensures each string is a valid command
