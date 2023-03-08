@@ -51,7 +51,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
 
   - kind: v1/secrets
     selector:
-      query: '.metadata.labels | contains({ "argocd.argoproj.io/secret-type": "repository" })'
+      query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
     port:
       mappings:
         - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
@@ -62,7 +62,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
   
   - kind: v1/secrets
     selector:
-      query: '.metadata.labels | contains({ "argocd.argoproj.io/secret-type": "repo-creds" })'
+      query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repo-creds" })'
     port:
       mappings:
         - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
