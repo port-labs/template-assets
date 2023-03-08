@@ -49,6 +49,33 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
+  - kind: argoproj.io/v1alpha1/applications
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            blueprint: '"argocdApp"'
+            properties:
+              status: .status.health.status
+              syncStatus: .status.sync.status
+              syncPolicy: .spec.syncPolicy // empty
+              gitRepo: .spec.source.repoURL
+              gitPath: .spec.source.path
+              gitRev: .status.sync.revision
+            relations:
+              deployments: .metadata.namespace as $namespace | .status.resources | map(select(.kind == "Deployment") | .name + "-" + $namespace + "-" + "{CLUSTER_NAME}")
+              project: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: argoproj.io/v1alpha1/appproject
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            blueprint: '"argocdProject"'
+            properties:
+              name: .metadata.name
+              title: .metadata.name
+
   - kind: v1/secrets
     selector:
       query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
