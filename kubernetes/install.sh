@@ -29,7 +29,8 @@ REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/generic_config.yaml}"
+TEMPLATE_NAME="${TEMPLATE_NAME:-kubernetes}"
+CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/${template}_config.yaml}"
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
