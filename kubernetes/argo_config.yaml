@@ -90,6 +90,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"argoRepo"'
             properties:
               repoUrl: .data.url | @base64d
+              repoType: .data.type | @base64d
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
   
