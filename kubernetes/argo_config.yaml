@@ -55,6 +55,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             blueprint: '"argocdApp"'
+            title: .metadata.name
             properties:
               status: .status.health.status
               syncStatus: .status.sync.status
@@ -72,6 +73,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
       entity:
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
             blueprint: '"argocdProject"'
             properties:
               name: .metadata.name
