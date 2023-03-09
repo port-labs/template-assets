@@ -62,7 +62,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               syncPolicy: .spec.syncPolicy // empty
               gitRepo: .spec.source.repoURL
               gitPath: .spec.source.path
-              gitRev: .status.sync.revision
+              gitRev: .status.sync.revision // empty
             relations:
               Deployment: .spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment") | .name + "-" + $namespace + "-" + "{CLUSTER_NAME}")
               ArgoProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
