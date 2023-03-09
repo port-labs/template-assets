@@ -76,10 +76,8 @@ resources: # List of K8s resources to list, watch, and export to Port.
             title: .metadata.name
             blueprint: '"argocdProject"'
             properties:
-              name: .metadata.name
-              title: .metadata.name
             relations:
-              Namespace: .metadata.namespace + "-" + '"{CLUSTER_NAME}"'
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/secrets
     selector:
