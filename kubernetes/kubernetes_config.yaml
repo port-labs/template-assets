@@ -46,6 +46,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               availableReplicas: .status.availableReplicas
               labels: .metadata.labels
               containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 

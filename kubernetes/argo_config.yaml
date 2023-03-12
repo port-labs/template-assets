@@ -44,6 +44,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
               strategy: .spec.strategy.type
               availableReplicas: .status.availableReplicas
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
               labels: .metadata.labels
               containers: (.spec.template.spec.containers | map({name, image, resources}))
             relations:
