@@ -78,7 +78,7 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
   save_endpoint_to_file ${BASE_CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
 
   # Iterate over TEMPLATE_NAMES and download their config.yaml files
-  for template in ${TEMPLATE_NAMES}
+  for template in ${TEMPLATE_NAME}
   do
       echo "Downloading config.tmpl file for template '${TEMPLATE_NAME}'..."
       CONFIG_YAML_URL="${REPO_BASE_URL}/kubernetes/${TEMPLATE_NAME}_config.tmpl"
@@ -86,6 +86,7 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
       cat ${temp_dir}/${TEMPLATE_NAME}_config.tmpl >> ${temp_dir}/template_config.yaml
   done
 else
+  echo "Custom config.yaml file URL found.
   save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
