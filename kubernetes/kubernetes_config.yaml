@@ -72,7 +72,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
   - kind: apps/v1/statefulsets
     selector:
@@ -93,7 +93,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/pods
     selector:
