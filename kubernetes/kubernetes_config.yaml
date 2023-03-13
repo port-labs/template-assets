@@ -37,7 +37,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             icon: '"Deployment"'
             blueprint: '"podOwner"'
             properties:
-              kind: "Deployment"
+              kind: '"Deployment"'
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
