@@ -80,10 +80,11 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
   # Iterate over TEMPLATE_NAMES and download their config.yaml files
   for template in ${TEMPLATE_NAME}
   do
-      echo "Downloading config.tmpl file for template '${TEMPLATE_NAME}'..."
-      CONFIG_YAML_URL="${REPO_BASE_URL}/kubernetes/${TEMPLATE_NAME}_config.tmpl"
-      save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/${TEMPLATE_NAME}_config.tmpl"
-      cat ${temp_dir}/${TEMPLATE_NAME}_config.tmpl >> ${temp_dir}/template_config.yaml
+      echo "Downloading config.tmpl file for template '${template}'..."
+      CONFIG_YAML_URL="${REPO_BASE_URL}/kubernetes/${template}_config.tmpl"
+      save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/${template}_config.tmpl"
+      cat ${temp_dir}/${template}_config.tmpl >> ${temp_dir}/template_config.yaml
+      echo "Added ${template}."
   done
 else
   echo "Custom config.yaml file URL found."
