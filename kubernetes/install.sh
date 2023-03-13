@@ -30,8 +30,9 @@ REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-TEMPLATE_NAME="${TEMPLATE_NAME:-kubernetes}"
-CONFIG_YAML_URL="${CONFIG_YAML_URL:-$REPO_BASE_URL/kubernetes/${TEMPLATE_NAME}_config.yaml}"
+TEMPLATE_NAME="${TEMPLATE_NAME}"
+BASE_CONFIG_YAML_URL="$REPO_BASE_URL/kubernetes/kubernetes_config.yaml"
+CONFIG_YAML_URL="${CONFIG_YAML_URL}"
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
@@ -73,8 +74,20 @@ echo "Beginning setup..."
 echo ""
 
 # Download config.yaml file into temporary folder
-save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+if [[ -z ${CONFIG_YAML_URL} ]]; then
+  save_endpoint_to_file ${BASE_CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
 
+  # Iterate over TEMPLATE_NAMES and download their config.yaml files
+  for template in ${TEMPLATE_NAMES}
+  do
+      echo "Downloading config.tmpl file for template '${TEMPLATE_NAME}'..."
+      CONFIG_YAML_URL="${REPO_BASE_URL}/kubernetes/${TEMPLATE_NAME}_config.tmpl"
+      save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/${TEMPLATE_NAME}_config.tmpl"
+      cat ${temp_dir}/${TEMPLATE_NAME}_config.tmpl >> ${temp_dir}/template_config.yaml
+  done
+else
+  save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
 
