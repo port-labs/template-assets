@@ -1,0 +1,46 @@
+  - kind: argoproj.io/v1alpha1/applications
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            blueprint: '"argocdApp"'
+            title: .metadata.name
+            properties:
+              status: .status.health.status
+              syncStatus: .status.sync.status
+              syncPolicy: .spec.syncPolicy // null
+              gitRepo: .spec.source.repoURL
+              gitPath: .spec.source.path
+              gitRev: .status.sync.revision // null
+            relations:
+              Deployment: .spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment") | .name + "-" + $namespace + "-" + "{CLUSTER_NAME}")
+              ArgoProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: argoproj.io/v1alpha1/appproject
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argocdProject"'
+            properties:
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: v1/secrets
+    selector:
+      query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argoRepo"'
+            properties:
+              repoUrl: .data.url | @base64d
+              repoType: .data.type | @base64d
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+ 
