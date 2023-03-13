@@ -57,7 +57,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "DaemonSet" + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
             blueprint: '"podOwner"'
             properties:
@@ -80,7 +80,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings: 
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "StatefulSet"
+          - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
             blueprint: '"podOwner"'
             properties:
