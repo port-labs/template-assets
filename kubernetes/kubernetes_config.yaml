@@ -136,7 +136,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               PodOwner: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
-              
 
   - kind: v1/nodes
     port:
@@ -155,4 +154,4 @@ resources: # List of K8s resources to list, watch, and export to Port.
               ready: .status.conditions[] | select(.type == "Ready") | .status
             relations:
               Cluster: '"{CLUSTER_NAME}"'
-
+####################
