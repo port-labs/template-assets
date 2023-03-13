@@ -13,7 +13,7 @@
               gitPath: .spec.source.path
               gitRev: .status.sync.revision // null
             relations:
-              PodOwner: .spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" ) | .name + "-" .kind + "-" + $namespace + "-{CLUSTER_NAME}" )
+              PodOwner: .spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" ) | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}" )
               ArgoProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
 
