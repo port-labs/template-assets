@@ -86,7 +86,7 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
       cat ${temp_dir}/${TEMPLATE_NAME}_config.tmpl >> ${temp_dir}/template_config.yaml
   done
 else
-  echo "Custom config.yaml file URL found.
+  echo "Custom config.yaml file URL found."
   save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
