@@ -57,6 +57,7 @@ import groovy.json.JsonSlurperClassic
                         }
                     }
                     """
+            // update jenkinsPipeline entity
             pipeline_response = httpRequest contentType: "APPLICATION_JSON", httpMode: "POST",
             url: "${API_URL}/v1/blueprints/jenkinsPipeline/entities?upsert=true&validation_only=false&merge=true",
                 requestBody: pipeline_body,
@@ -72,7 +73,7 @@ import groovy.json.JsonSlurperClassic
             OffsetDateTime cur_time = OffsetDateTime.now();
             String formatted_time = cur_time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"));
 
-            def deploy_body = """
+            def run_entity_body = """
                     {
                         "identifier": "${env.BUILD_TAG}",
                         "properties": {
@@ -86,9 +87,10 @@ import groovy.json.JsonSlurperClassic
                         }
                     }
                     """
-            deployment_response = httpRequest contentType: "APPLICATION_JSON", httpMode: "POST",
+            // create jenkinsPipelineRun entity
+            run_entity_response = httpRequest contentType: "APPLICATION_JSON", httpMode: "POST",
             url: "${API_URL}/v1/blueprints/jenkinsPipelineRun/entities?upsert=true&validation_only=false&merge=true",
-                requestBody: deploy_body,
+                requestBody: run_entity_body,
                 customHeaders: [
                     [name: "Authorization", value: "Bearer ${token}"],
                 ]
