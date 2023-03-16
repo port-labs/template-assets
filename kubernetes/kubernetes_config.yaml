@@ -43,6 +43,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               hasLatest: .spec.template.spec.containers[].image | contains(":latest")
               hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              strategyConfig: .spec.strategy // null
               strategy: .spec.strategy.type
               availableReplicas: .status.availableReplicas
               labels: .metadata.labels
@@ -88,6 +89,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               kind: '"StatefulSet"'
               labels: .metadata.labels
               creationTimestamp: .metadata.creationTimestamp
+              strategyConfig: .spec.strategy // null
               replicas: .spec.replicas
               availableReplicas: .status.availableReplicas
               hasLatest: .spec.template.spec.containers[].image | contains(":latest")
