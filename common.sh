@@ -112,3 +112,13 @@ cloudformation_tail() {
 
   echo "Stack Status: $stackStatus"
 }
+
+trigger_continue_prompt() {
+    read -p "Do you want to continue? (y/n) " answer
+    if [[ "$answer" == [yY] ]]; then
+        echo "Continuing..."
+    else
+        echo "Exiting..."
+        exit 0
+    fi
+}
