@@ -64,6 +64,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               kind: '"DaemonSet"'
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
+              strategyConfig: .spec.strategy // null
               availableReplicas: .status.availableReplicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               labels: .metadata.labels
