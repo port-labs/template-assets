@@ -55,6 +55,8 @@ curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
 source "${temp_dir}/common.sh"
 
 cat << EOF
+
+
 **** Install infromation ****
 Docs Reference for Port's K8s Exporter - https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/
 
