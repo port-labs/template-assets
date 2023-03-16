@@ -63,9 +63,9 @@ Docs Reference for Port's K8s Exporter - https://docs.getport.io/build-your-soft
 The following script will ensure a connection to the Kubernetes Cluster which is currently
 referenced in your ~/.kubeconfig file.
 
-It will add Port's helm chart ($HELM_REPO_URL) under the name $HELM_REPO_NAME locally,
-and then install the chart to your Kubernetes cluster under the namespace: $TARGET_NAMESPACE, 
-and the Deployment name: $DEPLOYMENT_NAME.
+It will add Port's helm chart ($HELM_REPO_URL) under the name "$HELM_REPO_NAME" locally,
+and then install the chart to your Kubernetes cluster under the namespace: "$TARGET_NAMESPACE", 
+and the Deployment name: "$DEPLOYMENT_NAME".
 
 By default, the exporter is given *read* permissions on all API groups and resources
 using the "$DEPLOYMENT_NAME" Cluster Role:
