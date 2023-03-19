@@ -61,7 +61,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
           - identifier: .metadata.name + "-ReplicaSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
             icon: '"Deployment"'
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"ReplicaSet"'
               creationTimestamp: .metadata.creationTimestamp
