@@ -35,7 +35,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
           - identifier: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
             icon: '"Deployment"'
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"Deployment"'
               creationTimestamp: .metadata.creationTimestamp
@@ -43,7 +43,8 @@ resources: # List of K8s resources to list, watch, and export to Port.
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               hasLatest: .spec.template.spec.containers[].image | contains(":latest")
               hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
-              strategy: .spec.strategy.type // null
+              strategyConfig: .spec.strategy // null
+              strategy: .spec.strategy.type
               availableReplicas: .status.availableReplicas
               labels: .metadata.labels
               containers: (.spec.template.spec.containers | map({name, image, resources}))
@@ -85,11 +86,12 @@ resources: # List of K8s resources to list, watch, and export to Port.
         mappings:
           - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"DaemonSet"'
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
+              strategyConfig: .spec.strategy // null
               availableReplicas: .status.availableReplicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
               labels: .metadata.labels
@@ -108,11 +110,12 @@ resources: # List of K8s resources to list, watch, and export to Port.
         mappings: 
           - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"StatefulSet"'
               labels: .metadata.labels
               creationTimestamp: .metadata.creationTimestamp
+              strategyConfig: .spec.strategy // null
               replicas: .spec.replicas
               availableReplicas: .status.availableReplicas
               hasLatest: .spec.template.spec.containers[].image | contains(":latest")
@@ -140,7 +143,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              PodOwner: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
+              workload: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/pods
@@ -160,7 +163,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              PodOwner: .metadata.ownerReferences[0].name + "-ReplicaSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
+              workload: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/nodes
