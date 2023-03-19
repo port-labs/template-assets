@@ -25,8 +25,8 @@ set -e
 ###################################################
 
 # Global variables
-PORT_API_URL="https://api.getport.io"
-REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
+REPO_BRANCH=${REPO_BRANCH:-"main"}
+REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/${REPO_BRANCH}"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
