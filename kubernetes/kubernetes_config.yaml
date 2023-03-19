@@ -35,7 +35,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
           - identifier: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
             icon: '"Deployment"'
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"Deployment"'
               creationTimestamp: .metadata.creationTimestamp
@@ -60,7 +60,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
         mappings:
           - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"DaemonSet"'
               creationTimestamp: .metadata.creationTimestamp         
@@ -84,7 +84,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
         mappings: 
           - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"podOwner"'
+            blueprint: '"workload"'
             properties:
               kind: '"StatefulSet"'
               labels: .metadata.labels
@@ -117,7 +117,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              PodOwner: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              workload: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/pods
@@ -137,7 +137,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              PodOwner: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              workload: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/nodes
