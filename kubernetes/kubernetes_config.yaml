@@ -163,7 +163,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
               conditions: .status.conditions
             relations:
-              workload: (.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-" + .metadata.ownerReferences[0].kind  + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              workload: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind  + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
 
   - kind: v1/nodes
