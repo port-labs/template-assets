@@ -129,10 +129,17 @@ else
 fi
 
 echo ""
-echo "Uploading config.json to S3 bucket..."
+echo "Checking existence of config.json in S3 bucket..."
 echo ""
 
-aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
+if ! aws s3api head-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" &> /dev/null
+then
+    echo "config.json not exists, uploading..."
+    echo ""
+    aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
+else
+    echo "config.json exists"
+fi
 
 echo ""
 echo "Updating Port credentials secret..."
