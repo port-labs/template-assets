@@ -13,7 +13,7 @@ PORT_CLIENT_SECRET: ""
 
 2. Create the following Python script in the branch of the workflow you would like to report to Port:
 
-#### **report_deployment_to_port.py**
+**report_workflow_to_port.py**
 ```python 
 import os
 import requests
