@@ -9,7 +9,7 @@ Follow these steps to report your Jenkins pipeline runs to Port:
 - [Plain Credentials](https://plugins.jenkins.io/credentials-binding/) (>=143.v1b_df8b_d3b_e48)
 - [HTTP Request](https://plugins.jenkins.io/http_request/) (>=1.16)
 - [build user vars plugin](https://plugins.jenkins.io/build-user-vars-plugin/) (>=v1.9)
-
+- [Git Client](https://plugins.jenkins.io/git-client/) (>=4.2.0)
 2. Make sure the following methods are [script approved](https://www.jenkins.io/doc/book/managing/script-approval/):
 
 ```
@@ -36,6 +36,8 @@ import groovy.json.JsonSlurperClassic
               string(credentialsId: 'port-client-id', variable: 'PORT_CLIENT_ID'),
               string(credentialsId: 'port-client-secret', variable: 'PORT_CLIENT_SECRET')
               ]){
+            
+            // checkout git repo
             def scmVars = checkout scmGit(
                 branches: [[name: 'origin/main']],
                 userRemoteConfigs: [[url: "${params.GIT_REPO_URL}"]])
