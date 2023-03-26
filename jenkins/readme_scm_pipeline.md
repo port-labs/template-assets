@@ -28,7 +28,7 @@ method java.time.OffsetDateTime format java.time.format.DateTimeFormatter
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import groovy.json.JsonSlurperClassic
-    stage('Report Deployment to Port') {
+      stage('Report Deployment to Port') {
       steps {
           script {
             // load credentials as variables 
@@ -37,8 +37,8 @@ import groovy.json.JsonSlurperClassic
               string(credentialsId: 'port-client-secret', variable: 'PORT_CLIENT_SECRET')
               ]){
             def scmVars = checkout scmGit(
-                branches: [[name: 'main']],
-                userRemoteConfigs: [[url: 'https://github.com/port-labs/temaplate-assets.git']])
+                branches: [[name: 'origin/main']],
+                userRemoteConfigs: [[url: "${params.GIT_REPO_URL}"]])
             echo "${scmVars.GIT_COMMIT}"
             auth_body = """
                 {
@@ -53,12 +53,27 @@ import groovy.json.JsonSlurperClassic
             def slurped_response = new JsonSlurperClassic().parseText(token_response.content)
             def token = slurped_response.accessToken // Use this token for authentication with Port
 
+            def repo_body = """
+                    {
+                        "identifier": "${env.JOB_NAME}-repo",
+                        "properties": {
+                            "gitUrl": "${params.GIT_REPO_URL}"
+                        }
+                    }
+                    """
+            // update jenkinsPipeline entity
+            pipeline_response = httpRequest contentType: "APPLICATION_JSON", httpMode: "POST",
+            url: "${API_URL}/v1/blueprints/gitRepo/entities?upsert=true&validation_only=false&merge=true",
+                requestBody: repo_body,
+                customHeaders: [
+                    [name: "Authorization", value: "Bearer ${token}"],
+                ]            
+
             def pipeline_body = """
                     {
                         "identifier": "${env.JOB_NAME}",
                         "properties": {
-                            "jobUrl": "${env.JENKINS_URL}jobs/${env.JOB_NAME}",
-                            "gitUrl": "${GIT_}"
+                            "jobUrl": "${env.JENKINS_URL}jobs/${env.JOB_NAME}"
                         }
                     }
                     """
@@ -101,4 +116,6 @@ import groovy.json.JsonSlurperClassic
                 ]
           }
       }
+    }
+}
 ```
