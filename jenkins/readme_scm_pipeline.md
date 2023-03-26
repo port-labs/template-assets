@@ -124,6 +124,3 @@ import groovy.json.JsonSlurperClassic
 }
 }
 ```
-
-:::note
-For this pipeline to work, you need to pass the GITHUB_UR
