@@ -1,4 +1,4 @@
-# Jenkins installation
+# CircleCI template
 
 Insert template explanation here
 
