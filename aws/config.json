@@ -86,7 +86,7 @@
                 "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
                 "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
                 "arn": ".ServiceArn",
-                "stackSegment": "..ServiceName | split(\"-\") | first"
+                "stackSegment": ".ServiceName | split(\"-\") | first"
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]"
