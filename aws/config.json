@@ -85,7 +85,8 @@
                 "subnets": ".NetworkConfiguration.AwsvpcConfiguration.Subnets",
                 "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
                 "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
-                "arn": ".ServiceArn"
+                "arn": ".ServiceArn",
+                "stackSegment": "..ServiceName | split(\"-\") | first"
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]"
