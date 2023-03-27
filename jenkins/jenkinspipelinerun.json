@@ -1,0 +1,49 @@
+{
+    "identifier": "jenkinsPipelineRun",
+    "description": "This blueprint represents a service in our software catalog",
+    "title": "Pipeline Run",
+    "icon": "CICD",
+    "schema": {
+      "properties": {
+        "triggeredBy": {
+          "type": "string",
+          "description": "Who triggered the run"
+        },
+        "runLink": {
+          "type": "string",
+          "title": "Run Link",
+          "icon": "CICD",
+          "format": "url",
+          "description": "Link for the CI run"
+        },
+        "jobEndTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Time for when run end status was set"
+        },
+        "jobStatus": {
+          "type": "string",
+          "enum": [
+            "Success",
+            "Failure"
+          ],
+          "enumColors": {
+            "Success": "green",
+            "Failure": "red"
+          }
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "Pipeline": {
+        "title": "Pipeline",
+        "description": "The pipeline of this run",
+        "target": "jenkinsPipeline",
+        "required": false,
+        "many": false
+      }
+    }
+  }

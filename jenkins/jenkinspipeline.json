@@ -1,0 +1,24 @@
+{
+    "identifier": "jenkinsPipeline",
+    "description": "This blueprint represents a Jenkins Pipeline in our software catalog",
+    "title": "Jenkins Pipeline",
+    "icon": "Jenkins",
+    "schema": {
+      "properties": {
+        "jobUrl": {
+          "type": "string",
+          "format": "url",
+          "description": "Jenkins pipeline job url"
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "gitRepo": {
+        "target": "gitRepo",
+        "title": "Pipeline Git Repo"
+      }
+    }
+  }

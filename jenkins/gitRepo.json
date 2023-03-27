@@ -1,0 +1,19 @@
+{
+  "identifier": "gitRepo",
+  "description": "This blueprint represents a git repo for storing Jenkins Pipeline in our software catalog",
+  "title": "Git Repo",
+  "icon": "Git",
+  "schema": {
+    "properties": {
+      "gitUrl": {
+        "type": "string",
+        "format": "url",
+        "description": "Jenkins pipeline job url"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {}
+}
