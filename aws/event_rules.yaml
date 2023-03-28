@@ -44,7 +44,7 @@ Resources:
                 "resource_type": "AWS::Lambda::Function",
                 "region": "\"<awsRegion>\"",
                 "identifier": "if \"<responseFunctionName>\" != \"\" then \"<responseFunctionName>\" else \"<requestFunctionName>\" end",
-                "action": "if \"<eventName>\" | startswith(\"Delete\") then \"delete\" else \"upsert\" end"
+                "action": "if \"<eventName>\" | test(\"DeleteFunction[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
               }
   EventRule1:
     Type: AWS::Events::Rule
