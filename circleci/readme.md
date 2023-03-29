@@ -24,8 +24,8 @@ giturlparse>=0.1.0
 ```python 
 import os
 import requests
-import datetime
 from giturlparse import parse
+import json
 
 # Env vars passed by the CircleCI context
 CLIENT_ID = os.environ['PORT_CLIENT_ID']
@@ -33,6 +33,21 @@ CLIENT_SECRET = os.environ['PORT_CLIENT_SECRET']
 API_URL = 'https://api.getport.io/v1'
 RUN_STATUS = os.environ['RUN_STATUS']
 
+if os.path.isfile('requirements.txt'):
+    packages = [] 
+    with open('requirements.txt') as f:
+        packages = [line.strip().replace('==', '-').replace('>=','-').replace('<=', '-') for line in f if line.strip()]
+        language = "Python"
+
+if os.path.isfile('package.json'):
+    language="Node"
+    packages = []
+    with open('package.json') as f:
+        package_json = json.load(f)
+        for dep in package_json['dependencies']:
+            print(f"{dep.replace('/','-')}-{package_json['dependencies'][dep].replace('^','')}")
+            packages.append(f"{dep.replace('/','-')}-{package_json['dependencies'][dep].replace('^','')}")
+        
 credentials = {
     'clientId': CLIENT_ID,
     'clientSecret': CLIENT_SECRET
@@ -46,44 +61,61 @@ headers = {
     'Authorization': f'Bearer {access_token}'
 }
 
+# Create packages passed from env var
+package_id = []
+for package in packages:
+  package_json = {
+  "identifier": f"{package}",
+  "properties": {
+    "version": f"{package.split('-')[1]}",
+    "language": f"{language}"
+  },
+  "relations": {}
+  }
+  package_id.append(package_json["identifier"])
+  requests.post(f'{API_URL}/blueprints/package/entities?upsert=true', json=package_json, headers=headers)  
+
+print(package_id)
+
 p = parse(f"{os.environ['CIRCLE_REPOSITORY_URL']}")
 repo_url = f"{p.host}/{p.owner}/{p.repo}"
 
-repo_entity_json = {
+file_path = "README.md"
+if os.path.exists(file_path):
+    with open(file_path, "r") as f:
+        readme_content = f.read()
+    print(f"README.md contents: {readme_content}")
+else:
+    print("README.md file not found!")
+
+microservice_entity_json = {
   "identifier": f"{os.environ['CIRCLE_PROJECT_REPONAME']}",
   "properties": {
     "gitUrl": f"{p.url2https}",
+    "language": f"{language}",
+    "readme": f"{readme_content}"
   },
-  "relations": {}
-}
-requests.post(f'{API_URL}/blueprints/git_repo/entities?upsert=true', json=repo_entity_json, headers=headers)
-
-print(f"{repo_url}/tree/{os.environ['CIRCLE_BRANCH']}")
-workflow_entity_json = {
-  "identifier": f"{os.environ['CIRCLE_PROJECT_REPONAME']}-{os.environ['CIRCLE_BRANCH']}",
-  "properties": {},
   "relations": {
-    "projectRepo": os.environ['CIRCLE_PROJECT_REPONAME']
+    "packages": package_id
   }
 }
-requests.post(f'{API_URL}/blueprints/workflow/entities?upsert=true', json=workflow_entity_json, headers=headers)
+requests.post(f'{API_URL}/blueprints/microservice/entities?upsert=true', json=microservice_entity_json, headers=headers)
 
-workflow_run_entity_json = {
+deployment_run_entity_json = {
   "identifier": f"{os.environ['CIRCLE_PROJECT_REPONAME']}-{os.environ['CIRCLE_BRANCH']}-{os.environ['CIRCLE_WORKFLOW_ID']}",
   "properties": {
     "committedBy": os.environ['CIRCLE_USERNAME'],
     "commitHash": os.environ['CIRCLE_SHA1'],
-    "repoPushedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "runLink": os.environ['CIRCLE_BUILD_URL'],
     "triggeredBranchUrl": f"https://{repo_url}/tree/{os.environ['CIRCLE_BRANCH']}",
     # Can be 'Successful', 'Failed', or 'Running' as per configured in the 'workflowRun' Blueprint
     "runStatus": f"{RUN_STATUS}"
   },
   "relations": {
-    "workflow": f"{os.environ['CIRCLE_PROJECT_REPONAME']}-{os.environ['CIRCLE_BRANCH']}"
+    "microservice": f"{os.environ['CIRCLE_PROJECT_REPONAME']}"
   }
 }
-requests.post(f'{API_URL}/blueprints/workflowRun/entities?upsert=true', json=workflow_run_entity_json, headers=headers)
+requests.post(f'{API_URL}/blueprints/deployment/entities?upsert=true', json=deployment_run_entity_json, headers=headers)
 ```
 
 
