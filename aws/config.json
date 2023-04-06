@@ -107,9 +107,7 @@
               "blueprint": "dashboard",
               "properties": {
                 "stack": ".ServiceName | split(\"-\") | first",
-                "env": ".ServiceName | split(\"-\") | last",
-                "app": ".ServiceName | split(\"-\") | join(\"-\") | split(\"-\")[0:-2] | join(\"-\")",
-                "url": "https://lioness.uat.core.autofi.io",
+
                 "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
                 "desiredCount": ".DesiredCount",
                 "launchType": ".LaunchType",
