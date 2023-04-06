@@ -10,10 +10,13 @@
                 "lambda:ListFunctions",
                 "apprunner:DescribeService",
                 "apprunner:ListServices",
+                "ecs:DescribeClusters",
                 "ecs:DescribeServices",
-                "ecs:DescribeServices",
+                "ecs:DescribeTasks",
                 "ecs:ListClusters",
-                "ecs:ListServices"
+                "ecs:ListServices",
+                "ecs:ListTasks",
+                "ecs:ListTaskDefinitions"
             ],
             "Resource": "*"
         }
