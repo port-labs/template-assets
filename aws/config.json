@@ -106,8 +106,6 @@
               "title": ".ServiceName",
               "blueprint": "dashboard",
               "properties": {
-                "stack": ".ServiceName | split(\"-\") | first",
-
                 "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
                 "desiredCount": ".DesiredCount",
                 "launchType": ".LaunchType",
