@@ -23,9 +23,14 @@ set -e
 ###################################################
 
 # Enter your GitLab API token and group ID here
-REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
+REPO_BASE_URL="https://github.com/port-labs/template-assets/blob/add-gitlab-exporter-template"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
+
+function cleanup {
+  rm -rf "${temp_dir}"
+}
+trap cleanup EXIT
 
 # Create temporary folder
 temp_dir=$(mktemp -d)
