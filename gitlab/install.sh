@@ -58,7 +58,7 @@ echo ""
 # Download gitlab exporter file into temporary folder
 save_endpoint_to_file ${GITLAB_EXPORTER_SCRIPT_URL} "${temp_dir}/gitlab_exporter.py"
 pip3 install requests
-python3 "${temp_dir}/gitlab_exporter.py" --port_client_id "${PORT_CLIENT_ID}" --port_client_secret "${PORT_CLIENT_SECRET}" --gitlab_api_token "${GITLAB_API_TOKEN}" --group_id "${GROUP_ID}"
+python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
 
 echo ""
 echo "Finished installation!"

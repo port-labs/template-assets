@@ -11,6 +11,11 @@ PORT_CLIENT_SECRET = sys.argv[1]
 GITLAB_API_TOKEN = sys.argv[2]
 GROUP_ID = sys.argv[3] 
 
+print(PORT_CLIENT_ID)
+print(PORT_CLIENT_SECRET)
+print(GITLAB_API_TOKEN)
+print(GROUP_ID)
+
 def create_webhook():
     api_url = f"{GITLAB_URL}/groups/{GROUP_ID}/hooks"
 
