@@ -6,11 +6,10 @@ GITLAB_URL = "https://gitlab.com/api/v4"
 PORT_API_URL = "http://localhost:3000/v1" # "https://api.getport.io/v1"
 WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
 
-PORT_CLIENT_ID = sys.argv[0] # "60EsooJtOqimlekxrNh7nfr2iOgTcyLZ"; # "YOUR_PORT_CLIENT_ID"
-PORT_CLIENT_SECRET = sys.argv[1] # "3qhzxVQYf2GTrCeXooW6o53vWWqoy3IvnhGIlZJULf6D95RasYVBQyuXB5S3DIry" # "YOUR_PORT_CLIENT_SECRET"
-GITLAB_API_TOKEN = sys.argv[2] # "glpat-Rsy5UQmx8yunyC2x935y" # "YOUR_API_TOKEN"
-GROUP_ID = sys.argv[3] # 66136652 # "YOUR_GROUP_ID"
-
+PORT_CLIENT_ID = sys.argv[0]
+PORT_CLIENT_SECRET = sys.argv[1] 
+GITLAB_API_TOKEN = sys.argv[2]
+GROUP_ID = sys.argv[3] 
 
 def create_webhook():
     api_url = f"{GITLAB_URL}/groups/{GROUP_ID}/hooks"
