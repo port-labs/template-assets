@@ -2,8 +2,8 @@ import requests
 import json 
 import sys
 
-GITLAB_URL = "https://gitlab.com/api/v4"
-PORT_API_URL = "http://localhost:3000/v1" # "https://api.getport.io/v1"
+GITLAB_URL = "https://gitlab.com/api/v4" 
+PORT_API_URL = "http://localhost:3000/v1" # TODO: change to "https://api.getport.io/v1"
 WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
 
 PORT_CLIENT_ID = sys.argv[0]

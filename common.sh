@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PORT_API_URL="https://api.getport.io/v1"
+PORT_API_URL="http://localhost:3000/v1" # TODO: change to "https://api.getport.io/v1"
 
 check_port_credentials() {
     clientId=$1
