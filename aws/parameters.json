@@ -29,10 +29,10 @@
   },
   {
     "Name": "ScheduleExpression",
-    "Value": "rate(1 hour)"
+    "Value": "rate(5 minutes)"
   },
   {
     "Name": "ScheduleState",
-    "Value": "DISABLED"
+    "Value": "ENABLED"
   }
 ]
