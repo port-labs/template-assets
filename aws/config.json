@@ -158,7 +158,7 @@
                 "defaultCapacityProviderStrategy": ".DefaultCapacityProviderStrategy",
                 "tags": ".Tags",
                 "statistics": ".Statistics",
-                "arn": ".ClusterArn"
+                "arn": ".Arn"
               }
             }
           ]
