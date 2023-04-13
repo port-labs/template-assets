@@ -12,7 +12,7 @@ set -e
 #   Documentation: To Be Added
 # 
 # Prerequisites:
-#   - The variables 'PORT_CLIENT_ID' and 'PORT_CLIENT_SECRET' must be passed to the script
+#   - The variables 'PORT_CLIENT_ID', 'PORT_CLIENT_SECRET', 'GITLAB_API_TOKEN' and 'GROUP_ID' must be passed to the script
 # 
 # Variables:
 #   PORT_CLIENT_ID - Your Port organization Client ID (required)
@@ -57,8 +57,22 @@ echo ""
 
 # Download gitlab exporter file into temporary folder
 save_endpoint_to_file ${GITLAB_EXPORTER_SCRIPT_URL} "${temp_dir}/gitlab_exporter.py"
-pip3 install requests
-python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
+if command -v python3 &>/dev/null
+then
+  echo "Python 3 is installed, Running script..."
+  python3 -m pip install requests
+  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
+elif command -v python &>/dev/null 
+then
+  echo "Python 2 is installed, Running script..."
+  python -m pip install requests
+  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
+else
+  echo "Neither Python 2 nor Python 3 is installed, please install Python and try again"
+  exit 1
+fi
+
+
 
 echo ""
 echo "Finished installation!"

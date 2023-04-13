@@ -2,17 +2,19 @@ import requests
 import json 
 import sys
 
-GITLAB_URL = "https://gitlab.com/api/v4" 
-PORT_API_URL = "http://localhost:3000/v1" # TODO: change to "https://api.getport.io/v1"
-WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
+
 
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2] 
 GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
 
+GITLAB_URL = "https://gitlab.com/api/v4/groups/{GROUP_ID}" 
+PORT_API_URL = "https://api.getport.io/v1"
+WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
+
 def create_webhook():
-    api_url = f"{GITLAB_URL}/groups/{GROUP_ID}/hooks"
+    api_url = f"{GITLAB_URL}/hooks"
 
     webhook_data = {
         "url": WEBHOOK_URL,
@@ -58,8 +60,8 @@ def create_entity(blueprint: str, body: json, access_token: str):
 
     return response
 
-def get_all_merge_requests_from_gitlab(token: str):
-    merge_requests_url = f"{GITLAB_URL}/groups/{GROUP_ID}/merge_requests"
+def get_all_merge_requests_from_gitlab():
+    merge_requests_url = f"{GITLAB_URL}/merge_requests"
 
     response = requests.get(
         merge_requests_url,
@@ -69,6 +71,7 @@ def get_all_merge_requests_from_gitlab(token: str):
     if response.status_code == 200:
         merge_requests = response.json()
 
+        token = get_port_api_token()
         for merge_request in merge_requests:
             entity = {
                 'identifier': str(merge_request['id']),
@@ -93,10 +96,8 @@ def get_all_merge_requests_from_gitlab(token: str):
 
 def get_all_entities_from_gitlab():
     # Gets all projects from GitLab and create a microservice for each one
-    # Foreach project gets all merge requests from GitLab and create a merge request for each one
-
-    # membership=true will return only the projects that the user is a member of (and not all public projects)
-    api_url = f"{GITLAB_URL}/groups/{GROUP_ID}/projects"
+    # Gets all merge requests from GitLab and create a merge request for each one
+    api_url = f"{GITLAB_URL}/projects"
 
     response = requests.get(
         api_url,
@@ -118,10 +119,11 @@ def get_all_entities_from_gitlab():
             }
 
             create_entity('microservice', entity, access_token=token)
-            get_all_merge_requests_from_gitlab(token)
+            
     else:
         print(f"Failed to retrieve projects. Status code: {response.status_code}") 
 
 if __name__ == "__main__":
     create_webhook()
     get_all_entities_from_gitlab()
+    get_all_merge_requests_from_gitlab()
