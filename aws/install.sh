@@ -34,7 +34,7 @@ REPO_AWS_CONTENT_URL="${REPO_BASE_URL}/aws"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-EXPORTER_APP_NAME=${EXPORTER_APP_NAME:-"port-aws-exporter"}
+EXPORTER_APP_NAME=${EXPORTER_APP_NAME:-"port-aws-exporter"}1
 EXPORTER_LAMBDA_NAME=${EXPORTER_LAMBDA_NAME:-"port-aws-exporter"}
 EXPORTER_SECRET_NAME=${EXPORTER_SECRET_NAME:-"port-credentials"}
 EXPORTER_IAM_POLICY_NAME=${EXPORTER_IAM_POLICY_NAME:-"PortAWSExporterPolicy"}
@@ -115,7 +115,7 @@ echo "Deploying Port's AWS exporter application..."
 
 CHANGE_SET_ID=$(aws serverlessrepo create-cloud-formation-change-set \
 --application-id arn:aws:serverlessrepo:eu-west-1:185657066287:applications/port-aws-exporter \
---stack-name "${EXPORTER_APP_NAME}1" --capabilities CAPABILITY_IAM CAPABILITY_RESOURCE_POLICY \
+--stack-name "${EXPORTER_APP_NAME}" --capabilities CAPABILITY_IAM CAPABILITY_RESOURCE_POLICY \
 --parameter-overrides "file://${temp_dir}/parameters.json" | jq -r ".ChangeSetId")
 
 if ! aws cloudformation wait change-set-create-complete --change-set-name "${CHANGE_SET_ID}" &> /dev/null
