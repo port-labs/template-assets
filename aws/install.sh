@@ -114,6 +114,7 @@ echo ""
 echo "Deploying Port's AWS exporter application..."
 
 CHANGE_SET_ID=$(aws serverlessrepo create-cloud-formation-change-set \
+--debug \
 --application-id arn:aws:serverlessrepo:eu-west-1:185657066287:applications/port-aws-exporter \
 --stack-name "${EXPORTER_APP_NAME}" --capabilities CAPABILITY_IAM CAPABILITY_RESOURCE_POLICY \
 --parameter-overrides "file://${temp_dir}/parameters.json" | jq -r ".ChangeSetId")
