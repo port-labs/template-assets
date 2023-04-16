@@ -13,8 +13,7 @@ check_port_credentials() {
         exit 1
     fi
 
-    # TODO: add the -s after {http_code} 
-    response_code=$(curl -w "%{http_code}" -o /dev/null -X POST "${PORT_API_URL}/auth/access_token" \
+    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/auth/access_token" \
         --header 'Content-Type: application/json' \
         --data-raw "{\"clientId\": \"${clientId}\", \"clientSecret\": \"${clientSecret}\"}")
 
