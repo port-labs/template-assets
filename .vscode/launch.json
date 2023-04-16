@@ -9,11 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/gitlab/gitlab_exporter.py",
-            "args": [
-                "60EsooJtOqimlekxrNh7nfr2iOgTcyLZ",
-                "W3E48NmReGofYnTTaXIM97TMRHrmFUB4P74b0-Sv3kZMtTH8L-sqNd0yzcF9s548",
-                "glpat-Rsy5UQmx8yunyC2x935y",
-                "66136652"],
+            "args": [],
             "console": "integratedTerminal",
             "justMyCode": true
         }
