@@ -2,8 +2,6 @@ import requests
 import json 
 import sys
 
-
-
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2] 
 GITLAB_API_TOKEN = sys.argv[3]
