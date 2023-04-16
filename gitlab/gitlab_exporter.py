@@ -22,23 +22,26 @@ def create_webhook():
 
     response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=headers)
 
-    webhook_data = {
-        "url": WEBHOOK_URL/{response.integration.webhookKey},
-        "push_events": True,
-        "merge_requests_events": True,
-        "issues_events": True,
-    }
+    if response.status_code == 200:
+        webhook_data = {
+            "url": WEBHOOK_URL/{response.integration.webhookKey},
+            "push_events": True,
+            "merge_requests_events": True,
+            "issues_events": True,
+        }
 
-    response = requests.post(
-        api_url,
-        headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
-        json=webhook_data
-    )
+        response = requests.post(
+            api_url,
+            headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+            json=webhook_data
+        )
 
-    if response.status_code == 201:
-        print("Webhook added successfully!")
+        if response.status_code == 201:
+            print("Webhook added successfully!")
+        else:
+            print(f"Failed to add webhook. Status code: {response.status_code}")
     else:
-        print(f"Failed to add webhook. Status code: {response.status_code}")
+        print(f"Failed to get webhookKey. Status code: {response.status_code}")
 
 def get_port_api_token():
     """
