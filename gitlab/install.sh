@@ -23,7 +23,7 @@ set -e
 ###################################################
 
 # Enter your GitLab API token and group ID here
-REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/add-gitlab-exporter-template" # TODO: change to main
+REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
 
