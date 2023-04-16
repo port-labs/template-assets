@@ -95,6 +95,34 @@
           ]
         }
       }
+    },
+    {
+      "kind": "AWS::ECS::Service",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceName",
+              "title": ".ServiceName",
+              "blueprint": "new_core_service",
+              "properties": {
+                "service": ".ServiceName",
+                "stack": "",
+                "env": "",
+                "app": "",
+                "cluster": ".Cluster",
+                "desiredCount": ".DesiredCount",
+                "loadBalancers": ".LoadBalancers",
+                "taskDef": ".TaskDefinition | split(\"/\")[-1]",
+                "arn": ".ServiceArn"
+              },
+              "relations": {
+                "region": ".ServiceArn | split(\":\")[3]"
+              }
+            }
+          ]
+        }
+      }
     }
   ]
 }
