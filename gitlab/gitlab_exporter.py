@@ -9,13 +9,21 @@ GROUP_ID = sys.argv[4]
 
 GITLAB_URL = "https://gitlab.com/api/v4/groups/{GROUP_ID}" 
 PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
+WEBHOOK_URL = "https://ingest.getport.io/" 
 
 def create_webhook():
     api_url = f"{GITLAB_URL}/hooks"
+    
+    access_token = get_port_api_token()
+
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=headers)
 
     webhook_data = {
-        "url": WEBHOOK_URL,
+        "url": WEBHOOK_URL/{response.integration.webhookKey},
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
