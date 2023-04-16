@@ -113,7 +113,7 @@
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
                 "loadBalancers": ".LoadBalancers",
-                "taskDef": ".TaskDefinition | split(\"/\")[-1]",
+                "taskDef": ".TaskDefinition",
                 "arn": ".ServiceArn"
               },
               "relations": {
