@@ -24,7 +24,7 @@ def create_webhook():
 
     if response.status_code == 200:
         webhook_data = {
-            "url": WEBHOOK_URL/{response.integration.webhookKey},
+            "url": WEBHOOK_URL/{response.json()['integration']['webhookKey']},
             "push_events": True,
             "merge_requests_events": True,
             "issues_events": True,
