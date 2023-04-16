@@ -107,9 +107,9 @@
               "blueprint": "new_core_service",
               "properties": {
                 "service": ".ServiceName",
-                "stack": "",
-                "env": "",
-                "app": "",
+                "stack": ".[] | select(.key == \"stack\") | .value",
+                "env": ".[] | select(.key == \"env\") | .value",
+                "app": ".[] | select(.key == \"app\") | .value",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
                 "loadBalancers": ".LoadBalancers",
