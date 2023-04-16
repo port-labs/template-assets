@@ -9,28 +9,39 @@ GROUP_ID = sys.argv[4]
 
 GITLAB_URL = "https://gitlab.com/api/v4/groups/{GROUP_ID}" 
 PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://smee.getport.io/SNzcBJlHUFfzHDO" 
+WEBHOOK_URL = "https://ingest.getport.io/" 
 
 def create_webhook():
     api_url = f"{GITLAB_URL}/hooks"
+    
+    access_token = get_port_api_token()
 
-    webhook_data = {
-        "url": WEBHOOK_URL,
-        "push_events": True,
-        "merge_requests_events": True,
-        "issues_events": True,
+    headers = {
+        'Authorization': f'Bearer {access_token}'
     }
 
-    response = requests.post(
-        api_url,
-        headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
-        json=webhook_data
-    )
+    response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=headers)
 
-    if response.status_code == 201:
-        print("Webhook added successfully!")
+    if response.status_code == 200:
+        webhook_data = {
+            "url": WEBHOOK_URL/{response.json()['integration']['webhookKey']},
+            "push_events": True,
+            "merge_requests_events": True,
+            "issues_events": True,
+        }
+
+        response = requests.post(
+            api_url,
+            headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+            json=webhook_data
+        )
+
+        if response.status_code == 201:
+            print("Webhook added successfully!")
+        else:
+            print(f"Failed to add webhook. Status code: {response.status_code}")
     else:
-        print(f"Failed to add webhook. Status code: {response.status_code}")
+        print(f"Failed to get webhookKey. Status code: {response.status_code}")
 
 def get_port_api_token():
     """
