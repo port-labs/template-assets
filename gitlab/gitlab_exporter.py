@@ -7,9 +7,9 @@ PORT_CLIENT_SECRET = sys.argv[2]
 GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
 
-GITLAB_URL = "https://gitlab.com/api/v4/groups/{GROUP_ID}" 
-PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://ingest.getport.io/" 
+GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
+PORT_API_URL = "https://api.stg-01.getport.io/v1" # TODO: "https://api.getport.io/v1"
+WEBHOOK_URL = "https://ingest.stg-01.getport.io" # TODO: "https://ingest.getport.io"
 
 def get_port_api_token():
     """
@@ -36,7 +36,7 @@ def create_webhook():
 
     if response.status_code == 200:
         webhook_data = {
-            "url": WEBHOOK_URL/{response.json()['integration']['webhookKey']},
+            "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
             "push_events": True,
             "merge_requests_events": True,
             "issues_events": True,

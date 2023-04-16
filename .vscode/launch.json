@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/gitlab/gitlab_exporter.py",
+            "args": [
+                "60EsooJtOqimlekxrNh7nfr2iOgTcyLZ",
+                "W3E48NmReGofYnTTaXIM97TMRHrmFUB4P74b0-Sv3kZMtTH8L-sqNd0yzcF9s548",
+                "glpat-Rsy5UQmx8yunyC2x935y",
+                "66136652"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
