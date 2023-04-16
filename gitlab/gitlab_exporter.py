@@ -7,9 +7,21 @@ PORT_CLIENT_SECRET = sys.argv[2]
 GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
 
-GITLAB_URL = "https://gitlab.com/api/v4/groups/{GROUP_ID}" 
-PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://ingest.getport.io/" 
+GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
+PORT_API_URL = "https://api.stg-01.getport.io/v1" # TODO: "https://api.getport.io/v1"
+WEBHOOK_URL = "https://ingest.stg-01.getport.io" # TODO: "https://ingest.getport.io"
+
+def get_port_api_token():
+    """
+    Get a Port API access token
+    This function uses CLIENT_ID and CLIENT_SECRET from config
+    """
+
+    credentials = {'clientId': PORT_CLIENT_ID, 'clientSecret': PORT_CLIENT_SECRET}
+
+    token_response = requests.post(f"{PORT_API_URL}/auth/access_token", json=credentials)
+
+    return token_response.json()['accessToken']
 
 def create_webhook():
     api_url = f"{GITLAB_URL}/hooks"
@@ -24,7 +36,7 @@ def create_webhook():
 
     if response.status_code == 200:
         webhook_data = {
-            "url": WEBHOOK_URL/{response.json()['integration']['webhookKey']},
+            "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
             "push_events": True,
             "merge_requests_events": True,
             "issues_events": True,
@@ -42,18 +54,6 @@ def create_webhook():
             print(f"Failed to add webhook. Status code: {response.status_code}")
     else:
         print(f"Failed to get webhookKey. Status code: {response.status_code}")
-
-def get_port_api_token():
-    """
-    Get a Port API access token
-    This function uses CLIENT_ID and CLIENT_SECRET from config
-    """
-
-    credentials = {'clientId': PORT_CLIENT_ID, 'clientSecret': PORT_CLIENT_SECRET}
-
-    token_response = requests.post(f"{PORT_API_URL}/auth/access_token", json=credentials)
-
-    return token_response.json()['accessToken']
 
 def create_entity(blueprint: str, body: json, access_token: str):
     """
@@ -136,3 +136,4 @@ if __name__ == "__main__":
     create_webhook()
     get_all_entities_from_gitlab()
     get_all_merge_requests_from_gitlab()
+
