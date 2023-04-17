@@ -8,8 +8,8 @@ GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
 
 GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
-PORT_API_URL = "https://api.stg-01.getport.io/v1" # TODO: "https://api.getport.io/v1"
-WEBHOOK_URL = "https://ingest.stg-01.getport.io" # TODO: "https://ingest.getport.io"
+PORT_API_URL = "https://api.getport.io/v1"
+WEBHOOK_URL = "https://ingest.getport.io"
 
 def get_port_api_token():
     """
