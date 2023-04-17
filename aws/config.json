@@ -81,7 +81,7 @@
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then \"unknown\" else .[] | select(.Key == \"app\") | .Value end",
                 "cluster": ".Cluster | split(\"/\")[1]",
                 "desiredCount": ".DesiredCount",
-                "taskDef": ".TaskDefinition | split(\"/\")[-1]",
+                "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
                 "arn": ".ServiceArn"
               },
               "relations": {
