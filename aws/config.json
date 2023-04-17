@@ -81,7 +81,7 @@
                 "app": ".ServiceName",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
-                "taskDef": ".TaskDefinition",
+                "taskDef": ".TaskDefinition | split(\"/\")[-1]",
                 "arn": ".ServiceArn"
               },
               "relations": {
