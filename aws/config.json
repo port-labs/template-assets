@@ -95,9 +95,9 @@
               "blueprint": "new_core_service",
               "properties": {
                 "service": ".ServiceName",
-                "stack": "hello",
-                "env": "world",
-                "app": "now",
+                "stack": ".ServiceName",
+                "env": ".ServiceName",
+                "app": ".ServiceName",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition",
