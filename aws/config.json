@@ -107,9 +107,9 @@
               "blueprint": "new_core_service",
               "properties": {
                 "service": ".ServiceName",
-                "stack": ".Tags | .[] | select(.key == \"stack\") | .value",
-                "env": ".Tags | .[] | select(.key == \"env\") | .value",
-                "app": ".Tags | .[] | select(.key == \"app\") | .value",
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"stack\")) then null else .[] | select(.Key == \"stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"env\")) then null else .[] | select(.Key == \"env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then null else .[] | select(.Key == \"app\") | .Value end",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
                 "loadBalancers": ".LoadBalancers",
