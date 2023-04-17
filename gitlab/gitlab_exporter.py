@@ -24,36 +24,56 @@ def get_port_api_token():
     return token_response.json()['accessToken']
 
 def create_webhook():
-    api_url = f"{GITLAB_URL}/hooks"
-    
+    gitlab_api_url = f"{GITLAB_URL}/hooks"
+    gitlab_request_headers = {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
+
+    # Checks if webhook already exists
+    response = requests.get(
+        gitlab_api_url,
+        headers=gitlab_request_headers
+    )
+
+    if response.status_code != 200:
+        print(f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response.json()['error']}, exiting...")
+        return
+    else: 
+        webhooks = response.json()
+        if webhooks.__len__() > 0 :
+            port_webhook = [webhook for webhook in webhooks if webhook['url'].startswith(WEBHOOK_URL)]
+            if port_webhook.__len__() > 0:
+                print("Webhook already exists, exiting...")
+                return
+
+    # Webhook doesn't exist, create it 
     access_token = get_port_api_token()
 
-    headers = {
+    port_request_headers = {
         'Authorization': f'Bearer {access_token}'
     }
 
-    response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=headers)
+    response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=port_request_headers)
 
-    if response.status_code == 200:
-        webhook_data = {
-            "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
-            "push_events": True,
-            "merge_requests_events": True,
-            "issues_events": True,
-        }
+    if response.status_code != 200:
+        print(f"Failed to get webhookKey. Status code: {response.status_code}, Error: {response.json()['error']}")
+        return
+    
+    webhook_data = {
+        "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
+        "push_events": True,
+        "merge_requests_events": True,
+        "issues_events": True,
+    }
 
-        response = requests.post(
-            api_url,
-            headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
-            json=webhook_data
-        )
+    response = requests.post(
+        gitlab_api_url,
+        headers=gitlab_request_headers,
+        json=webhook_data
+    )
 
-        if response.status_code == 201:
-            print("Webhook added successfully!")
-        else:
-            print(f"Failed to add webhook. Status code: {response.status_code}")
+    if response.status_code == 201:
+        print("Webhook added successfully!")
     else:
-        print(f"Failed to get webhookKey. Status code: {response.status_code}")
+        print(f"Failed to add webhook. Status code: {response.status_code}, Error: {response.json()['error']}")
 
 def create_entity(blueprint: str, body: json, access_token: str):
     """
