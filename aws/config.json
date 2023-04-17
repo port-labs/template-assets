@@ -79,7 +79,7 @@
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"stack\")) then \"unknown\" else .[] | select(.Key == \"stack\") | .Value end",
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"env\")) then \"unknown\" else .[] | select(.Key == \"env\") | .Value end",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then \"unknown\" else .[] | select(.Key == \"app\") | .Value end",
-                "cluster": ".Cluster | split(\":\")[5]",
+                "cluster": ".Cluster | split(\":\")[5] | split(\"/\")[1]",
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition | split(\"/\")[-1]",
                 "arn": ".ServiceArn"
