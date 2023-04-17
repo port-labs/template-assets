@@ -66,25 +66,6 @@
       }
     },
     {
-    "kind": "AWS::Organizations::Account",
-      "port": {
-        "entity": {
-          "mappings": [
-            {
-              "identifier": ".AccountName",
-              "title": ".AccountName",
-              "blueprint": "cloudAccount",
-              "properties": {
-                "alias": ".AccountName",
-                "email": ".Email",
-                "role": ".RoleName"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
       "kind": "AWS::ECS::Service",
       "port": {
         "entity": {
