@@ -95,9 +95,9 @@
               "blueprint": "new_core_service",
               "properties": {
                 "service": ".ServiceName",
-                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"stack\")) then null else .[] | select(.Key == \"stack\") | .Value end",
-                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"env\")) then null else .[] | select(.Key == \"env\") | .Value end",
-                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then null else .[] | select(.Key == \"app\") | .Value end",
+                "stack": "hello",
+                "env": "world",
+                "app": "now",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition",
