@@ -131,7 +131,6 @@
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then null else .[] | select(.Key == \"app\") | .Value end",
                 "cluster": ".Cluster",
                 "desiredCount": ".DesiredCount",
-                "loadBalancers": ".LoadBalancers",
                 "taskDef": ".TaskDefinition",
                 "arn": ".ServiceArn"
               },
