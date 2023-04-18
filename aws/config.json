@@ -86,7 +86,8 @@
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]",
-                "cloudAccount": ".ServiceArn | split(\":\")[4]"
+                "cloudAccount": ".ServiceArn | split(\":\")[4]",
+                "deploymentEnvironment": ".Tags // [] | if isempty(.[] | select(.Key == \"env\")) then \"unknown\" else .[] | select(.Key == \"env\") | .Value end"
               }
             }
           ]
