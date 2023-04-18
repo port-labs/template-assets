@@ -6,8 +6,13 @@ PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2] 
 GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
+GITLAB_API_URL = sys.argv[5]
 
 GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
+
+if GITLAB_API_URL != "":
+    GITLAB_URL = f"{GITLAB_API_URL}/groups/{GROUP_ID}"
+
 PORT_API_URL = "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
 
