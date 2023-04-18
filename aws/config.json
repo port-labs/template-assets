@@ -85,7 +85,8 @@
                 "arn": ".ServiceArn"
               },
               "relations": {
-                "region": ".ServiceArn | split(\":\")[3]"
+                "region": ".ServiceArn | split(\":\")[3]",
+                "cloudAccount": ".ServiceArn | split(\":\")[4]"
               }
             }
           ]
