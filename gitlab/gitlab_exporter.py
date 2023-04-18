@@ -34,7 +34,7 @@ def create_webhook():
     )
 
     if response.status_code != 200:
-        print(f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response.json()['error']}, exiting...")
+        print(f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response.json()}, exiting...")
         return
     else: 
         webhooks = response.json()
@@ -54,7 +54,7 @@ def create_webhook():
     response = requests.get(f"{PORT_API_URL}/webhooks/gitlabIntegration", headers=port_request_headers)
 
     if response.status_code != 200:
-        print(f"Failed to get webhookKey. Status code: {response.status_code}, Error: {response.json()['error']}")
+        print(f"Failed to get webhookKey. Status code: {response.status_code}, Error: {response.json()}")
         return
     
     webhook_data = {
@@ -73,7 +73,7 @@ def create_webhook():
     if response.status_code == 201:
         print("Webhook added successfully!")
     else:
-        print(f"Failed to add webhook. Status code: {response.status_code}, Error: {response.json()['error']}")
+        print(f"Failed to add webhook. Status code: {response.status_code}, Error: {response.json()}")
 
 def create_entity(blueprint: str, body: json, access_token: str):
     """
