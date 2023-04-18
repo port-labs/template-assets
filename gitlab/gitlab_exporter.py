@@ -11,7 +11,7 @@ GITLAB_API_URL = sys.argv[5]
 GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
 
 if GITLAB_API_URL != "":
-    GITLAB_URL = f"{GITLAB_API_URL}/v4/groups/{GROUP_ID}"
+    GITLAB_URL = f"{GITLAB_API_URL}/api/v4/groups/{GROUP_ID}"
 
 PORT_API_URL = "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
