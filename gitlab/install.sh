@@ -12,13 +12,18 @@ set -e
 #   Documentation: To Be Added
 # 
 # Prerequisites:
-#   - The variables 'PORT_CLIENT_ID', 'PORT_CLIENT_SECRET', 'GITLAB_API_TOKEN' and 'GROUP_ID' must be passed to the script
-# 
+#   - The variables 'PORT_CLIENT_ID', 'PORT_CLIENT_SECRET'
+#     'GITLAB_API_TOKEN' and 'GROUP_ID' must be passed to the script
+#   
+#  - For Self-Hosted GitLab instances
+#    'GITLAB_API_URL' must be passed to the script
+#
 # Variables:
 #   PORT_CLIENT_ID - Your Port organization Client ID (required)
 #   PORT_CLIENT_SECRET - Your Port organization Client Secret (required)
 #   GITLAB_API_TOKEN - Your GitLab API token (required)
 #   GROUP_ID - The ID of the GitLab group to sync (required)
+#   GITLAB_API_URL - The URL of your GitLab instance (optional)
 #
 ###################################################
 
@@ -61,14 +66,14 @@ if command -v python3 &>/dev/null
 then
   echo "Python 3 is installed, Running script..."
   python3 -m pip install requests
-  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
+  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}"
 elif command -v python &>/dev/null 
 then
-  echo "Python 2 is installed, Running script..."
+  echo "Python is installed, Running script..."
   python -m pip install requests
-  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}"
+  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}"
 else
-  echo "Neither Python 2 nor Python 3 is installed, please install Python and try again"
+  echo "Python 3 is not installed, please install Python 3 and try again"
   exit 1
 fi
 
