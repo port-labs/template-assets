@@ -95,7 +95,9 @@ def create_entity(blueprint: str, body: json, access_token: str):
     return response
 
 def get_all_merge_requests_from_gitlab():
+    # Gets all merge requests for this group and its subgroups.
     merge_requests_url = f"{GITLAB_URL}/merge_requests"
+    created_merge_requests_in_port = 0
 
     response = requests.get(
         merge_requests_url,
@@ -105,6 +107,8 @@ def get_all_merge_requests_from_gitlab():
     if response.status_code == 200:
         merge_requests = response.json()
 
+        print(f"Found {len(merge_requests)} merge requests in GitLab")
+
         token = get_port_api_token()
         for merge_request in merge_requests:
             entity = {
@@ -112,7 +116,7 @@ def get_all_merge_requests_from_gitlab():
                 'title': merge_request['title'],
                 'properties': {
                     'creator': merge_request['author']['username'],
-                    'status': merge_request['state'],
+                    'status': merge_request['state'], # can be opened, closed, merged or locked.
                     'createdAt': merge_request['created_at'],
                     'updatedAt': merge_request['updated_at'],
                     'description': merge_request['description'],
@@ -123,7 +127,12 @@ def get_all_merge_requests_from_gitlab():
                 }
             }
 
-            create_entity('mergeRequest', entity, access_token=token)
+            response = create_entity('mergeRequest', entity, access_token=token)
+
+            if response.status_code == 201:
+                created_merge_requests_in_port += 1
+        
+        print(f"Created {created_merge_requests_in_port} merge requests in Port")
     else:
         print(f"Failed to get merge requests. Status code: {response.status_code}")
 
@@ -132,15 +141,38 @@ def get_all_entities_from_gitlab():
     # Gets all projects from GitLab and create a microservice for each one
     # Gets all merge requests from GitLab and create a merge request for each one
     api_url = f"{GITLAB_URL}/projects"
+    current_page = 1
+    per_page = 50
+    request_more_project = True
+    projects_from_gitlab = []
+    created_projects_in_port = 0
 
-    response = requests.get(
-        api_url,
-        headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
-    )  
+    # Get all projects from GitLab
+    while request_more_project:
+        response = requests.get(
+            api_url,
+            headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+            # By default, this request returns 20 results at a time because the API results are paginated.
+            # Archived projects are included by default so we need to exclude them.
+            params={'include_subgroups': True, 'archived': False, 'per_page': per_page, 'page': current_page}
+        )  
 
-    if response.status_code == 200:
-        projects = response.json()
+        if response.status_code == 200:
+            projects = response.json()
 
+            projects_from_gitlab.extend(projects)
+        
+            if len(projects) == per_page:
+                # There are more projects to get
+                current_page += 1
+            else:
+                request_more_project = False
+                print(f"Found {len(projects_from_gitlab)} projects in GitLab")
+        else:
+            print(f"Failed to retrieve projects, Page Number: {current_page}, Status code: {response.status_code}") 
+
+    # Creates microservices in Port
+    if len(projects_from_gitlab) > 0:
         token = get_port_api_token()
         for project in projects:
             entity = {
@@ -152,10 +184,12 @@ def get_all_entities_from_gitlab():
                 }
             }
 
-            create_entity('microservice', entity, access_token=token)
-            
-    else:
-        print(f"Failed to retrieve projects. Status code: {response.status_code}") 
+            response = create_entity('microservice', entity, access_token=token)
+
+            if response.status_code == 201:
+                created_projects_in_port += 1
+    
+    print(f"Created {created_projects_in_port} microservices in Port")
 
 if __name__ == "__main__":
     create_webhook()
