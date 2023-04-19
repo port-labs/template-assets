@@ -90,7 +90,7 @@ def create_entity(blueprint: str, body: json, access_token: str):
         'User-Agent': 'gitlab-exporter',
     }
 
-    response = requests.post(f"{PORT_API_URL}/blueprints/{blueprint}/entities?upsert=true&merge=true",json=body, headers=headers)
+    response = requests.post(f"{PORT_API_URL}/blueprints/{blueprint}/entities?upsert=true&merge=true&create_missing_related_entities=true",json=body, headers=headers)
 
     return response
 
