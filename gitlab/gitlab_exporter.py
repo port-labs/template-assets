@@ -13,7 +13,7 @@ GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}"
 if GITLAB_API_URL != "":
     GITLAB_URL = f"{GITLAB_API_URL}/api/v4/groups/{GROUP_ID}"
 
-PORT_API_URL = "https://api.getport.io/v1"
+PORT_API_URL = "http://localhost:3000/v1" # "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
 
 def get_port_api_token():
@@ -63,7 +63,8 @@ def create_webhook():
         return
     
     webhook_data = {
-        "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
+        # "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
+        "url": "https://smee.getport.io/SNzcBJlHUFfzHDO",
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
@@ -128,9 +129,7 @@ def get_all_merge_requests_from_gitlab():
         print(f"Failed to get merge requests. Status code: {response.status_code}")
 
 
-def get_all_entities_from_gitlab():
-    # Gets all projects from GitLab and create a microservice for each one
-    # Gets all merge requests from GitLab and create a merge request for each one
+def get_all_projects_from_gitlab():
     api_url = f"{GITLAB_URL}/projects"
 
     response = requests.get(
@@ -157,8 +156,44 @@ def get_all_entities_from_gitlab():
     else:
         print(f"Failed to retrieve projects. Status code: {response.status_code}") 
 
+def get_all_issues_from_gitlab():
+    api_url = f"{GITLAB_URL}/issues"
+
+    response = requests.get(
+        api_url,
+        headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+    )  
+
+    if response.status_code == 200:
+        issues = response.json()
+
+        token = get_port_api_token()
+        for issue in issues:
+            entity = {
+                'identifier': str(issue['id']),
+                'title': issue['title'],
+                'properties': {
+                    'description': issue['description'],
+                    'link': issue['web_url'],
+                    'createdAt': issue['created_at'],
+                    'closedAt': issue['closed_at'],
+                    'updatedAt': issue['updated_at'],
+                    'creator': issue['author']['username'],
+                    'status': issue['state'],
+                    'labels': issue['labels']
+                }
+            }
+
+            create_entity('issue', entity, access_token=token)
+            
+    else:
+        print(f"Failed to retrieve projects. Status code: {response.status_code}") 
+
+
+
 if __name__ == "__main__":
     create_webhook()
-    get_all_entities_from_gitlab()
+    get_all_projects_from_gitlab()
     get_all_merge_requests_from_gitlab()
+    get_all_issues_from_gitlab()
 
