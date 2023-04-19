@@ -95,6 +95,7 @@ def create_entity(blueprint: str, body: json, access_token: str):
     return response
 
 def get_all_merge_requests_from_gitlab():
+    # Gets all merge requests for this group and its subgroups.
     merge_requests_url = f"{GITLAB_URL}/merge_requests"
 
     response = requests.get(
@@ -112,7 +113,7 @@ def get_all_merge_requests_from_gitlab():
                 'title': merge_request['title'],
                 'properties': {
                     'creator': merge_request['author']['username'],
-                    'status': merge_request['state'],
+                    'status': merge_request['state'], # can be opened, closed, merged or locked.
                     'createdAt': merge_request['created_at'],
                     'updatedAt': merge_request['updated_at'],
                     'description': merge_request['description'],
@@ -124,6 +125,8 @@ def get_all_merge_requests_from_gitlab():
             }
 
             create_entity('mergeRequest', entity, access_token=token)
+        
+        print(f"Created {merge_requests.__len__()} merge requests")
     else:
         print(f"Failed to get merge requests. Status code: {response.status_code}")
 
@@ -136,11 +139,15 @@ def get_all_entities_from_gitlab():
     response = requests.get(
         api_url,
         headers={"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+        # By default, this request returns 20 results at a time because the API results are paginated.
+        # Archived projects are included by default so we need to exclude them.
+        params={'include_subgroups': True, 'archived': False, 'per_page': 100}
     )  
 
     if response.status_code == 200:
         projects = response.json()
 
+        # Creates microservices
         token = get_port_api_token()
         for project in projects:
             entity = {
@@ -153,6 +160,12 @@ def get_all_entities_from_gitlab():
             }
 
             create_entity('microservice', entity, access_token=token)
+        
+        print(f"Created {projects.__len__()} microservices")
+
+        # Creates merge requests of projects that already exist in Port
+        if projects.__len__() > 0:
+            get_all_merge_requests_from_gitlab()
             
     else:
         print(f"Failed to retrieve projects. Status code: {response.status_code}") 
@@ -160,5 +173,4 @@ def get_all_entities_from_gitlab():
 if __name__ == "__main__":
     create_webhook()
     get_all_entities_from_gitlab()
-    get_all_merge_requests_from_gitlab()
 
