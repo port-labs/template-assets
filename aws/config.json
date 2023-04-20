@@ -87,7 +87,7 @@
                 "cloudAccount": ".ServiceArn | split(\":\")[4]",
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"stack\")) then \"unknown\" else .[] | select(.Key == \"stack\") | .Value end",
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"env\")) then \"unknown\" else .[] | select(.Key == \"env\") | .Value end",
-                "binaryVersion": "(.ServiceName),(\"-\"),(.ServiceName)"
+                "binaryVersion": "(.ServiceName),(\"-\")"
               }
             }
           ]
