@@ -73,7 +73,7 @@
             {
               "identifier": ".ServiceName",
               "title": ".ServiceName",
-              "blueprint": "core_service",
+              "blueprint": "service",
               "properties": {
                 "service": ".ServiceName",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then \"unknown\" else .[] | select(.Key == \"app\") | .Value end",
