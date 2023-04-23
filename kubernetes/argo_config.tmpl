@@ -1,27 +1,3 @@
-  - kind: argoproj.io/v1alpha1/rollouts
-    selector:
-      query: .metadata.namespace | startswith("kube") | not 
-    port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-Rollout-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            blueprint: '"workload"'
-            properties:
-              kind: '"Rollout"'
-              creationTimestamp: .metadata.creationTimestamp         
-              replicas: .spec.replicas
-              strategyConfig: .spec.strategy // null
-              availableReplicas: .status.availableReplicas
-              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
-              labels: .metadata.labels
-              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
-              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
-              containers: (.spec.template.spec.containers | map({name, image, resources}))
-              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
-            relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-
   - kind: argoproj.io/v1alpha1/applications
     port:
       entity:
