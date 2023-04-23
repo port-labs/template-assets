@@ -60,7 +60,7 @@
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"argoRepo"'
+            blueprint: '"argocdRepo"'
             properties:
               repoUrl: .data.url | @base64d
               repoType: .data.type | @base64d
