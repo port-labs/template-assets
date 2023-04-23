@@ -16,7 +16,7 @@ if GITLAB_API_URL != "":
 PORT_API_URL = "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
 
-PAGINATION_PER_PAGE = 5
+PAGE_SIZE = 50
 
 def get_port_api_token():
     """
