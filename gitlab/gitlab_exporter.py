@@ -13,7 +13,7 @@ GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}"
 if GITLAB_API_URL != "":
     GITLAB_URL = f"{GITLAB_API_URL}/api/v4/groups/{GROUP_ID}"
 
-PORT_API_URL = "http://localhost:3000/v1" # "https://api.getport.io/v1"
+PORT_API_URL = "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
 
 def get_port_api_token():
@@ -63,8 +63,7 @@ def create_webhook():
         return
     
     webhook_data = {
-        # "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
-        "url": "https://smee.getport.io/SNzcBJlHUFfzHDO",
+        "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
@@ -141,7 +140,7 @@ def get_all_merge_requests_from_gitlab():
 def get_all_projects_from_gitlab():
     api_url = f"{GITLAB_URL}/projects"
     current_page = 1
-    per_page = 50
+    per_page = 10
     request_more_project = True
     projects_from_gitlab = []
     created_projects_in_port = 0
@@ -173,7 +172,7 @@ def get_all_projects_from_gitlab():
     # Creates microservices in Port
     if len(projects_from_gitlab) > 0:
         token = get_port_api_token()
-        for project in projects:
+        for project in projects_from_gitlab:
             entity = {
                 'identifier': str(project['id']),
                 'title': project['name'],
