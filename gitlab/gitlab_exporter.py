@@ -102,7 +102,7 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict, p
     entities_from_gitlab = []
    
     while request_more_entities:
-        params['per_page'] = PAGINATION_PER_PAGE
+        params['per_page'] = PAGE_SIZE
         params['page'] = current_page
 
         response = requests.get(api_url, headers=headers, params=params)  
@@ -112,7 +112,7 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict, p
 
             entities_from_gitlab.extend(entities)
         
-            if len(entities) == PAGINATION_PER_PAGE:
+            if len(entities) == PAGE_SIZE:
                 # There are more entities to get
                 current_page += 1
             else:
