@@ -129,7 +129,7 @@ check_path_or_url() {
     elif [[ $1 =~ ^https?:// ]]; then
         echo "url"
     else
-        echo "$1 is neither a local path nor a URL. Failing..."
+        echo "$1 is neither a local path or a URL in 'https://*' format. Failing..."
 	exit 0
     fi
 }
