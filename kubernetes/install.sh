@@ -87,8 +87,12 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
       echo "Added ${template}."
   done
 else
-  echo "Custom config.yaml file URL found."
-  save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+  echo "Custom config.yaml file found."
+  if [[ $(check_path_or_url ${CONFIG_YAML_URL}) == 'local']; then
+    cp ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+  else
+    save_endpoint_to_file ${BASE_CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+  fi
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"

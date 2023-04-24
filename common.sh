@@ -133,3 +133,48 @@ check_path_or_url() {
 	exit 0
     fi
 }
+
+post_port_blueprint() {
+    clientId=$1
+    clientSecret=$2
+    blueprint=$3
+
+    blueprint_id=$(echo ${blueprint} | jq .identifier)
+
+    accessToken=$(curl -s -X POST "${PORT_API_URL}/auth/access_token" \
+        --header 'Content-Type: application/json' \
+        --data-raw "{\"clientId\": \"${clientId}\", \"clientSecret\": \"${clientSecret}\"}" | jq -r ".accessToken")
+
+    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/blueprints?upsert=true&merge=true" \
+        --header 'Content-Type: application/json' \
+        --header "Authorization: Bearer ${accessToken}" \
+        --data-raw "${blueprint}")
+
+    if [[ ${response_code} != "201" || ${response_code} != "200" ]]; then
+        echo "Create blueprint: \"${blueprint_id}\" failed, status code: ${response_code}"
+        return 1
+    fi
+
+    echo "Create blueprint: \"${blueprint_id}\" succeeded"
+    return 0
+}
+
+# supports single or multiple blueprints
+report_blueprints_to_port() {
+    clientId=$1
+    clientSecret=$2
+    blueprints=$3
+    
+    # Checks if single blueprint
+    if [[ "$(declare -p ${blueprints} 2> /dev/null)" =~ "declare --" ]]; then
+        post_port_blueprint ${clientId} ${clientSecret} ${blueprint}
+    # Checks if array of blueprints
+    elif [[ "$(declare -p ${blueprints} 2> /dev/null)" =~ "declare -a" ]]; then
+        for blueprint in ${blueprints}; do
+            post_port_blueprint ${clientId} ${clientSecret} ${blueprint}
+        done
+    else
+        echo "Unknown type for variable"
+    fi
+
+}
