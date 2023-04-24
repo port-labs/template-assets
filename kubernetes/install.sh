@@ -89,10 +89,8 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
 else
   echo "Custom config.yaml file found."
   if [[ $(check_path_or_url ${CONFIG_YAML_URL}) == 'local']; then
-        echo "copied"
     cp ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml" || echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1
   else
-      echo "fetching url"
     save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
   fi
 fi
