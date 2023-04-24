@@ -80,7 +80,8 @@
                 "cluster": ".Cluster | split(\"/\")[1]",
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
-                "arn": ".ServiceArn"
+                "arn": ".ServiceArn",
+                "binaryVersion": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:binary-version\")) then \"unknown\" else .[] | select(.Key == \"autofi:binary-version\") | .Value end"
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]",
