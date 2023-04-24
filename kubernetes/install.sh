@@ -33,6 +33,7 @@ COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 TEMPLATE_NAME=${TEMPLATE_NAME:-}
 BASE_CONFIG_YAML_URL="$REPO_BASE_URL/kubernetes/kubernetes_config.yaml"
 CONFIG_YAML_URL=${CONFIG_YAML_URL:-}
+CUSTOM_BP_PATH=${CUSTOM_BP_PATH:-}
 HELM_REPO_NAME="port-labs"
 HELM_REPO_URL="https://port-labs.github.io/helm-charts"
 HELM_K8S_CHART_NAME="port-k8s-exporter"
@@ -95,14 +96,32 @@ else
   elif [[ "${config_path_type}" == 'url' ]]; then
     save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
   else
-    echo "Failed to retrieve custom \`config.yaml\`. Is the path/URL valid?"
+    echo "Failed to retrieve custom \`config.yaml\` ${CONFIG_YAML_URL}. Is the path/URL valid?"
     exit 1
   fi
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
 
+echo ""
+if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
+  echo "Found custom a blueprints file configuration. Attempting to create blueprints defined in: ${CUSTOM_BP_PATH}"
+  bp_path_type=$(check_path_or_url ${CUSTOM_BP_PATH}) # 'local' or 'url'
+  if [[ "${bp_path_type}" == 'local' ]]; then
+    cp "${CUSTOM_BP_PATH}" "${temp_dir}/blueprints.json" || (echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1)
+  elif [[ "${bp_path_type}" == 'url' ]]; then
+    save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/blueprints.json"
+  else
+    echo "Failed to retrieve blueprints file \`${CUSTOM_BP_PATH}\`. Is the path/URL valid?"
+    exit 1
+  fi
 
+  cat ${temp_dir}/blueprints.json | jq -c '.[]' | while read blueprint; do
+    post_port_blueprint "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "$blueprint" 
+  done
+fi
+
+echo ""
 echo "Adding ${HELM_REPO_NAME} repository to helm..."
 helm repo add port-labs ${HELM_REPO_URL}
 echo ""
