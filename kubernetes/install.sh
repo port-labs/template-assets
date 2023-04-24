@@ -93,6 +93,7 @@ else
     echo "copied"
   else
     save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+    echo "fetching url"
   fi
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
