@@ -160,15 +160,3 @@ post_port_blueprint() {
     echo "Create blueprint: \"${blueprint_id}\" succeeded"
     return 0
 }
-
-# supports single or multiple blueprints
-report_blueprints_to_port() {
-    clientId=$1
-    clientSecret=$2
-    blueprints=$3
-
-    for blueprint in ${blueprints}; do
-        post_port_blueprint ${clientId} ${clientSecret} ${blueprint}
-    done
-
-}
