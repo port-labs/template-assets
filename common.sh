@@ -130,7 +130,7 @@ check_path_or_url() {
         echo "url"
     else
         echo "$1 is neither a local path or a URL in 'https://*' format. Failing..."
-	    exit 0
+	    return 1
     fi
 }
 
