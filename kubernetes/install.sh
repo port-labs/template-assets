@@ -52,7 +52,8 @@ temp_dir=$(mktemp -d)
 
 echo "Importing common functions..."
 curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
-source "${temp_dir}/common.sh"
+source "common.sh"
+#source "${temp_dir}/common.sh"
 
 echo "Checking for prerequisites..."
 
@@ -87,12 +88,15 @@ if [[ -z ${CONFIG_YAML_URL} ]]; then
       echo "Added ${template}."
   done
 else
-  echo "Custom config.yaml file found."
+  echo "Custom config.yaml file configuration found."
   config_path_type=$(check_path_or_url ${CONFIG_YAML_URL}) # 'local' or 'url'
   if [[ "${config_path_type}" == 'local' ]]; then
     cp "${CONFIG_YAML_URL}" "${temp_dir}/template_config.yaml" || (echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1)
-  else
+  elif [[ "${config_path_type}" == 'url' ]]; then
     save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+  else
+    echo "Failed to retrieve custom \`config.yaml\`. Is the path/URL valid?"
+    exit 1
   fi
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
