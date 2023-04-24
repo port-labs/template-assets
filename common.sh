@@ -122,3 +122,14 @@ trigger_continue_prompt() {
         exit 0
     fi
 }
+
+check_path_or_url() {
+    if [[ -f $1 ]]; then
+        echo "local"
+    elif [[ $1 =~ ^https?:// ]]; then
+        echo "url"
+    else
+        echo "$1 is neither a local path nor a URL. Failing..."
+	exit 0
+    fi
+}
