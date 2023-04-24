@@ -90,8 +90,9 @@ else
   echo "Custom config.yaml file found."
   if [[ $(check_path_or_url ${CONFIG_YAML_URL}) == 'local']; then
     cp ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+    echo "copied"
   else
-    save_endpoint_to_file ${BASE_CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
+    save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
   fi
 fi
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
