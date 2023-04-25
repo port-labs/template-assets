@@ -169,7 +169,7 @@ echo ""
 
 upsert_port_entity "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "region" "{\"identifier\": \"${AWS_REGION}\", \"title\": \"${AWS_REGION}\", \"properties\": {}}" || exit
 
-if [ "$1" == "skip_logs" ]; then
+if [ "$1" == "skip_logs" ]
 then
     echo "Skipping manual lambda invocation"
     exit 0
