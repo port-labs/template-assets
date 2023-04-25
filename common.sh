@@ -67,7 +67,6 @@ check_commands () {
 save_endpoint_to_file() {
   endpoint=$1
   filename=$2
-
   response=$(curl -s -w "%{http_code}" "$endpoint" -o "$filename")
 
   if [[ "${response}" -ne 200 && "${response}" -ne 301 ]]; then

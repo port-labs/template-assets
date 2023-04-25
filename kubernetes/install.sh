@@ -110,7 +110,7 @@ if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
   if [[ "${bp_path_type}" == 'local' ]]; then
     cp "${CUSTOM_BP_PATH}" "${temp_dir}/blueprints.json" || (echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1)
   elif [[ "${bp_path_type}" == 'url' ]]; then
-    save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/blueprints.json"
+    save_endpoint_to_file ${CUSTOM_BP_PATH} "${temp_dir}/blueprints.json"
   else
     echo "Failed to retrieve blueprints file \`${CUSTOM_BP_PATH}\`. Is the path/URL valid?"
     exit 1
