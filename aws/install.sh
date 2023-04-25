@@ -129,18 +129,21 @@ else
     cloudformation_tail "serverlessrepo-${EXPORTER_APP_NAME}"
 fi
 
-echo ""
-echo "Checking existence of config.json in S3 bucket..."
-echo ""
+# Always put config.json in case a change was made
+aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
 
-if ! aws s3api head-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" &> /dev/null
-then
-    echo "config.json not exists, uploading..."
-    echo ""
-    aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
-else
-    echo "config.json exists"
-fi
+# echo ""
+# echo "Checking existence of config.json in S3 bucket..."
+# echo ""
+
+# if ! aws s3api head-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" &> /dev/null
+# then
+#     echo "config.json not exists, uploading..."
+#     echo ""
+#     aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
+# else
+#     echo "config.json exists"
+# fi
 
 echo ""
 echo "Updating Port credentials secret..."
@@ -161,6 +164,12 @@ echo "Creating Port entity for region: \"${AWS_REGION}\"..."
 echo ""
 
 upsert_port_entity "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "region" "{\"identifier\": \"${AWS_REGION}\", \"title\": \"${AWS_REGION}\", \"properties\": {}}" || exit
+
+if [ "$1" == "skip_logs" ]; then
+then
+    echo "Skipping manual lambda invocation"
+    exit 0
+fi
 
 echo ""
 echo "Running exporter's lambda manually..."
