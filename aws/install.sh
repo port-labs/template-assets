@@ -130,6 +130,10 @@ else
 fi
 
 # Always put config.json in case a change was made
+echo ""
+echo "Updating config.json in s3..."
+echo ""
+
 aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
 
 # echo ""
