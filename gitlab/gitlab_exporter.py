@@ -8,15 +8,21 @@ GITLAB_API_TOKEN = sys.argv[3]
 GROUP_ID = sys.argv[4]
 GITLAB_API_URL = sys.argv[5]
 
-GITLAB_URL = f"https://gitlab.com/api/v4/groups/{GROUP_ID}" 
+GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
+GITLAB_GROUP_URL = f"{GITLAB_BASE_URL}/groups/{GROUP_ID}" 
 
 if GITLAB_API_URL != "":
-    GITLAB_URL = f"{GITLAB_API_URL}/api/v4/groups/{GROUP_ID}"
+    GITLAB_BASE_URL = GITLAB_API_URL
+    GITLAB_GROUP_URL = f"{GITLAB_BASE_URL}/groups/{GROUP_ID}"
 
 PORT_API_URL = "https://api.getport.io/v1"
 WEBHOOK_URL = "https://ingest.getport.io"
 
+# For Pagination
 PAGE_SIZE = 50
+
+# For entities relations
+projects_ids_to_names = {}
 
 def get_port_api_token():
     """
@@ -31,7 +37,7 @@ def get_port_api_token():
     return token_response.json()['accessToken']
 
 def create_webhook():
-    gitlab_api_url = f"{GITLAB_URL}/hooks"
+    gitlab_api_url = f"{GITLAB_GROUP_URL}/hooks"
     gitlab_request_headers = {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
 
     # Checks if webhook already exists
@@ -69,6 +75,8 @@ def create_webhook():
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
+        "pipeline_events": True,
+        "job_events": True
     }
 
     response = requests.post(
@@ -96,12 +104,13 @@ def create_entity(blueprint: str, body: json, access_token: str):
 
     return response
 
-def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict, params: dict = {}):
+def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict={}, params: dict = {}):
     current_page = 1
     request_more_entities = True
     entities_from_gitlab = []
    
     while request_more_entities:
+        headers['PRIVATE-TOKEN'] = GITLAB_API_TOKEN
         params['per_page'] = PAGE_SIZE
         params['page'] = current_page
 
@@ -118,44 +127,9 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict, p
             else:
                 request_more_entities = False
         else:
-            print(f"Failed to retrieve projects, Page Number: {current_page}, Status code: {response.status_code}")
+            print(f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
     
     return entities_from_gitlab
-
-def get_all_merge_requests_from_gitlab():
-    created_merge_requests_in_port = 0
-
-    # Gets all merge requests for this group and its subgroups.
-    merge_requests_from_gitlab = request_entities_from_gitlab_using_pagination(f"{GITLAB_URL}/merge_requests", {"PRIVATE-TOKEN": GITLAB_API_TOKEN})
-
-    print(f"Found {len(merge_requests_from_gitlab)} merge requests in GitLab")
-
-    if len(merge_requests_from_gitlab) > 0:
-        token = get_port_api_token()
-
-        for merge_request in merge_requests_from_gitlab:
-            entity = {
-                'identifier': str(merge_request['id']),
-                'title': merge_request['title'],
-                'properties': {
-                    'creator': merge_request['author']['username'],
-                    'status': merge_request['state'], # can be opened, closed, merged or locked.
-                    'createdAt': merge_request['created_at'],
-                    'updatedAt': merge_request['updated_at'],
-                    'description': merge_request['description'],
-                    'link': merge_request['web_url']
-                },
-                'relations': {
-                    'microservice': str(merge_request['source_project_id']),
-                }
-            }
-
-            response = create_entity('mergeRequest', entity, access_token=token)
-
-            if response.status_code == 201:
-                created_merge_requests_in_port += 1
-        
-        print(f"Created {created_merge_requests_in_port} merge requests in Port")
 
 def get_all_projects_from_gitlab():
     created_projects_in_port = 0
@@ -163,19 +137,22 @@ def get_all_projects_from_gitlab():
     # By default, in gitlab projects a request returns 20 results at a time because the API results are paginated.
     # Archived projects are included by default so we need to exclude them.
     projects_from_gitlab = request_entities_from_gitlab_using_pagination(
-        f"{GITLAB_URL}/projects",
-        {"PRIVATE-TOKEN": GITLAB_API_TOKEN},
+        f"{GITLAB_GROUP_URL}/projects",
+        {},
         {'include_subgroups': True, 'archived': False}
     )
 
     print(f"Found {len(projects_from_gitlab)} projects in GitLab")
+
+    for project in projects_from_gitlab:
+        projects_ids_to_names[project['id']] = project['path_with_namespace'].replace('/', '-')
 
     # Creates microservices in Port
     if len(projects_from_gitlab) > 0:
         token = get_port_api_token()
         for project in projects_from_gitlab:
             entity = {
-                'identifier': str(project['id']),
+                'identifier': projects_ids_to_names[project['id']],
                 'title': project['name'],
                 'properties': {
                     'description': project['description'],
@@ -190,13 +167,46 @@ def get_all_projects_from_gitlab():
     
     print(f"Created {created_projects_in_port} microservices in Port")
 
+
+def get_all_merge_requests_from_gitlab():
+    created_merge_requests_in_port = 0
+
+    # Gets all merge requests for this group and its subgroups.
+    merge_requests_from_gitlab = request_entities_from_gitlab_using_pagination(f"{GITLAB_GROUP_URL}/merge_requests")
+
+    print(f"Found {len(merge_requests_from_gitlab)} merge requests in GitLab")
+
+    if len(merge_requests_from_gitlab) > 0:
+        token = get_port_api_token()
+
+        for merge_request in merge_requests_from_gitlab:
+            entity = {
+                'identifier': str(merge_request['id']),
+                'title': merge_request['title'],
+                'properties': {
+                    'creator': merge_request['author']['username'],
+                    'status': merge_request['state'], 
+                    'createdAt': merge_request['created_at'],
+                    'updatedAt': merge_request['updated_at'],
+                    'description': merge_request['description'],
+                    'link': merge_request['web_url']
+                },
+                'relations': {
+                    'microservice': projects_ids_to_names[merge_request['source_project_id']],
+                }
+            }
+
+            response = create_entity('mergeRequest', entity, access_token=token)
+
+            if response.status_code == 201:
+                created_merge_requests_in_port += 1
+        
+        print(f"Created {created_merge_requests_in_port} merge requests in Port")
+
 def get_all_issues_from_gitlab():
     created_issues_in_port = 0
 
-    issues_from_gitlab = request_entities_from_gitlab_using_pagination(
-        f"{GITLAB_URL}/issues", 
-        {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
-    )
+    issues_from_gitlab = request_entities_from_gitlab_using_pagination(f"{GITLAB_GROUP_URL}/issues")
 
     print(f"Found {len(issues_from_gitlab)} issues in GitLab")
 
@@ -217,6 +227,9 @@ def get_all_issues_from_gitlab():
                     'creator': issue['author']['username'],
                     'status': issue['state'],
                     'labels': issue['labels']
+                },
+                'relations': {
+                    'microservice': projects_ids_to_names[issue['project_id']],
                 }
             }
 
@@ -227,9 +240,84 @@ def get_all_issues_from_gitlab():
 
     print(f"Created {created_issues_in_port} issues in Port")
 
+def get_all_pipelines_from_gitlab():
+    created_pipelines_in_port = 0
+    pipelines_from_gitlab = []
+
+    for project_id in projects_ids_to_names.keys():
+        pipelines_from_gitlab.extend(request_entities_from_gitlab_using_pagination(f"{GITLAB_BASE_URL}/projects/{project_id}/pipelines"))
+
+    print(f"Found {len(pipelines_from_gitlab)} pipelines in GitLab")
+
+    # Creates issues in Port
+    if len(pipelines_from_gitlab) > 0:
+        token = get_port_api_token()
+
+        for pipeline in pipelines_from_gitlab:
+            entity = {
+                'identifier': str(pipeline['id']),
+                'properties': {
+                    'createdAt': pipeline['created_at'],
+                    'updatedAt': pipeline['updated_at'],
+                    'status': pipeline['status'],
+                    'link': pipeline['web_url']
+                },
+                'relations': {
+                    'microservice': projects_ids_to_names[pipeline['project_id']],
+                }
+            }
+
+            response = create_entity('pipeline', entity, access_token=token)
+
+            if response.status_code == 201:
+                created_pipelines_in_port += 1
+
+    print(f"Created {created_pipelines_in_port} pipelines in Port")
+
+def get_all_job_from_gitlab():
+    created_jobs_in_port = 0
+    jobs_from_gitlab = []
+
+    for project_id in projects_ids_to_names.keys():
+        jobs_from_gitlab.extend(request_entities_from_gitlab_using_pagination(f"{GITLAB_BASE_URL}/projects/{project_id}/jobs"))
+
+    print(f"Found {len(jobs_from_gitlab)} jobs in GitLab")
+
+    # Creates issues in Port
+    if len(jobs_from_gitlab) > 0:
+        token = get_port_api_token()
+
+        for job in jobs_from_gitlab:
+            entity = {
+                'identifier': str(job['id']),
+                'title': job['name'],
+                'properties': {
+                    'createdAt': job['created_at'],
+                    'startedAt': job['started_at'],
+                    'finishedAt': job['finished_at'],
+                    'creator': job['user']['username'],
+                    'stage': job['stage'],
+                    'status': job['status'],
+                },
+                'relations': {
+                    'pipeline': str(job['pipeline']['id']),
+                }
+            }
+
+            response = create_entity('job', entity, access_token=token)
+
+            if response.status_code == 201:
+                created_jobs_in_port += 1
+
+    print(f"Created {created_jobs_in_port} jobs in Port")
+
+
+
 if __name__ == "__main__":
     create_webhook()
     get_all_projects_from_gitlab()
     get_all_merge_requests_from_gitlab()
     get_all_issues_from_gitlab()
+    get_all_pipelines_from_gitlab()
+    get_all_job_from_gitlab()
 
