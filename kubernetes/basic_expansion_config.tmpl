@@ -12,7 +12,7 @@
             relations:
               cluster: '"{CLUSTER_NAME}"'
 
-    - kind: rbac.authorization.k8s.io/v1/roles
+  - kind: rbac.authorization.k8s.io/v1/roles
     selector:
       query: .metadata.namespace | startswith("kube") | not 
     port:
