@@ -54,7 +54,7 @@ temp_dir=$(mktemp -d)
 echo "Importing common functions..."
 curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
 
-source "./common.sh"
+source "${temp_dir}/common.sh"
 
 echo "Checking for prerequisites..."
 
