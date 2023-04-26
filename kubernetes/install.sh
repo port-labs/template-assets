@@ -92,7 +92,7 @@ else
   echo "Custom config.yaml file configuration found."
   config_path_type=$(check_path_or_url ${CONFIG_YAML_URL}) # 'local' or 'url'
   if [[ "${config_path_type}" == 'local' ]]; then
-    cp "${CONFIG_YAML_URL}" "${temp_dir}/template_config.yaml" || (echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1)
+    cp "${CONFIG_YAML_URL}" "${temp_dir}/template_config.yaml"
   elif [[ "${config_path_type}" == 'url' ]]; then
     save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
   else
@@ -100,6 +100,7 @@ else
     exit 1
   fi
 fi
+(cat ${temp_dir}/template_config.yaml | yq > /dev/null) || (echo "Failed to 'yq' parse the config.yaml. Is it a valid yaml? Exiting..." && exit 1)
 # Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
 sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
 
@@ -108,7 +109,7 @@ if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
   echo "Found custom a blueprints file configuration. Attempting to create blueprints defined in: ${CUSTOM_BP_PATH}"
   bp_path_type=$(check_path_or_url ${CUSTOM_BP_PATH}) # 'local' or 'url'
   if [[ "${bp_path_type}" == 'local' ]]; then
-    cp "${CUSTOM_BP_PATH}" "${temp_dir}/blueprints.json" || (echo "Failed to copy \"${CONFIG_YAML_URL}\" to temp dir. Does it exist?" && exit 1)
+    cp "${CUSTOM_BP_PATH}" "${temp_dir}/blueprints.json"
   elif [[ "${bp_path_type}" == 'url' ]]; then
     save_endpoint_to_file ${CUSTOM_BP_PATH} "${temp_dir}/blueprints.json"
   else
@@ -116,6 +117,8 @@ if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
     exit 1
   fi
 
+  (cat ${temp_dir}/blueprints.json | jq > /dev/null) || (echo "Failed to 'jq' parse the blueprints.json. Is it a valid json? Exiting..." && exit 1)
+  
   cat ${temp_dir}/blueprints.json | jq -c '.[]' | while read blueprint; do
     post_port_blueprint "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "$blueprint" 
   done
