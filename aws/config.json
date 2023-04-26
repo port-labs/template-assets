@@ -100,8 +100,8 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".DBName",
-              "title": ".DBName",
+              "identifier": ".DBInstanceIdentifier",
+              "title": ".DBInstanceIdentifier",
               "blueprint": "database",
               "properties": {
                 "cluster": ".DBClusterIdentifier"
