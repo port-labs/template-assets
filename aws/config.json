@@ -104,6 +104,7 @@
               "title": ".DBInstanceIdentifier",
               "blueprint": "database",
               "properties": {
+                "database": ".DBInstanceIdentifier",
                 "cluster": ".DBClusterIdentifier",
                 "properties": "."
               },
