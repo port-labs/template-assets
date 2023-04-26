@@ -76,7 +76,6 @@
               "blueprint": "service",
               "properties": {
                 "service": ".ServiceName",
-                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"app\")) then \"unknown\" else .[] | select(.Key == \"app\") | .Value end",
                 "cluster": ".Cluster | split(\"/\")[1]",
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
@@ -86,6 +85,30 @@
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]",
                 "cloudAccount": ".ServiceArn | split(\":\")[4]",
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::RDS::DBInstance",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".DBName",
+              "title": ".DBName",
+              "blueprint": "database",
+              "properties": {
+                "cluster": ".DBClusterIdentifier"
+              },
+              "relations": {
+                "region": ".SourceRegion",
+                "cloudAccount": ".DBInstanceArn | split(\":\")[4]",
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
