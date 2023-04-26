@@ -16,7 +16,8 @@
                 "ecs:ListClusters",
                 "ecs:ListServices",
                 "ecs:ListTasks",
-                "ecs:ListTaskDefinitions"
+                "ecs:ListTaskDefinitions",
+                "rds:DescribeDBInstances"
             ],
             "Resource": "*"
         }
