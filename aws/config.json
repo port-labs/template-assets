@@ -104,7 +104,8 @@
               "title": ".DBInstanceIdentifier",
               "blueprint": "database",
               "properties": {
-                "cluster": ".DBClusterIdentifier"
+                "cluster": ".DBClusterIdentifier",
+                "properties": "."
               },
               "relations": {
                 "region": ".SourceRegion",
