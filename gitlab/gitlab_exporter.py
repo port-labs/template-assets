@@ -145,7 +145,7 @@ def get_all_projects_from_gitlab():
     print(f"Found {len(projects_from_gitlab)} projects in GitLab")
 
     for project in projects_from_gitlab:
-        projects_ids_to_names[project['id']] = project['path_with_namespace'].replace('/', '-')
+        projects_ids_to_names[project['id']] = project['path_with_namespace'].replace('/', '-').replace(' ', '-').replace('+', '-')
 
     # Creates microservices in Port
     if len(projects_from_gitlab) > 0:
