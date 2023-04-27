@@ -70,7 +70,7 @@ save_endpoint_to_file() {
   response=$(curl -s -w "%{http_code}" "$endpoint" -o "$filename")
 
   if [[ "${response}" -ne 200 && "${response}" -ne 301 ]]; then
-    echo "Error: Failed to get file ${filename}, status code: $response"
+    echo "Error: Failed to get file ${endpoint}, status code: $response"
     rm "$filename" 2>/dev/null
     return 1
   fi
