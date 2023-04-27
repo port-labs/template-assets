@@ -67,11 +67,10 @@ check_commands () {
 save_endpoint_to_file() {
   endpoint=$1
   filename=$2
-
   response=$(curl -s -w "%{http_code}" "$endpoint" -o "$filename")
 
-  if [ "${response}" -ne 200 ]; then
-    echo "Error: Failed to get file ${filename}, status code: $response"
+  if [[ "${response}" -ne 200 ]]; then
+    echo "Error: Failed to get file ${endpoint}, status code: $response"
     rm "$filename" 2>/dev/null
     return 1
   fi
@@ -129,7 +128,34 @@ check_path_or_url() {
     elif [[ $1 =~ ^https?:// ]]; then
         echo "url"
     else
-        echo "$1 is neither a local path or a URL in 'https://*' format. Failing..."
-	exit 0
+        echo "none"
     fi
+}
+
+post_port_blueprint() {
+    clientId=$1
+    clientSecret=$2
+    blueprint=$3
+
+    blueprint_id=$(echo ${blueprint} | jq -r .identifier)
+
+    accessToken=$(curl -s -X POST "${PORT_API_URL}/auth/access_token" \
+        --header 'Content-Type: application/json' \
+        --data-raw "{\"clientId\": \"${clientId}\", \"clientSecret\": \"${clientSecret}\"}" | jq -r ".accessToken")
+
+    response_code=$(curl -w "%{http_code}" -s -o /dev/null -X POST "${PORT_API_URL}/blueprints" \
+        --header 'Content-Type: application/json' \
+        --header "Authorization: Bearer ${accessToken}" \
+        --data-raw "${blueprint}")
+
+    if [[ ${response_code} == "409" ]]; then
+        echo "Blueprint \"${blueprint_id}\" already exists! Continuing..."
+        return 0
+    elif [[ ${response_code} != "201" && ${response_code} != "200" ]]; then
+        echo "Create blueprint: \"${blueprint_id}\" failed, status code: ${response_code}"
+        return 1
+    fi
+
+    echo "Create blueprint: \"${blueprint_id}\" succeeded"
+    return 0
 }
