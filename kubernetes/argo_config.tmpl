@@ -9,8 +9,8 @@
               status: .status.health.status
               syncStatus: .status.sync.status
               syncPolicy: .spec.syncPolicy // null
-              gitRepo: .spec.source.repoURL
-              gitPath: .spec.source.path
+              gitRepo: .spec.source.repoURL// null
+              gitPath: .spec.source.path // null
               gitRev: .status.sync.revision // null
             relations:
               workload: .spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}"
