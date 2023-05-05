@@ -119,6 +119,24 @@
           ]
         }
       }
+    },
+    {
+      "kind": "AWS::Route53::HostedZone",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".Name",
+              "title": ".Name",
+              "blueprint": "hosted_zone",
+              "properties": {
+                "hosted_zone_config": ".HostedZoneConfig"
+              },
+              "relations": {}
+            }
+          ]
+        }
+      }
     }
   ]
 }
