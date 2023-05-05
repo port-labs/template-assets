@@ -18,7 +18,8 @@
                 "ecs:ListTasks",
                 "ecs:ListTaskDefinitions",
                 "rds:DescribeDBInstances",
-                "route53:ListHostedZones"
+                "route53:ListHostedZones",
+                "route53:GetHostedZone"
             ],
             "Resource": "*"
         }
