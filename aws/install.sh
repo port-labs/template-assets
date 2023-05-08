@@ -91,7 +91,7 @@ if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo "Policy not exists, creating..."
     echo ""
-    aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || aws iam create-policy-version --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} --policy-document "file://${temp_dir}/policy.json" --set-as-default true || exit
+    aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || aws iam create-policy-version --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} --policy-document "file://${temp_dir}/policy.json" --set-as-default 
 else
     echo "Policy exists"
 fi
