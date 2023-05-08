@@ -132,7 +132,9 @@
               "properties": {
                 "hosted_zone_config": ".HostedZoneConfig"
               },
-              "relations": {}
+              "relations": {
+                "cloud_account": ".Arn | split(\":\")[4]"
+              }
             }
           ]
         }
