@@ -129,6 +129,12 @@ else
     cloudformation_tail "serverlessrepo-${EXPORTER_APP_NAME}"
 fi
 
+echo ""
+echo "deleting port PortAWSExporterPolicy..."
+echo ""
+
+aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/PortAWSExporterPolicy || exit
+
 # Always put config.json in case a change was made
 echo ""
 echo "Updating config.json in s3..."
