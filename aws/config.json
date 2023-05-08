@@ -137,6 +137,25 @@
           ]
         }
       }
+    },
+    {
+      "kind": "AWS::ECR::Repository",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".RepositoryName",
+              "title": ".RepositoryName",
+              "blueprint": "ecr",
+              "properties": {
+              },
+              "relations": {
+                "cloud_account": ".Arn | split(\":\")[4]"
+              }
+            }
+          ]
+        }
+      }
     }
   ]
 }
