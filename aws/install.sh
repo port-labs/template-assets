@@ -105,6 +105,7 @@ then
             --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
             --query 'Versions[?IsDefaultVersion!=`true`].VersionId' \
             --output text | \
+             tr ' ' '\n' | tail -n 1 | \
             xargs -I {} aws iam delete-policy-version \
             --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
             --version-id {} \
