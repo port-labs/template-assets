@@ -24,13 +24,14 @@ set -e
 #   GITLAB_API_TOKEN - Your GitLab API token (required)
 #   GROUP_ID - The ID of the GitLab group to sync (required)
 #   GITLAB_API_URL - The URL of your GitLab instance (optional)
-#
+#   REPOSITORIES_LIST - A list of repositories to sync (optional), i.e group/repo,group/subgroup/repo defaults to * (all repositories)
 ###################################################
 
 # Enter your GitLab API token and group ID here
 REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
+REPOSITORIES_LIST="${REPOSITORIES_LIST:-"*"}"
 
 function cleanup {
   rm -rf "${temp_dir}"
@@ -66,12 +67,12 @@ if command -v python3 &>/dev/null
 then
   echo "Python 3 is installed, Running script..."
   python3 -m pip install requests
-  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}"
+  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}" "${REPOSITORIES_LIST}"
 elif command -v python &>/dev/null 
 then
   echo "Python is installed, Running script..."
   python -m pip install requests
-  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}"
+  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUP_ID}" "${GITLAB_API_URL}" "${REPOSITORIES_LIST}"
 else
   echo "Python 3 is not installed, please install Python 3 and try again"
   exit 1
