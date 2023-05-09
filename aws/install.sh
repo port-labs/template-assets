@@ -87,13 +87,6 @@ echo ""
 echo "Checking existence of IAM policy: \"${EXPORTER_IAM_POLICY_NAME}\"..."
 echo ""
 
-# aws iam list-policy-versions \
-#     --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
-#     --query 'Versions[?IsDefaultVersion!=`true`].VersionId' \
-#     --output text
-
-#     exit
-
 if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo "Policy not exists, creating..."
@@ -104,8 +97,7 @@ then
         || (aws iam list-policy-versions \
             --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
             --query 'Versions[?IsDefaultVersion!=`true`].VersionId' \
-            --output text | \
-             tr ' ' '\n' | tail -n 1 | \
+            --output text | awk '{print $NF}' | \
             xargs -I {} aws iam delete-policy-version \
             --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
             --version-id {} \
