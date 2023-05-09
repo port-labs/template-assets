@@ -106,6 +106,7 @@ then
             --policy-document "file://${temp_dir}/policy.json" \
             --set-as-default) \
         || exit
+
 else
     echo "Policy exists"
 fi
