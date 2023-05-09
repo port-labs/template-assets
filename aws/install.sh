@@ -91,7 +91,21 @@ if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo "Policy not exists, creating..."
     echo ""
-    aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || aws iam create-policy-version --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} --policy-document "file://${temp_dir}/policy.json" --set-as-default || exit
+    aws iam create-policy \
+        --policy-name "${EXPORTER_IAM_POLICY_NAME}" \
+        --policy-document "file://${temp_dir}/policy.json" \
+        || (aws iam list-policy-versions \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --query 'Versions[?IsDefaultVersion!=`true`].VersionId' \
+            --output text | \
+            xargs -I {} aws iam delete-policy-version \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --version-id {} \
+        && aws iam create-policy-version \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --policy-document "file://${temp_dir}/policy.json" \
+            --set-as-default) \
+        || exit
 else
     echo "Policy exists"
 fi
