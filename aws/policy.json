@@ -22,10 +22,7 @@
                 "route53:GetHostedZone",
                 "route53:ListTagsForResource",
                 "route53:ListQueryLoggingConfigs",
-                "ecr:DescribeRepositories",
-                "iam:CreatePolicy",
-                "iam:CreatePolicyVersion",
-                "iam:ListPolicyVersions"
+                "ecr:DescribeRepositories"
             ],
             "Resource": "*"
         }
