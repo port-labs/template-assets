@@ -22,7 +22,8 @@
                 "route53:GetHostedZone",
                 "route53:ListTagsForResource",
                 "route53:ListQueryLoggingConfigs",
-                "ecr:DescribeRepositories"
+                "ecr:DescribeRepositories",
+                "elasticloadbalancing:DescribeTargetGroups"
             ],
             "Resource": "*"
         }
