@@ -174,8 +174,6 @@
                 "arn": ".Arn"
               },
               "relations": {
-                "region": ".Arn | split(\":\")[3]",
-                "cloudAccount": ".Arn | split(\":\")[4]",
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
