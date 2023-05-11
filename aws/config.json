@@ -191,7 +191,7 @@
           "mappings": [
             {
               "identifier": ".VpcId",
-              "title": ".VpcId",
+              "title": ".Identifier",
               "blueprint": "vpc",
               "properties": {
                 "cidr_block": ".CidrBlock"
