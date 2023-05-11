@@ -190,8 +190,8 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".VpcId",
-              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .VpcId else .[] | select(.Key == \"Name\") | .Value end",
+              "identifier": ".Identifier",
+              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .Identifier else .[] | select(.Key == \"Name\") | .Value end",
               "blueprint": "vpc",
               "properties": {
                 "cidr_block": ".CidrBlock"
