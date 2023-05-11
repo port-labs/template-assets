@@ -194,7 +194,7 @@
               "title": ".VpcId",
               "blueprint": "vpc",
               "properties": {
-                "arn": ".VpcId"
+                "cidr_block": ".CidrBlock"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
