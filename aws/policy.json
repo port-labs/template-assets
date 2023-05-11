@@ -24,7 +24,8 @@
                 "route53:ListQueryLoggingConfigs",
                 "ecr:DescribeRepositories",
                 "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeTargetGroupAttributes"
+                "elasticloadbalancing:DescribeTargetGroupAttributes",
+                "elasticloadbalancing:DescribeTags"
             ],
             "Resource": "*"
         }
