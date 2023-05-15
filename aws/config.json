@@ -212,8 +212,8 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Identifier",
-              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .Identifier else .[] | select(.Key == \"Name\") | .Value end",
+              "identifier": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then \"unknown\" else .[] | select(.Key == \"Name\") | .Value end",
+              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then \"unknown\" else .[] | select(.Key == \"Name\") | .Value end",
               "blueprint": "ec2",
               "properties": {
                 "availability_zone": ".AvailabilityZone"
