@@ -190,7 +190,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Identifier",
+              "identifier": ".VpcId",
               "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .VpcId else .[] | select(.Key == \"Name\") | .Value end",
               "blueprint": "vpc",
               "properties": {
