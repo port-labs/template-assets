@@ -100,8 +100,8 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Name",
-              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .Name else .[] | select(.Key == \"Name\") | .Value end",
+              "identifier": ".Identifier",
+              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .Identifier else .[] | select(.Key == \"Name\") | .Value end",
               "blueprint": "task_definition",
               "properties": {
                 "cpu": ".Cpu",
