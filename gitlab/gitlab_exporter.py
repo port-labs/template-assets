@@ -238,7 +238,9 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
                 'title': project['name'],
                 'properties': {
                     'description': project['description'],
-                    'url': project['web_url']
+                    'url': project['web_url'],
+                    'namespace': project['namespace']['name'],
+                    'full_path': project['namespace']['full_path'],
                 }
             }
 
