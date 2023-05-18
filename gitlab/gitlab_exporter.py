@@ -5,29 +5,47 @@ import sys
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2]
 GITLAB_API_TOKEN = sys.argv[3]
-GROUP_ID = sys.argv[4]
+GROUPS_TO_REPOS = sys.argv[4]
 GITLAB_API_URL = sys.argv[5]
-REPOSITORIES_LIST = sys.argv[6]
-
-REPOSITORY_WHITE_LIST = REPOSITORIES_LIST.split(
-    ',') if REPOSITORIES_LIST != "*" else []
 
 GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
-GITLAB_GROUP_URL = f"{GITLAB_BASE_URL}/groups/{GROUP_ID}"
 
 if GITLAB_API_URL != "":
     GITLAB_BASE_URL = GITLAB_API_URL
-    GITLAB_GROUP_URL = f"{GITLAB_BASE_URL}/groups/{GROUP_ID}"
 
-PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://ingest.getport.io"
+PORT_API_URL ="https://api.getport.io/v1"
+WEBHOOK_URL ="https://ingest.getport.io"
 
 # For Pagination
 PAGE_SIZE = 50
 
+# For webhook creation 
+root_groups_ids = []
+
+# Group to Projects white list
+group_to_projects = {}
+
 # For entities relations
 projects_ids_to_names = {}
 
+def process_group_to_projects_config():
+    if (GROUPS_TO_REPOS == '*'):
+        return
+    
+    group_to_projects_list_as_string = GROUPS_TO_REPOS.split(';')
+
+    if(GROUPS_TO_REPOS[-1] == ';'):
+        group_to_projects_list_as_string = group_to_projects_list_as_string[:-1]
+    
+    for group_to_projects_string in group_to_projects_list_as_string:
+        group_to_projects_string_list = group_to_projects_string.split(':')
+        group_name = group_to_projects_string_list[0]
+        if (group_to_projects_string_list[1] == '*'):
+            group_to_projects[group_name] = '*'
+            continue
+        projects_names = group_to_projects_string_list[1].split(',')
+
+        group_to_projects[group_name] = projects_names
 
 def get_port_api_token():
     """
@@ -44,8 +62,8 @@ def get_port_api_token():
     return token_response.json()['accessToken']
 
 
-def create_webhook():
-    gitlab_api_url = f"{GITLAB_GROUP_URL}/hooks"
+def create_webhook(group_id: int):
+    gitlab_api_url = f"{GITLAB_BASE_URL}/groups/{group_id}/hooks"
     gitlab_request_headers = {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
 
     # Checks if webhook already exists
@@ -64,10 +82,10 @@ def create_webhook():
             port_webhook = [
                 webhook for webhook in webhooks if webhook['url'].startswith(WEBHOOK_URL)]
             if port_webhook.__len__() > 0:
-                print("Webhook already exists, exiting...")
+                print(f"Webhook already exists in group {group_id}, skipping...")
                 return
 
-    # Webhook doesn't exist, create it
+    # Webhook doesn't exist, creating it
     access_token = get_port_api_token()
 
     port_request_headers = {
@@ -91,17 +109,52 @@ def create_webhook():
         "job_events": True
     }
 
-    response = requests.post(
+    create_webhook_response = requests.post(
         gitlab_api_url,
         headers=gitlab_request_headers,
         json=webhook_data
     )
 
-    if response.status_code == 201:
+    if create_webhook_response.status_code == 201:
         print("Webhook added successfully!")
     else:
         print(
-            f"Failed to add webhook. Status code: {response.status_code}, Error: {response.json()}")
+            f"Failed to add webhook. Status code: {create_webhook_response.status_code}, Error: {create_webhook_response.json()}")
+
+
+def process_data_from_all_groups_from_gitlab():
+    gitlab_request_headers = {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
+    gitlab_api_url = f"{GITLAB_BASE_URL}/groups"
+
+    response = requests.get(
+        gitlab_api_url,
+        headers=gitlab_request_headers
+    )
+
+    if response.status_code != 200:
+        print(
+            f"Failed to get groups from GitLab. Status code: {response.status_code}, Error: {response.json()}")
+        return
+    
+    all_groups = response.json()
+    root_groups = [group for group in all_groups if group['parent_id'] is None]
+    root_groups_ids = [group['id'] for group in root_groups]
+
+    if (group_to_projects == {}):
+        configured_groups = [group['name'] for group in all_groups]
+    else:
+        configured_groups = group_to_projects.keys()
+
+    for group in all_groups:
+        if (group['name'] not in configured_groups):
+            continue
+        
+        # Create webhook for root groups
+        if(group['id'] in root_groups_ids):
+            create_webhook(group['id'])
+        
+        get_all_projects_from_gitlab(group['id'], group['name'])
+    
 
 
 def create_entity(blueprint: str, body: json, access_token: str):
@@ -130,47 +183,57 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = 
         params['per_page'] = PAGE_SIZE
         params['page'] = current_page
 
-        response = requests.get(api_url, headers=headers, params=params)
+        try:
+            response = requests.get(api_url, headers=headers, params=params)
 
-        if response.status_code == 200:
-            entities = response.json()
+            if response.status_code == 200:
+                entities = response.json()
 
-            entities_from_gitlab.extend(entities)
+                entities_from_gitlab.extend(entities)
 
-            if len(entities) == PAGE_SIZE:
-                # There are more entities to get
-                current_page += 1
+                if len(entities) == PAGE_SIZE:
+                    # There are more entities to get
+                    current_page += 1
+                else:
+                    request_more_entities = False
             else:
-                request_more_entities = False
-        else:
+                print(
+                    f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
+        except Exception as e:
             print(
-                f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
-
+                f"Failed to retrieve entities, Page Number: {current_page}, Error: {e}")
+            
     return entities_from_gitlab
 
 
-def get_all_projects_from_gitlab():
+def get_all_projects_from_gitlab(group_id: str, group_name: str):
     created_projects_in_port = 0
 
     # By default, in gitlab projects a request returns 20 results at a time because the API results are paginated.
     # Archived projects are included by default so we need to exclude them.
+    gitlab_group_url = f"{GITLAB_BASE_URL}/groups/{group_id}"
+
     projects_from_gitlab = request_entities_from_gitlab_using_pagination(
-        f"{GITLAB_GROUP_URL}/projects",
+        f"{gitlab_group_url}/projects",
         {},
         {'include_subgroups': True, 'archived': False}
     )
 
-    print(f"Found {len(projects_from_gitlab)} projects in GitLab")
+    print(f"Found {len(projects_from_gitlab)} projects in GitLab for group {group_name}")
 
     # Creates microservices in Port
     if len(projects_from_gitlab) > 0:
-        token = get_port_api_token()
-        for project in projects_from_gitlab:
-            if project['path_with_namespace'] not in REPOSITORY_WHITE_LIST and REPOSITORIES_LIST != "*":
-                print(
-                    f"Skipping {project['name']} because it's not in the white list")
-                continue
+        # Filter projects that are not in the white list
+        if(group_to_projects != {} and group_to_projects[group_name] != "*"):
+            configured_projects = group_to_projects[group_name]
+            projects_from_gitlab = [project for project in projects_from_gitlab if project["name"] in configured_projects]
 
+            # Filter project that are not directly in the group
+            projects_from_gitlab = [project for project in projects_from_gitlab if project["namespace"]["id"] == group_id]
+
+        token = get_port_api_token()
+
+        for project in projects_from_gitlab:
             projects_ids_to_names[project['id']] = project['path_with_namespace'].replace(
                 '/', '-').replace(' ', '-').replace('+', '-')
 
@@ -193,18 +256,24 @@ def get_all_projects_from_gitlab():
 
             if response.status_code == 201:
                 created_projects_in_port += 1
+            
+            get_all_project_merge_requests_from_gitlab(project['id'])
+            get_all_project_issues_from_gitlab(project['id'])
+            get_all_project_pipelines_from_gitlab(project['id'])
+            get_all_projects_job_from_gitlab(project['id'])
 
-    print(f"Created {created_projects_in_port} microservices in Port")
+    print(f"Created {created_projects_in_port} microservices in Port for group {group_name}")
 
 
-def get_all_merge_requests_from_gitlab():
+def get_all_project_merge_requests_from_gitlab(project_id: str):
     created_merge_requests_in_port = 0
 
     # Gets all merge requests for this group and its subgroups.
     merge_requests_from_gitlab = request_entities_from_gitlab_using_pagination(
-        f"{GITLAB_GROUP_URL}/merge_requests")
+        f"{GITLAB_BASE_URL}/projects/{project_id}/merge_requests"
+    )
 
-    print(f"Found {len(merge_requests_from_gitlab)} merge requests in GitLab")
+    print(f"Found {len(merge_requests_from_gitlab)} merge requests in GitLab for project {project_id}")
 
     if len(merge_requests_from_gitlab) > 0:
         token = get_port_api_token()
@@ -241,16 +310,16 @@ def get_all_merge_requests_from_gitlab():
                 created_merge_requests_in_port += 1
 
         print(
-            f"Created {created_merge_requests_in_port} merge requests in Port")
+            f"Created {created_merge_requests_in_port} merge requests in Port for project {project_id}")
 
 
-def get_all_issues_from_gitlab():
+def get_all_project_issues_from_gitlab(project_id: str):
     created_issues_in_port = 0
 
     issues_from_gitlab = request_entities_from_gitlab_using_pagination(
-        f"{GITLAB_GROUP_URL}/issues")
+        f"{GITLAB_BASE_URL}/projects/{project_id}/issues")
 
-    print(f"Found {len(issues_from_gitlab)} issues in GitLab")
+    print(f"Found {len(issues_from_gitlab)} issues in GitLab for project {project_id}")
 
     # Creates issues in Port
     if len(issues_from_gitlab) > 0:
@@ -287,21 +356,15 @@ def get_all_issues_from_gitlab():
             if response.status_code == 201:
                 created_issues_in_port += 1
 
-    print(f"Created {created_issues_in_port} issues in Port")
+    print(f"Created {created_issues_in_port} issues in Port for project {project_id}")
 
 
-def get_all_pipelines_from_gitlab():
+def get_all_project_pipelines_from_gitlab(project_id: str):
     created_pipelines_in_port = 0
-    pipelines_from_gitlab = []
+    pipelines_from_gitlab = request_entities_from_gitlab_using_pagination(
+            f"{GITLAB_BASE_URL}/projects/{project_id}/pipelines")
 
-    print(
-        f"Getting pipelines from GitLab for projects {projects_ids_to_names.keys()}")
-
-    for project_id in projects_ids_to_names.keys():
-        pipelines_from_gitlab.extend(request_entities_from_gitlab_using_pagination(
-            f"{GITLAB_BASE_URL}/projects/{project_id}/pipelines"))
-
-    print(f"Found {len(pipelines_from_gitlab)} pipelines in GitLab")
+    print(f"Found {len(pipelines_from_gitlab)} pipelines in GitLab for project {project_id}")
 
     # Creates issues in Port
     if len(pipelines_from_gitlab) > 0:
@@ -328,18 +391,15 @@ def get_all_pipelines_from_gitlab():
             if response.status_code == 201:
                 created_pipelines_in_port += 1
 
-    print(f"Created {created_pipelines_in_port} pipelines in Port")
+    print(f"Created {created_pipelines_in_port} pipelines in Port for project {project_id}")
 
 
-def get_all_job_from_gitlab():
+def get_all_project_job_from_gitlab(project_id: str):
     created_jobs_in_port = 0
-    jobs_from_gitlab = []
+    jobs_from_gitlab = request_entities_from_gitlab_using_pagination(
+            f"{GITLAB_BASE_URL}/projects/{project_id}/jobs")
 
-    for project_id in projects_ids_to_names.keys():
-        jobs_from_gitlab.extend(request_entities_from_gitlab_using_pagination(
-            f"{GITLAB_BASE_URL}/projects/{project_id}/jobs"))
-
-    print(f"Found {len(jobs_from_gitlab)} jobs in GitLab")
+    print(f"Found {len(jobs_from_gitlab)} jobs in GitLab for project {project_id}")
 
     # Creates issues in Port
     if len(jobs_from_gitlab) > 0:
@@ -369,13 +429,16 @@ def get_all_job_from_gitlab():
             if response.status_code == 201:
                 created_jobs_in_port += 1
 
-    print(f"Created {created_jobs_in_port} jobs in Port")
+    print(f"Created {created_jobs_in_port} jobs in Port for project {project_id}")
 
 
 if __name__ == "__main__":
-    create_webhook()
-    get_all_projects_from_gitlab()
-    get_all_merge_requests_from_gitlab()
-    get_all_issues_from_gitlab()
-    get_all_pipelines_from_gitlab()
-    get_all_job_from_gitlab()
+    try:
+        print("Processing group to projects configuration")
+        process_group_to_projects_config()
+    except Exception as e:
+        print(e)
+        print("Error processing group to projects configuration")
+    
+    print("Processing data from all groups from GitLab")
+    process_data_from_all_groups_from_gitlab()
