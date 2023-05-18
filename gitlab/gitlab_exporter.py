@@ -13,8 +13,8 @@ GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
 if GITLAB_API_URL != "":
     GITLAB_BASE_URL = GITLAB_API_URL
 
-PORT_API_URL = "https://api.getport.io/v1"
-WEBHOOK_URL = "https://ingest.getport.io"
+PORT_API_URL ="https://api.getport.io/v1"
+WEBHOOK_URL ="https://ingest.getport.io"
 
 # For Pagination
 PAGE_SIZE = 50
@@ -34,7 +34,10 @@ def process_group_to_projects_config():
     
     group_to_projects_list_as_string = GROUPS_TO_REPOS.split(';')
 
-    for group_to_projects_string in group_to_projects_list_as_string[:-1]:
+    if(GROUPS_TO_REPOS[-1] == ';'):
+        group_to_projects_list_as_string = group_to_projects_list_as_string[:-1]
+    
+    for group_to_projects_string in group_to_projects_list_as_string:
         group_to_projects_string_list = group_to_projects_string.split(':')
         group_name = group_to_projects_string_list[0]
         if (group_to_projects_string_list[1] == '*'):
@@ -79,10 +82,10 @@ def create_webhook(group_id: int):
             port_webhook = [
                 webhook for webhook in webhooks if webhook['url'].startswith(WEBHOOK_URL)]
             if port_webhook.__len__() > 0:
-                print(f"Webhook already exists in group ${group_id}, exiting...")
+                print(f"Webhook already exists in group {group_id}, skipping...")
                 return
 
-    # Webhook doesn't exist, create it
+    # Webhook doesn't exist, creating it
     access_token = get_port_api_token()
 
     port_request_headers = {
@@ -180,22 +183,26 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = 
         params['per_page'] = PAGE_SIZE
         params['page'] = current_page
 
-        response = requests.get(api_url, headers=headers, params=params)
+        try:
+            response = requests.get(api_url, headers=headers, params=params)
 
-        if response.status_code == 200:
-            entities = response.json()
+            if response.status_code == 200:
+                entities = response.json()
 
-            entities_from_gitlab.extend(entities)
+                entities_from_gitlab.extend(entities)
 
-            if len(entities) == PAGE_SIZE:
-                # There are more entities to get
-                current_page += 1
+                if len(entities) == PAGE_SIZE:
+                    # There are more entities to get
+                    current_page += 1
+                else:
+                    request_more_entities = False
             else:
-                request_more_entities = False
-        else:
+                print(
+                    f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
+        except Exception as e:
             print(
-                f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
-
+                f"Failed to retrieve entities, Page Number: {current_page}, Error: {e}")
+            
     return entities_from_gitlab
 
 
@@ -387,7 +394,7 @@ def get_all_project_pipelines_from_gitlab(project_id: str):
     print(f"Created {created_pipelines_in_port} pipelines in Port for project {project_id}")
 
 
-def get_all_projects_job_from_gitlab(project_id: str):
+def get_all_project_job_from_gitlab(project_id: str):
     created_jobs_in_port = 0
     jobs_from_gitlab = request_entities_from_gitlab_using_pagination(
             f"{GITLAB_BASE_URL}/projects/{project_id}/jobs")
@@ -427,9 +434,11 @@ def get_all_projects_job_from_gitlab(project_id: str):
 
 if __name__ == "__main__":
     try:
+        print("Processing group to projects configuration")
         process_group_to_projects_config()
     except Exception as e:
         print(e)
         print("Error processing group to projects configuration")
     
+    print("Processing data from all groups from GitLab")
     process_data_from_all_groups_from_gitlab()
