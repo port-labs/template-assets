@@ -95,30 +95,6 @@
       }
     },
     {
-      "kind": "AWS::ECS::TaskDefinition",
-      "port": {
-        "entity": {
-          "mappings": [
-            {
-              "identifier": ".Ref",
-              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then \"unknown\" else .[] | select(.Key == \"Name\") | .Value end",
-              "blueprint": "task_definition",
-              "properties": {
-                "cpu": ".Cpu",
-                "memory": ".Memory",
-                "arn": ".Arn"
-              },
-              "relations": {
-                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
-                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
-                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
-              }  
-            }
-          ]
-        }
-      }
-    },
-    {
       "kind": "AWS::RDS::DBInstance",
       "port": {
         "entity": {
