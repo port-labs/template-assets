@@ -27,7 +27,8 @@
                 "elasticloadbalancing:DescribeTargetGroupAttributes",
                 "elasticloadbalancing:DescribeTags",
                 "elasticloadbalancing:DescribeTargetHealth",
-                "ec2:*"
+                "ec2:*",
+                "ecs:DescribeTaskDefinition"
             ],
             "Resource": "*"
         }
