@@ -100,7 +100,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Name",
+              "identifier": ".Identifier",
               "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then \"unknown\" else .[] | select(.Key == \"Name\") | .Value end",
               "blueprint": "task_definition",
               "properties": {
