@@ -260,7 +260,7 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
             get_all_project_merge_requests_from_gitlab(project['id'])
             get_all_project_issues_from_gitlab(project['id'])
             get_all_project_pipelines_from_gitlab(project['id'])
-            get_all_projects_job_from_gitlab(project['id'])
+            get_all_project_job_from_gitlab(project['id'])
 
     print(f"Created {created_projects_in_port} microservices in Port for group {group_name}")
 
