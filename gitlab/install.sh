@@ -29,8 +29,8 @@ set -e
 REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
-GROUPS_TO_REPOS = "${GROUPS_TO_REPOS:-"*"}"
-GITLAB_API_URL = "${GITLAB_API_URL:-""}"
+GROUPS_TO_REPOS="${GROUPS_TO_REPOS:-"*"}"
+GITLAB_API_URL="${GITLAB_API_URL:-""}"
 
 function cleanup {
   rm -rf "${temp_dir}"
@@ -51,7 +51,7 @@ check_port_credentials "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}"
 
 echo "Checking GitLab variables!"
 echo ""
-if [[ -z "${GITLAB_API_TOKEN}" ]] || [[ -z "${GROUP_ID}" ]]
+if [[ -z $GITLAB_API_TOKEN ]] || [[-z $GROUP_ID ]];
 then
   echo "GITLAB_API_TOKEN or GROUP_ID variables are not defined"
   exit 1
