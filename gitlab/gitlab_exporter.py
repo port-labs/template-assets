@@ -7,6 +7,7 @@ PORT_CLIENT_SECRET = sys.argv[2]
 GITLAB_API_TOKEN = sys.argv[3]
 GROUPS_TO_REPOS = sys.argv[4]
 GITLAB_API_URL = sys.argv[5]
+SKIP_WEBHOOK_CREATION = sys.argv[6]
 
 GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
 
@@ -59,7 +60,12 @@ def get_port_api_token():
     token_response = requests.post(
         f"{PORT_API_URL}/auth/access_token", json=credentials)
 
-    return token_response.json()['accessToken']
+    if token_response.status_code == 200:
+        return token_response.json()['accessToken']
+    else:
+        print(
+            f"Failed to get access token. Status code: {token_response.status_code}, Error: {token_response.json()}")
+        return None
 
 
 def create_webhook(group_id: int):
@@ -150,7 +156,7 @@ def process_data_from_all_groups_from_gitlab():
             continue
         
         # Create webhook for root groups
-        if(group['id'] in root_groups_ids):
+        if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
             create_webhook(group['id'])
         
         get_all_projects_from_gitlab(group['id'], group['name'])
@@ -260,7 +266,7 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
             get_all_project_merge_requests_from_gitlab(project['id'])
             get_all_project_issues_from_gitlab(project['id'])
             get_all_project_pipelines_from_gitlab(project['id'])
-            get_all_projects_job_from_gitlab(project['id'])
+            get_all_project_jobs_from_gitlab(project['id'])
 
     print(f"Created {created_projects_in_port} microservices in Port for group {group_name}")
 
@@ -394,7 +400,7 @@ def get_all_project_pipelines_from_gitlab(project_id: str):
     print(f"Created {created_pipelines_in_port} pipelines in Port for project {project_id}")
 
 
-def get_all_project_job_from_gitlab(project_id: str):
+def get_all_project_jobs_from_gitlab(project_id: str):
     created_jobs_in_port = 0
     jobs_from_gitlab = request_entities_from_gitlab_using_pagination(
             f"{GITLAB_BASE_URL}/projects/{project_id}/jobs")

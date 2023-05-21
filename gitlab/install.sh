@@ -23,6 +23,7 @@ set -e
 #   GITLAB_API_TOKEN - Your GitLab API private access token (required)
 #   GROUPS_TO_REPOS - A list of GitLab groups and projects to export (optional)
 #   GITLAB_API_URL - The URL of your GitLab instance (optional)
+#   SKIP_WEBHOOK_CREATION - If set to true, the script will not create a webhook in GitLab (optional)
 ###################################################
 
 # Enter your GitLab API token and group ID here
@@ -31,6 +32,7 @@ COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
 GROUPS_TO_REPOS = "${GROUPS_TO_REPOS:-"*"}"
 GITLAB_API_URL = "${GITLAB_API_URL:-""}"
+SKIP_WEBHOOK_CREATION = "${SKIP_WEBHOOK_CREATION:-"false"}"
 
 function cleanup {
   rm -rf "${temp_dir}"
@@ -66,12 +68,12 @@ if command -v python3 &>/dev/null
 then
   echo "Python 3 is installed, Running script..."
   python3 -m pip install requests
-  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUPS_TO_REPOS}" "${GITLAB_API_URL}"
+  python3 "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUPS_TO_REPOS}" "${GITLAB_API_URL}" "${SKIP_WEBHOOK_CREATION}"
 elif command -v python &>/dev/null 
 then
   echo "Python is installed, Running script..."
   python -m pip install requests
-  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUPS_TO_REPOS}" "${GITLAB_API_URL}"
+  python "${temp_dir}/gitlab_exporter.py" "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "${GITLAB_API_TOKEN}" "${GROUPS_TO_REPOS}" "${GITLAB_API_URL}" "${SKIP_WEBHOOK_CREATION}"
 else
   echo "Python 3 is not installed, please install Python 3 and try again"
   exit 1
