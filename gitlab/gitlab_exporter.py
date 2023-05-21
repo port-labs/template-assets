@@ -7,6 +7,7 @@ PORT_CLIENT_SECRET = sys.argv[2]
 GITLAB_API_TOKEN = sys.argv[3]
 GROUPS_TO_REPOS = sys.argv[4]
 GITLAB_API_URL = sys.argv[5]
+SUPPRESS_WEBHOOK_CREATION = sys.argv[6]
 
 GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
 
@@ -59,7 +60,12 @@ def get_port_api_token():
     token_response = requests.post(
         f"{PORT_API_URL}/auth/access_token", json=credentials)
 
-    return token_response.json()['accessToken']
+    if token_response.status_code == 200:
+        return token_response.json()['accessToken']
+    else:
+        print(
+            f"Failed to get access token. Status code: {token_response.status_code}, Error: {token_response.json()}")
+        return None
 
 
 def create_webhook(group_id: int):
@@ -101,7 +107,8 @@ def create_webhook(group_id: int):
         return
 
     webhook_data = {
-        "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
+        # "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
+        "url": f"{WEBHOOK_URL}",
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
@@ -150,10 +157,10 @@ def process_data_from_all_groups_from_gitlab():
             continue
         
         # Create webhook for root groups
-        if(group['id'] in root_groups_ids):
+        if(SUPPRESS_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids):
             create_webhook(group['id'])
         
-        get_all_projects_from_gitlab(group['id'], group['name'])
+        # get_all_projects_from_gitlab(group['id'], group['name'])
     
 
 
@@ -260,7 +267,7 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
             get_all_project_merge_requests_from_gitlab(project['id'])
             get_all_project_issues_from_gitlab(project['id'])
             get_all_project_pipelines_from_gitlab(project['id'])
-            get_all_projects_job_from_gitlab(project['id'])
+            get_all_project_job_from_gitlab(project['id'])
 
     print(f"Created {created_projects_in_port} microservices in Port for group {group_name}")
 
