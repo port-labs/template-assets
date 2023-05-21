@@ -156,7 +156,7 @@ def process_data_from_all_groups_from_gitlab():
             continue
         
         # Create webhook for root groups
-        if(SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids):
+        if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
             create_webhook(group['id'])
         
         get_all_projects_from_gitlab(group['id'], group['name'])
