@@ -107,8 +107,7 @@ def create_webhook(group_id: int):
         return
 
     webhook_data = {
-        # "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
-        "url": f"{WEBHOOK_URL}",
+        "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
         "push_events": True,
         "merge_requests_events": True,
         "issues_events": True,
@@ -160,7 +159,7 @@ def process_data_from_all_groups_from_gitlab():
         if(SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids):
             create_webhook(group['id'])
         
-        # get_all_projects_from_gitlab(group['id'], group['name'])
+        get_all_projects_from_gitlab(group['id'], group['name'])
     
 
 
@@ -267,7 +266,7 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
             get_all_project_merge_requests_from_gitlab(project['id'])
             get_all_project_issues_from_gitlab(project['id'])
             get_all_project_pipelines_from_gitlab(project['id'])
-            get_all_project_job_from_gitlab(project['id'])
+            get_all_project_jobs_from_gitlab(project['id'])
 
     print(f"Created {created_projects_in_port} microservices in Port for group {group_name}")
 
@@ -401,7 +400,7 @@ def get_all_project_pipelines_from_gitlab(project_id: str):
     print(f"Created {created_pipelines_in_port} pipelines in Port for project {project_id}")
 
 
-def get_all_project_job_from_gitlab(project_id: str):
+def get_all_project_jobs_from_gitlab(project_id: str):
     created_jobs_in_port = 0
     jobs_from_gitlab = request_entities_from_gitlab_using_pagination(
             f"{GITLAB_BASE_URL}/projects/{project_id}/jobs")
