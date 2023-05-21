@@ -38,6 +38,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"Deployment"'
+              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
@@ -64,6 +65,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"ReplicaSet"'
+              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
@@ -90,6 +92,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"DaemonSet"'
+              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
               strategyConfig: .spec.strategy // null
@@ -115,6 +118,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"StatefulSet"'
+              workloadJson: .
               labels: .metadata.labels
               creationTimestamp: .metadata.creationTimestamp
               strategyConfig: .spec.strategy // null
