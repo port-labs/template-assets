@@ -30,9 +30,9 @@ set -e
 REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 GITLAB_EXPORTER_SCRIPT_URL="${REPO_BASE_URL}/gitlab/gitlab_exporter.py"
-GROUPS_TO_REPOS = "${GROUPS_TO_REPOS:-"*"}"
-GITLAB_API_URL = "${GITLAB_API_URL:-""}"
-SKIP_WEBHOOK_CREATION = "${SKIP_WEBHOOK_CREATION:-"false"}"
+GROUPS_TO_REPOS="${GROUPS_TO_REPOS:-"*"}"
+GITLAB_API_URL="${GITLAB_API_URL:-""}"
+SKIP_WEBHOOK_CREATION="${SKIP_WEBHOOK_CREATION:-"false"}"
 
 function cleanup {
   rm -rf "${temp_dir}"
