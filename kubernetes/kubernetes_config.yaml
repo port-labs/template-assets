@@ -14,8 +14,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
-
-# Defines cluster using the uniq 
   - kind: v1/namespaces
     selector:
       query: .metadata.name | contains("kube-system")
