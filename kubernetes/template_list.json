@@ -1,0 +1,12 @@
+{
+    "argo": {
+        "path": "argo_config.tmpl"
+    },
+    "argo_rollouts": {
+        "path": "argo_rollouts_config.tmpl",
+        "needs": "argo"
+    },
+    "complete_usecase": {
+        "path": "complete_usecase_config.tmpl"
+    }
+}
