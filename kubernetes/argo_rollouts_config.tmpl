@@ -1,3 +1,4 @@
+  # ArgoCD Rollouts configuration
   - kind: argoproj.io/v1alpha1/rollouts
     selector:
       query: .metadata.namespace | startswith("kube") | not 
