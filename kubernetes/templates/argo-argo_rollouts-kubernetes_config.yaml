@@ -1,0 +1,244 @@
+# Base Kubernetes configuration
+
+resources: # List of K8s resources to list, watch, and export to Port.
+  - kind: v1/namespaces # group/version/resource (G/V/R) format
+    selector:
+      query: .metadata.name | startswith("kube") | not # JQ boolean query. If evaluated to false - skip syncing the object.
+    port:
+      entity:
+        mappings: # Mappings between one K8s object to one or many Port Entities. Each value is a JQ query.
+          - identifier: .metadata.name + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"namespace"'
+            properties:
+              creationTimestamp: .metadata.creationTimestamp
+              labels: .metadata.labels
+            relations:
+              Cluster: '"{CLUSTER_NAME}"'
+
+  - kind: v1/namespaces
+    selector:
+      query: .metadata.name | contains("kube-system")
+    port:
+      entity:
+        mappings:
+          - identifier: '"{CLUSTER_NAME}"'
+            title: '"{CLUSTER_NAME}"'
+            blueprint: '"cluster"'
+
+  - kind: apps/v1/deployments
+    selector:
+      query: .metadata.namespace | startswith("kube") | not
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            icon: '"Deployment"'
+            blueprint: '"workload"'
+            properties:
+              kind: '"Deployment"'
+              workloadJson: .
+              creationTimestamp: .metadata.creationTimestamp
+              replicas: .spec.replicas
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
+              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              strategyConfig: .spec.strategy // null
+              strategy: .spec.strategy.type
+              availableReplicas: .status.availableReplicas
+              labels: .metadata.labels
+              containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: apps/v1/replicasets
+    selector:
+      query: .metadata.namespace | startswith("kube") | not
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-ReplicaSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            icon: '"Deployment"'
+            blueprint: '"workload"'
+            properties:
+              kind: '"ReplicaSet"'
+              workloadJson: .
+              creationTimestamp: .metadata.creationTimestamp
+              replicas: .spec.replicas
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
+              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              strategy: .spec.strategy.type // null
+              availableReplicas: .status.availableReplicas
+              labels: .metadata.labels
+              containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
+            relations:
+              workloadManager: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: apps/v1/daemonsets 
+    selector:
+      query: .metadata.namespace | startswith("kube") | not 
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"workload"'
+            properties:
+              kind: '"DaemonSet"'
+              workloadJson: .
+              creationTimestamp: .metadata.creationTimestamp         
+              replicas: .spec.replicas
+              strategyConfig: .spec.strategy // null
+              availableReplicas: .status.availableReplicas
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
+              labels: .metadata.labels
+              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: apps/v1/statefulsets
+    selector:
+      query: .metadata.namespace | startswith("kube") | not
+    port:
+      entity:
+        mappings: 
+          - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"workload"'
+            properties:
+              kind: '"StatefulSet"'
+              workloadJson: .
+              labels: .metadata.labels
+              creationTimestamp: .metadata.creationTimestamp
+              strategyConfig: .spec.strategy // null
+              replicas: .spec.replicas
+              availableReplicas: .status.availableReplicas
+              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: v1/pods
+    selector:
+      query: .metadata.namespace | startswith("kube") | not 
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            icon: '"Microservices"'
+            blueprint: '"pod"'
+            properties:
+              startTime: .status.startTime
+              phase: .status.phase
+              labels: .metadata.labels
+              containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
+              conditions: .status.conditions
+            relations:
+              workload: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
+              
+  - kind: v1/nodes
+    port:
+      entity:
+        mappings:
+          - identifier: (.metadata.name) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name + "-" + "{CLUSTER_NAME}"
+            icon: '"Node"'
+            blueprint: '"node"'
+            properties:
+              creationTimestamp: .metadata.creationTimestamp
+              totalCPU: .status.allocatable.cpu
+              totalMemory: .status.allocatable.memory
+              labels: .metadata.labels
+              kubeletVersion: .status.nodeInfo.kubeletVersion | split("-") | .[0]
+              ready: .status.conditions[] | select(.type == "Ready") | .status
+            relations:
+              Cluster: '"{CLUSTER_NAME}"'
+
+
+  # ArgoCD configuration
+  - kind: argoproj.io/v1alpha1/applications
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            blueprint: '"argocdApp"'
+            title: .metadata.name
+            properties:
+              status: .status.health.status
+              syncStatus: .status.sync.status
+              syncPolicy: .spec.syncPolicy // null
+              gitRepo: .spec.source.repoURL// null
+              gitPath: .spec.source.path // null
+              gitRev: .status.sync.revision // null
+            relations:
+              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}") // {}'
+              argocdProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: argoproj.io/v1alpha1/appproject
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argocdProject"'
+            properties:
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: v1/secrets
+    selector:
+      query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"argocdRepo"'
+            properties:
+              repoUrl: .data.url | @base64d
+              repoType: .data.type | @base64d
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+ 
+
+  # ArgoCD Rollouts configuration
+  - kind: argoproj.io/v1alpha1/rollouts
+    selector:
+      query: .metadata.namespace | startswith("kube") | not 
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-Rollout-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            blueprint: '"workload"'
+            properties:
+              kind: '"Rollout"'
+              creationTimestamp: .metadata.creationTimestamp         
+              replicas: .spec.replicas
+              workloadJson: .
+              strategyConfig: .spec.strategy // null
+              availableReplicas: .status.availableReplicas
+              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
+              labels: .metadata.labels
+              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
+              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
+              containers: (.spec.template.spec.containers | map({name, image, resources}))
+              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
+            relations:
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
