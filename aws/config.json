@@ -80,7 +80,9 @@
                 "desiredCount": ".DesiredCount",
                 "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
                 "arn": ".ServiceArn",
-                "binaryVersion": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:binary-version\")) then \"unknown\" else .[] | select(.Key == \"autofi:binary-version\") | .Value end"
+                "binaryVersion": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:binary-version\")) then \"unknown\" else .[] | select(.Key == \"autofi:binary-version\") | .Value end",
+                "cpu": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:cpu\")) then null else .[] | select(.Key == \"autofi:cpu\") | .Value end",
+                "memory": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:memory\")) then null else .[] | select(.Key == \"autofi:memory\") | .Value end"
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]",
