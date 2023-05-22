@@ -1,3 +1,4 @@
+  # ArgoCD configuration
   - kind: argoproj.io/v1alpha1/applications
     port:
       entity:
@@ -13,7 +14,7 @@
               gitPath: .spec.source.path // null
               gitRev: .status.sync.revision // null
             relations:
-              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}") // {}'
+              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}") // []'
               argocdProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
               destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
 
@@ -42,5 +43,3 @@
               repoType: .data.type | @base64d
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-
- 
