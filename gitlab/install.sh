@@ -53,9 +53,9 @@ check_port_credentials "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}"
 
 echo "Checking GitLab variables!"
 echo ""
-if [[ -z "${GITLAB_API_TOKEN}" ]] || [[ -z "${GROUP_ID}" ]]
+if [[ -z "${GITLAB_API_TOKEN}" ]]
 then
-  echo "GITLAB_API_TOKEN or GROUP_ID variables are not defined"
+  echo "GITLAB_API_TOKEN is not defined"
   exit 1
 fi
 
