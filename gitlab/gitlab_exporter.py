@@ -80,7 +80,7 @@ def create_webhook(group_id: int):
 
     if response.status_code != 200:
         print(
-            f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response.json()}, exiting...")
+            f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response}, exiting...")
         return
     else:
         webhooks = response.json()
