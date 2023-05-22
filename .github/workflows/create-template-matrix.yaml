@@ -24,6 +24,9 @@ jobs:
       - run: python .github/scripts/create-templates.py
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
+        with:
+          branch-suffix: timestamp
+
 
           
     
