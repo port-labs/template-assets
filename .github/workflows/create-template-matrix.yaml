@@ -6,6 +6,7 @@ on:
     paths: 
         - kubernetes/template_list.json
         - kubernetes/*.tmpl
+        - kubernetes/kubernetes_config.yaml
 
 jobs:
   create-matrix:
