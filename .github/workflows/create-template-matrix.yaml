@@ -22,10 +22,8 @@ jobs:
         with:
           python-version: '3.10' 
       - run: python .github/scripts/create-templates.py
-      - run: |
-          git add kubernetes/templates
-          git commit -m "Automatic template updates"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
 
           
     
