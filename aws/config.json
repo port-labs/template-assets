@@ -216,7 +216,8 @@
               "title": ".ServiceName",
               "blueprint": "test_read_settings_json",
               "properties": {
-                "dns": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) and (select(.Key == \"autofi:env\") | .Value == \"prod\")) then \"fe7e74b1a00f4262a7ec8532963d5ce1\" else \"autofi-stage.kb\" end"
+                "elastic_dns": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) and (select(.Key == \"autofi:env\") | .Value == \"prod\")) then \"fe7e74b1a00f4262a7ec8532963d5ce1\" else \"autofi-stage.kb\" end",
+                "app_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) and (select(.Key == \"autofi:env\") | .Value == \"prod\")) then \"71bec050-ce42-11e8-b752-f312020fec08\" else \"71bec050-ce42-11e8-b752-f312020fec08\" end"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
