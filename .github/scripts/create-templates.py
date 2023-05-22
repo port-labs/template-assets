@@ -33,6 +33,7 @@ for comb in list_combinations:
     template_file_name = f"{template_name}kubernetes_config.yaml"
     template_file_path = join(SCRIPT_PATH_ABS_PATH, f"../../kubernetes/templates/{template_file_name}")
     with open (template_file_path, "w") as f:
+        print(f"Creating: {template_file_path}")
         f.write(data)
 
 

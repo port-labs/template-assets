@@ -14,5 +14,10 @@
         "name": "Complete usecase expanstion",
         "description": "Contains Service, ClusterRole, and Role",
         "path": "complete_usecase_config.tmpl"
+    },
+    "istio": {
+        "name": "Istio",
+        "description": "Contains Istio gateway and virtualservice",
+        "path": "istio_config.tmpl"
     }
 }
