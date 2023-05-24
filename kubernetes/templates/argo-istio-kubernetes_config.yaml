@@ -1,3 +1,5 @@
+# Base Kubernetes configuration
+
 resources: # List of K8s resources to list, watch, and export to Port.
   - kind: v1/namespaces # group/version/resource (G/V/R) format
     selector:
@@ -14,8 +16,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
-
-# Defines cluster using the uniq 
   - kind: v1/namespaces
     selector:
       query: .metadata.name | contains("kube-system")
@@ -79,7 +79,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               workloadManager: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              knativeRevision: 'if (.metadata.ownerReferences[0].kind == "Revision") then .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" else null end'
 
   - kind: apps/v1/daemonsets 
     selector:
@@ -105,7 +104,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              knativeRevision: 'if (.metadata.ownerReferences[0].kind == "Revision") then .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" else null end'
 
   - kind: apps/v1/statefulsets
     selector:
@@ -170,77 +168,79 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
-  - kind: serving.knative.dev/v1/service
-    selector:
-      query: .metadata.name | startswith("kube") | not
+  # ArgoCD configuration
+  - kind: argoproj.io/v1alpha1/applications
     port:
       entity:
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            blueprint: '"argocdApp"'
             title: .metadata.name
-            blueprint: '"knativeService"'
             properties:
-              creationTimestamp: .metadata.creationTimestamp
-              labels: .metadata.labels
-              containerConcurrency: .spec.template.spec.containerConcurrency
-              containers: .spec.template.spec.containers
-              trafficConfiguration: .status.traffic
-              serviceTimeout: .spec.template.spec.timeoutSeconds
-              url: .status.url
-              ready: .status.conditions[] | select(.type == "Ready") | .status
-              generation: .metadata.generation
+              status: .status.health.status
+              syncStatus: .status.sync.status
+              syncPolicy: .spec.syncPolicy // null
+              gitRepo: .spec.source.repoURL// null
+              gitPath: .spec.source.path // null
+              gitRev: .status.sync.revision // null
             relations:
-              namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefuleSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}") // []'
+              argocdProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
 
-  - kind: serving.knative.dev/v1/configuration
-    selector:
-      query: .metadata.name | startswith("kube") | not
+  - kind: argoproj.io/v1alpha1/appproject
     port:
       entity:
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"knativeConfiguration"'
+            blueprint: '"argocdProject"'
             properties:
-              creationTimestamp: .metadata.creationTimestamp
-              labels: .metadata.labels
-              ready: .status.conditions[] | select(.type == "Ready") | .status
-              containers: .spec.template.spec.containers
             relations:
-              knativeService: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
-  - kind: serving.knative.dev/v1/revision
+  - kind: v1/secrets
     selector:
-      query: .metadata.name | startswith("kube") | not
+      query: '.metadata.labels // {} | contains({ "argocd.argoproj.io/secret-type": "repository" })'
     port:
       entity:
         mappings:
           - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
             title: .metadata.name
-            blueprint: '"knativeRevision"'
+            blueprint: '"argocdRepo"'
             properties:
-              creationTimestamp: .metadata.creationTimestamp
-              labels: .metadata.labels
-              isActive: .status.conditions[] | select(.type == "Active") | .status
-              containers: .spec.containers
-              replicaCount: .status.actualReplicas
+              repoUrl: .data.url | @base64d
+              repoType: .data.type | @base64d
             relations:
-              knativeConfiguration: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-  
-  - kind: serving.knative.dev/v1/route
-    selector:
-      query: .metadata.name | startswith("kube") | not
+              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+
+  - kind: networking.istio.io/v1beta1/virtualservices
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            blueprint: '"knativeRoute"'
+          - identifier: .metadata.name + "-" + .metadata.namespace
+            blueprint: '"virtualServices"'
             properties:
-              creationTimestamp: .metadata.creationTimestamp
+              title: .metadata.name
+              hosts: .spec.hosts
+              match: .spec.http[].match
               labels: .metadata.labels
-              trafficConfiguration: .status.traffic
-              url: .status.url
             relations:
-              knativeRevision: '[.status.traffic[].revisionName + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"]'
-              knativeService: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              gateways: .spec.gateways[] + "-" + .metadata.namespace 
+              services: .metadata.namespace as $namespace | .spec.http[].route[].destination.host + "-" + $namespace
+
+  - kind: networking.istio.io/v1beta1/gateways
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace
+            blueprint: '"gateways"'
+            properties:
+              title: .metadata.name
+              ports: .spec.servers[].port.number
+              name: .metadata.name
+              labels: .metadata.labels
+              selector: .spec.selector
+            relations:
+              namespace: .metadata.namespace
+              

@@ -1,3 +1,4 @@
+  # ArgoCD Rollouts configuration
   - kind: argoproj.io/v1alpha1/rollouts
     selector:
       query: .metadata.namespace | startswith("kube") | not 
@@ -11,6 +12,7 @@
               kind: '"Rollout"'
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
+              workloadJson: .
               strategyConfig: .spec.strategy // null
               availableReplicas: .status.availableReplicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any

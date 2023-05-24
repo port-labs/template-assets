@@ -1,3 +1,5 @@
+# Base Kubernetes configuration
+
 resources: # List of K8s resources to list, watch, and export to Port.
   - kind: v1/namespaces # group/version/resource (G/V/R) format
     selector:
@@ -14,8 +16,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
-
-# Defines cluster using the uniq 
   - kind: v1/namespaces
     selector:
       query: .metadata.name | contains("kube-system")
@@ -79,7 +79,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               workloadManager: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              knativeRevision: 'if (.metadata.ownerReferences[0].kind == "Revision") then .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" else null end'
 
   - kind: apps/v1/daemonsets 
     selector:
@@ -105,7 +104,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              knativeRevision: 'if (.metadata.ownerReferences[0].kind == "Revision") then .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" else null end'
 
   - kind: apps/v1/statefulsets
     selector:
@@ -170,77 +168,52 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Cluster: '"{CLUSTER_NAME}"'
 
-  - kind: serving.knative.dev/v1/service
-    selector:
-      query: .metadata.name | startswith("kube") | not
+  # Complete usecase
+  - kind: rbac.authorization.k8s.io/v1/clusterroles
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name | split(":")  | join("-") | split(".") | join("-") 
             title: .metadata.name
-            blueprint: '"knativeService"'
+            blueprint: '"clusterRole"'
             properties:
               creationTimestamp: .metadata.creationTimestamp
               labels: .metadata.labels
-              containerConcurrency: .spec.template.spec.containerConcurrency
-              containers: .spec.template.spec.containers
-              trafficConfiguration: .status.traffic
-              serviceTimeout: .spec.template.spec.timeoutSeconds
-              url: .status.url
-              ready: .status.conditions[] | select(.type == "Ready") | .status
-              generation: .metadata.generation
+              rules: .rules
+            relations:
+              cluster: '"{CLUSTER_NAME}"'
+
+  - kind: rbac.authorization.k8s.io/v1/roles
+    selector:
+      query: .metadata.namespace | startswith("kube") | not 
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace
+            title: .metadata.name
+            blueprint: '"role"'
+            properties:
+              creationTimestamp: .metadata.creationTimestamp
+              labels: .metadata.labels
+              rules: .rules
             relations:
               namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
-  - kind: serving.knative.dev/v1/configuration
+  - kind: v1/services
     selector:
-      query: .metadata.name | startswith("kube") | not
+      query: .metadata.namespace | startswith("kube") | not 
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-" + .metadata.namespace
             title: .metadata.name
-            blueprint: '"knativeConfiguration"'
+            icon: '"Service"'
+            blueprint: '"service"'
             properties:
               creationTimestamp: .metadata.creationTimestamp
               labels: .metadata.labels
-              ready: .status.conditions[] | select(.type == "Ready") | .status
-              containers: .spec.template.spec.containers
+              type: .spec.type
+              selectors: .spec.selector
             relations:
-              knativeService: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-
-  - kind: serving.knative.dev/v1/revision
-    selector:
-      query: .metadata.name | startswith("kube") | not
-    port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            blueprint: '"knativeRevision"'
-            properties:
-              creationTimestamp: .metadata.creationTimestamp
-              labels: .metadata.labels
-              isActive: .status.conditions[] | select(.type == "Active") | .status
-              containers: .spec.containers
-              replicaCount: .status.actualReplicas
-            relations:
-              knativeConfiguration: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-  
-  - kind: serving.knative.dev/v1/route
-    selector:
-      query: .metadata.name | startswith("kube") | not
-    port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            blueprint: '"knativeRoute"'
-            properties:
-              creationTimestamp: .metadata.creationTimestamp
-              labels: .metadata.labels
-              trafficConfiguration: .status.traffic
-              url: .status.url
-            relations:
-              knativeRevision: '[.status.traffic[].revisionName + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"]'
-              knativeService: .metadata.ownerReferences[0].name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              

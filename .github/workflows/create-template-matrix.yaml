@@ -1,0 +1,34 @@
+name: Create template files from matrix
+
+on:
+  push:
+    branches: main
+    paths: 
+        - kubernetes/template_list.json
+        - kubernetes/*.tmpl
+        - kubernetes/kubernetes_config.yaml
+
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Clean up templates
+        run: |
+          rm -f kubernetes/templates/*.yaml
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      - run: |
+          python .github/scripts/create-templates.py
+          ls -l kubernetes/templates
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch-suffix: timestamp
+
+
+          
+    
