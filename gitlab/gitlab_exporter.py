@@ -142,24 +142,28 @@ def process_data_from_all_groups_from_gitlab():
             f"Failed to get groups from GitLab. Status code: {response.status_code}, Error: {response.json()}")
         return
     
-    all_groups = response.json()
-    root_groups = [group for group in all_groups if group['parent_id'] is None]
-    root_groups_ids = [group['id'] for group in root_groups]
+    try:
+        all_groups = response.json()
+        root_groups = [group for group in all_groups if group['parent_id'] is None]
+        root_groups_ids = [group['id'] for group in root_groups]
 
-    if (group_to_projects == {}):
-        configured_groups = [group['name'] for group in all_groups]
-    else:
-        configured_groups = group_to_projects.keys()
+        if (group_to_projects == {}):
+            configured_groups = [group['name'] for group in all_groups]
+        else:
+            configured_groups = group_to_projects.keys()
 
-    for group in all_groups:
-        if (group['name'] not in configured_groups):
-            continue
+        for group in all_groups:
+            if (group['name'] not in configured_groups):
+                continue
         
-        # Create webhook for root groups
-        if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
-            create_webhook(group['id'])
+            # Create webhook for root groups
+            if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
+                create_webhook(group['id'])
         
-        get_all_projects_from_gitlab(group['id'], group['name'])
+            get_all_projects_from_gitlab(group['id'], group['name'])
+
+    except Exception as e:
+        print(f"Failed to process data from GitLab. Error: {e}")
     
 
 
@@ -442,9 +446,11 @@ if __name__ == "__main__":
     try:
         print("Processing group to projects configuration")
         process_group_to_projects_config()
+        print("Group to projects configuration processing completed successfully!")
     except Exception as e:
         print(e)
         print("Error processing group to projects configuration")
     
     print("Processing data from all groups from GitLab")
     process_data_from_all_groups_from_gitlab()
+    print("Data from all groups from GitLab processed successfully!")
