@@ -1,6 +1,7 @@
 import requests
 import json
 import sys
+import traceback
 
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2]
