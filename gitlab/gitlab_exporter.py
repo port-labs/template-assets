@@ -453,3 +453,4 @@ if __name__ == "__main__":
     
     print("Processing data from all groups from GitLab")
     process_data_from_all_groups_from_gitlab()
+    print("Data from all groups from GitLab processed successfully!")
