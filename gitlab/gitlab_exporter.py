@@ -1,6 +1,7 @@
 import requests
 import json
 import sys
+import traceback
 
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2]
@@ -164,6 +165,7 @@ def process_data_from_all_groups_from_gitlab():
 
     except Exception as e:
         print(f"Failed to process data from GitLab. Error: {e}")
+        traceback.print_exc()
     
 
 
@@ -212,6 +214,7 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = 
         except Exception as e:
             print(
                 f"Failed to retrieve entities, Page Number: {current_page}, Error: {e}")
+            traceback.print_exc()
             
     return entities_from_gitlab
 
@@ -450,6 +453,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
         print("Error processing group to projects configuration")
+        traceback.print_exc()
     
     print("Processing data from all groups from GitLab")
     process_data_from_all_groups_from_gitlab()
