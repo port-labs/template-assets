@@ -13,6 +13,10 @@ SKIP_WEBHOOK_CREATION = sys.argv[6]
 GITLAB_BASE_URL = f"https://gitlab.com/api/v4"
 
 if GITLAB_API_URL != "":
+    if '/api/' not in GITLAB_API_URL:
+        print("GITLAB_API_URL is not valid, should be in the format 'https://GitLabHostName.com/api/v4'")
+        print("Exiting...")
+        sys.exit(0)
     GITLAB_BASE_URL = GITLAB_API_URL
 
 PORT_API_URL ="https://api.getport.io/v1"
