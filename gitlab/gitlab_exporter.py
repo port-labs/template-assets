@@ -151,7 +151,7 @@ def process_data_from_all_groups_from_gitlab():
         if (group_to_projects == {}):
             configured_groups = [group['name'] for group in all_groups]
         else:
-            configured_groups = group_to_projects.keys()
+            configured_groups = list(group_to_projects.keys())
 
         for group in all_groups:
             if (group['name'] not in configured_groups):
