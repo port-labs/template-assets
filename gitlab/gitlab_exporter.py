@@ -49,6 +49,8 @@ def process_group_to_projects_config():
 
         group_to_projects[group_name] = projects_names
 
+    print(f"Final group to Projects: {group_to_projects}")
+
 def get_port_api_token():
     """
     Get a Port API access token
@@ -79,6 +81,8 @@ def create_webhook(group_id: int):
         headers=gitlab_request_headers
     )
 
+    print(f"Checks if webhook already exists - Response: {response.text}")
+
     if response.status_code != 200:
         print(
             f"Failed to get webhooks from GitLab. Status code: {response.status_code}, Error: {response}, exiting...")
@@ -107,6 +111,8 @@ def create_webhook(group_id: int):
             f"Failed to get webhookKey. Status code: {response.status_code}, Error: {response.json()}")
         return
 
+    print(f"Getting webhookKey - Response: {response.text}")
+
     webhook_data = {
         "url": f"{WEBHOOK_URL}/{response.json()['integration']['webhookKey']}",
         "push_events": True,
@@ -133,17 +139,19 @@ def process_data_from_all_groups_from_gitlab():
     gitlab_request_headers = {"PRIVATE-TOKEN": GITLAB_API_TOKEN}
     gitlab_api_url = f"{GITLAB_BASE_URL}/groups"
 
-    response = requests.get(
-        gitlab_api_url,
-        headers=gitlab_request_headers
-    )
-
-    if response.status_code != 200:
-        print(
-            f"Failed to get groups from GitLab. Status code: {response.status_code}, Error: {response.json()}")
-        return
-    
     try:
+        response = requests.get(
+            gitlab_api_url,
+            headers=gitlab_request_headers
+        )
+
+        print(f"Get all groups response - {response.text}")
+
+        if response.status_code != 200:
+            print(
+                f"Failed to get groups from GitLab. Status code: {response.status_code}, Error: {response.json()}")
+            return
+    
         all_groups = response.json()
         root_groups = [group for group in all_groups if group['parent_id'] is None]
         root_groups_ids = [group['id'] for group in root_groups]
@@ -151,7 +159,9 @@ def process_data_from_all_groups_from_gitlab():
         if (group_to_projects == {}):
             configured_groups = [group['name'] for group in all_groups]
         else:
-            configured_groups = group_to_projects.keys()
+            configured_groups = list(group_to_projects.keys())
+
+        print(f"Configured groups: {configured_groups}")
 
         for group in all_groups:
             if (group['name'] not in configured_groups):
@@ -198,6 +208,7 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = 
         try:
             response = requests.get(api_url, headers=headers, params=params)
 
+            print(f"Get gitlab entities request - ${api_url}, response - ${response.text}")
             if response.status_code == 200:
                 entities = response.json()
 
@@ -243,6 +254,8 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
 
             # Filter project that are not directly in the group
             projects_from_gitlab = [project for project in projects_from_gitlab if project["namespace"]["id"] == group_id]
+
+            print(f"Found {len(projects_from_gitlab)} projects in GitLab for group {group_name} after filtering")
 
         token = get_port_api_token()
 
