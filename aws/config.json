@@ -84,10 +84,9 @@
                 "cpu": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-cpu\")) then null else .[] | select(.Key == \"autofi:task-cpu\") | .Value end",
                 "memory": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-memory\")) then null else .[] | select(.Key == \"autofi:task-memory\") | .Value end",
                 "elastic_dns": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"autofi-stage.kb\" else \"fe7e74b1a00f4262a7ec8532963d5ce1\" end",
-                "console_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) and (select(.Key == \"autofi:env\") | .Value == \"prod\")) then \"abcc8690-65e4-11ed-a70c-2dc2eb9b4315\" else \"7b38db90-48f3-11ed-a3e0-4d2200e5ec82\" end",
-                "app_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) and (select(.Key == \"autofi:env\") | .Value == \"prod\")) then \"71bec050-ce42-11e8-b752-f312020fec08\" else \"be6ccc10-bb02-11e8-b036-cf92dc970185\" end",
+                "console_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"7b38db90-48f3-11ed-a3e0-4d2200e5ec82\" else \"abcc8690-65e4-11ed-a70c-2dc2eb9b4315\" end",
+                "app_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"be6ccc10-bb02-11e8-b036-cf92dc970185\" else \"71bec050-ce42-11e8-b752-f312020fec08\" end",
                 "legacy_app_name": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app-legacy-name\")) then \"unknown\" else .[] | select(.Key == \"autofi:app-legacy-name\") | .Value end"
-
               },
               "relations": {
                 "region": ".ServiceArn | split(\":\")[3]",
