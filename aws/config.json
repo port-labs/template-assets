@@ -173,7 +173,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Identifier | split(\":\")[5]",
+              "identifier": ".Name",
               "title": ".Name",
               "blueprint": "load_balancer_target_group",
               "properties": {
