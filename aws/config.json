@@ -177,9 +177,7 @@
               "title": ".Name",
               "blueprint": "load_balancer_target_group",
               "properties": {
-                "arn": ".Identifier",
-                "region": ".Identifier | split(\":\")[3]",
-                "cloud_account": ".Identifier | split(\":\")[4]"
+                "arn": ".Identifier"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
