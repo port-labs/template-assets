@@ -152,7 +152,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Identifier",
+              "identifier": ".RepositoryName",
               "title": ".RepositoryName",
               "blueprint": "ecr",
               "properties": {
