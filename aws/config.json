@@ -184,8 +184,8 @@
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
                 "vpc_id": ".VpcId",
-                "region": ".Identifier | split(\":\")[3]",
-                "cloud_account": ".Identifier | split(\":\")[4]"
+                "region": ".TargetGroupArn | split(\":\")[3]",
+                "cloud_account": ".TargetGroupArn | split(\":\")[4]"
               }
             }
           ]
