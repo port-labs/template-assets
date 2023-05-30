@@ -158,7 +158,8 @@
                 "arn": ".Arn"
               },
               "relations": {
-                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
+                "cloud_account": ".Arn | split(\":\")[4]"
               }
             }
           ]
