@@ -183,7 +183,9 @@
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
                 "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
-                "vpc_id": ".VpcId"
+                "vpc_id": ".VpcId",
+                "region": ".Identifier | split(\":\")[3]",
+                "cloud_account": ".Identifier | split(\":\")[4]"
               }
             }
           ]
