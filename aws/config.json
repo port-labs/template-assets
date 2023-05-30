@@ -185,7 +185,7 @@
                 "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
                 "vpc_id": ".VpcId",
                 "region": ".TargetGroupArn | split(\":\")[3]",
-                "cloud_account": ".TargetGroupArn | split(\":\")[4]"
+                "cloudAccount": ".TargetGroupArn | split(\":\")[4]"
               }
             }
           ]
