@@ -140,19 +140,10 @@ def process_data_from_all_groups_from_gitlab():
     gitlab_api_url = f"{GITLAB_BASE_URL}/groups"
 
     try:
-        response = requests.get(
-            gitlab_api_url,
-            headers=gitlab_request_headers
-        )
+        all_groups = request_entities_from_gitlab_using_pagination(gitlab_api_url,
+                                                                   gitlab_request_headers,
+                                                                   params={'include_subgroups': True})
 
-        print(f"Get all groups response - {response.text}")
-
-        if response.status_code != 200:
-            print(
-                f"Failed to get groups from GitLab. Status code: {response.status_code}, Error: {response.json()}")
-            return
-    
-        all_groups = response.json()
         root_groups = [group for group in all_groups if group['parent_id'] is None]
         root_groups_ids = [group['id'] for group in root_groups]
 
@@ -163,20 +154,19 @@ def process_data_from_all_groups_from_gitlab():
 
         print(f"Configured groups: {configured_groups}")
 
-        for group in all_groups:
-            if (group['name'] not in configured_groups):
-                continue
-        
+        filtered_groups = [group for group in all_groups if group['name'] in configured_groups]
+        print(f"Found groups: {filtered_groups}")
+        for group in filtered_groups:
             # Create webhook for root groups
             if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
                 create_webhook(group['id'])
-        
+
             get_all_projects_from_gitlab(group['id'], group['name'])
 
     except Exception as e:
         print(f"Failed to process data from GitLab. Error: {e}")
         traceback.print_exc()
-    
+
 
 
 def create_entity(blueprint: str, body: json, access_token: str):
@@ -195,7 +185,12 @@ def create_entity(blueprint: str, body: json, access_token: str):
     return response
 
 
-def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = {}, params: dict = {}):
+def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = None, params: dict = None):
+    if headers is None:
+        headers = {}
+    if params is None:
+        params = {}
+
     current_page = 1
     request_more_entities = True
     entities_from_gitlab = []
