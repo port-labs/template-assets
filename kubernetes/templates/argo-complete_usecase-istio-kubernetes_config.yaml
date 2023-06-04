@@ -53,33 +53,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
-  - kind: apps/v1/replicasets
-    selector:
-      query: .metadata.namespace | startswith("kube") | not
-    port:
-      entity:
-        mappings:
-          - identifier: .metadata.name + "-ReplicaSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-            title: .metadata.name
-            icon: '"Deployment"'
-            blueprint: '"workload"'
-            properties:
-              kind: '"ReplicaSet"'
-              workloadJson: .
-              creationTimestamp: .metadata.creationTimestamp
-              replicas: .spec.replicas
-              hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
-              hasLatest: .spec.template.spec.containers[].image | contains(":latest")
-              hasLimits: .spec.template.spec.containers | all(has("resources") and (.resources.limits.memory and .resources.limits.cpu))
-              strategy: .spec.strategy.type // null
-              availableReplicas: .status.availableReplicas
-              labels: .metadata.labels
-              containers: (.spec.template.spec.containers | map({name, image, resources}))
-              isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
-            relations:
-              workloadManager: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}" // null
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
-
   - kind: apps/v1/daemonsets 
     selector:
       query: .metadata.namespace | startswith("kube") | not 
@@ -130,9 +103,31 @@ resources: # List of K8s resources to list, watch, and export to Port.
             relations:
               Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
 
+  # Pods who are owned by replica-sets are connected directly to their deployment
   - kind: v1/pods
     selector:
-      query: .metadata.namespace | startswith("kube") | not 
+      query: (.metadata.ownerReferences[0].kind == "ReplicaSet") and (.metadata.namespace | startswith("kube") | not)
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+            title: .metadata.name
+            icon: '"Microservices"'
+            blueprint: '"pod"'
+            properties:
+              startTime: .status.startTime
+              phase: .status.phase
+              labels: .metadata.labels
+              containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
+              conditions: .status.conditions
+            relations:
+              workload: '(.metadata.ownerReferences[0].name | split("-") | .[:-1] | join("-")) + "-" + "Deployment" + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"'
+              Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + "{CLUSTER_NAME}"
+  
+  # Pods that are not managed by replicasets->deployments (daemonsets, statefulsets etc)
+  - kind: v1/pods
+    selector:
+      query: (.metadata.ownerReferences[0].kind != "ReplicaSet") and (.metadata.namespace | startswith("kube") | not)
     port:
       entity:
         mappings:
