@@ -5,7 +5,7 @@ import json
 SCRIPT_PATH_ABS_PATH = dirname(__file__)
 TEMPLATE_LIST_PATH = "../../kubernetes/template_list.json"
 LIST_ABS_PATH = join(SCRIPT_PATH_ABS_PATH, TEMPLATE_LIST_PATH)
-BASE_CONFIG_PATH = "../../kubernetes/kubernetes_config.yaml"
+BASE_CONFIG_PATH = "../../kubernetes/kubernetes_v1_config.yaml"
 BASE_CONFIG_ABS_PATH = join(SCRIPT_PATH_ABS_PATH, BASE_CONFIG_PATH)
 
 
