@@ -225,6 +225,94 @@
       }
     },
     {
+      "identifier": "replicaSet",
+      "description": "This blueprint represents a k8s ReplicaSet",
+      "title": "ReplicaSet",
+      "icon": "Deployment",
+      "schema": {
+        "properties": {
+          "replicaSetJson": {
+            "title": "ReplicaSet Json",
+            "type": "object",
+            "description": "The ReplicaSet json"
+          },
+          "availableReplicas": {
+            "type": "number",
+            "title": "Running Replicas",
+            "description": "Current running replica count"
+          },
+          "containers": {
+            "type": "array",
+            "title": "Containers",
+            "default": [],
+            "description": "The containers for each pod instance of the Workload"
+          },
+          "creationTimestamp": {
+            "type": "string",
+            "title": "Created",
+            "format": "date-time",
+            "description": "When the Workload was created"
+          },
+          "labels": {
+            "type": "object",
+            "title": "Labels",
+            "description": "Labels of the Workload"
+          },
+          "replicas": {
+            "type": "number",
+            "title": "Wanted Replicas",
+            "description": "Wanted replica count"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy",
+            "description": "Rollout Strategy"
+          },
+          "hasPrivileged": {
+            "type": "boolean",
+            "title": "Has Privileged Container"
+          },
+          "hasLatest": {
+            "type": "boolean",
+            "title": "Has 'latest' tag",
+            "description": "Has Container with 'latest' as image tag"
+          },
+          "hasLimits": {
+            "type": "boolean",
+            "title": "All containers have limits"
+          },
+          "isHealthy": {
+            "type": "string",
+            "enum": [
+              "Healthy",
+              "Unhealthy"
+            ],
+            "enumColors": {
+              "Healthy": "green",
+              "Unhealthy": "red"
+            },
+            "title": "ReplicaSet Health"
+          },
+          "strategyConfig": {
+            "type": "object",
+            "title": "Strategy Config",
+            "description": "The ReplicaSet rollout strategy"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {},
+      "calculationProperties": {},
+      "relations": {
+        "replicaSetManager": {
+          "title": "Manager",
+          "target": "workload",
+          "required": false,
+          "many": false
+        }
+      }
+    },
+    {
       "identifier": "pod",
       "description": "This blueprint represents a k8s Pod",
       "title": "Pod",
@@ -272,6 +360,13 @@
       },
       "calculationProperties": {},
       "relations": {
+        "replicaSet": {
+          "title": "ReplicaSet",
+          "description": "The ReplicaSet managing the pod (if it exists)",
+          "target": "replicaSet",
+          "required": false,
+          "many": true
+        },
         "Node": {
           "title": "Node",
           "description": "The node the pod is running on",
@@ -283,122 +378,6 @@
           "title": "Workload",
           "description": "The workload responsible for the pod",
           "target": "workload",
-          "required": false,
-          "many": false
-        }
-      }
-    },
-    {
-      "identifier": "clusterRole",
-      "description": "This blueprint represents a Kubernetes Cluster Role",
-      "title": "Cluster Role",
-      "icon": "TwoUsers",
-      "schema": {
-        "properties": {
-          "creationTimestamp": {
-            "type": "string",
-            "title": "Created",
-            "format": "date-time",
-            "description": "When the Namespace was created"
-          },
-          "labels": {
-            "type": "object",
-            "title": "Labels",
-            "description": "Labels of the Pod"
-          },
-          "rules": {
-            "type": "array",
-            "title": "Rules",
-            "description": "Role Rules"
-          }
-        },
-        "required": []
-      },
-      "mirrorProperties": {},
-      "calculationProperties": {},
-      "relations": {
-        "cluster": {
-          "title": "Cluster",
-          "target": "cluster",
-          "required": false,
-          "many": false
-        }
-      }
-    },
-    {
-      "identifier": "role",
-      "description": "This blueprint represents a Kubernetes Role",
-      "title": "Role",
-      "icon": "TwoUsers",
-      "schema": {
-        "properties": {
-          "creationTimestamp": {
-            "type": "string",
-            "title": "Created",
-            "format": "date-time",
-            "description": "When the Namespace was created"
-          },
-          "labels": {
-            "type": "object",
-            "title": "Labels",
-            "description": "Labels of the Pod"
-          },
-          "rules": {
-            "type": "array",
-            "title": "Rules",
-            "description": "Role Rules"
-          }
-        },
-        "required": []
-      },
-      "mirrorProperties": {},
-      "calculationProperties": {},
-      "relations": {
-        "namespace": {
-          "title": "Namespace",
-          "target": "namespace",
-          "required": false,
-          "many": false
-        }
-      }
-    },
-    {
-      "identifier": "service",
-      "description": "This blueprint represents a Kubernetes Service",
-      "title": "Service",
-      "icon": "Microservice",
-      "schema": {
-        "properties": {
-          "creationTimestamp": {
-            "type": "string",
-            "title": "Created",
-            "format": "date-time",
-            "description": "When the Namespace was created"
-          },
-          "labels": {
-            "type": "object",
-            "title": "Labels",
-            "description": "Labels of the Pod"
-          },
-          "type": {
-            "type": "string",
-            "title": "Service Type",
-            "description": "Service Type"
-          },
-          "selectors": {
-            "type": "object",
-            "title": "Service Type",
-            "description": "Pod selectors for the service"
-          }
-        },
-        "required": []
-      },
-      "mirrorProperties": {},
-      "calculationProperties": {},
-      "relations": {
-        "namespace": {
-          "title": "Namespace",
-          "target": "namespace",
           "required": false,
           "many": false
         }
