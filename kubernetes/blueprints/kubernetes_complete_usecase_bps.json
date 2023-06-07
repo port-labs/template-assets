@@ -185,7 +185,6 @@
               "StatefulSet",
               "DaemonSet",
               "Deployment",
-              "ReplicaSet",
               "Rollout"
             ]
           },
