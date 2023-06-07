@@ -10,11 +10,6 @@
         "path": "argo_rollouts_config.tmpl",
         "needs": "argo"
     },
-    "complete_usecase": {
-        "name": "Complete usecase expanstion",
-        "description": "Contains Service, ClusterRole, and Role",
-        "path": "complete_usecase_config.tmpl"
-    },
     "istio": {
         "name": "Istio",
         "description": "Contains Istio gateway and virtualservice",
