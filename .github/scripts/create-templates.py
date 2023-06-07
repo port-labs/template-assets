@@ -35,6 +35,9 @@ for comb in list_combinations:
     with open (template_file_path, "w") as f:
         print(f"Creating: {template_file_path}")
         f.write(data)
+        
+
+
 
 
 
