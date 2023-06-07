@@ -4,6 +4,7 @@ on:
   push:
     branches: main
     paths: 
+        - .github/scripts/create-templates.py
         - kubernetes/template_list.json
         - kubernetes/*.tmpl
         - kubernetes/kubernetes_config.yaml
