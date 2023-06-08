@@ -101,10 +101,10 @@ echo "Preparing parameters json file..."
 echo ""
 
 sed -i.backup \
--e "s/\<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
--e "s/\<EXPORTER_LAMBDA_NAME>/${EXPORTER_LAMBDA_NAME}/" \
--e "s/\<EXPORTER_SECRET_NAME>/${EXPORTER_SECRET_NAME}/" \
--e "s/\<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN//\//\\/}/" \
+-e "s/<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
+-e "s/<EXPORTER_LAMBDA_NAME>/${EXPORTER_LAMBDA_NAME}/" \
+-e "s/<EXPORTER_SECRET_NAME>/${EXPORTER_SECRET_NAME}/" \
+-e "s/<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN//\//\\/}/" \
 "${temp_dir}/parameters.json" || exit
 
 cat "${temp_dir}/parameters.json"
