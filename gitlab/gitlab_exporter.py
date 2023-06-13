@@ -156,7 +156,7 @@ def process_data_from_all_groups_from_gitlab():
 
         print(f"Matching groups: {configured_groups}")
 
-        for group in filtered_groups:
+        for group in configured_groups:
             # Create webhook for root groups
             if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
                 create_webhook(group['id'])
