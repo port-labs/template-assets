@@ -183,6 +183,9 @@ def create_entity(blueprint: str, body: json, access_token: str):
     response = requests.post(
         f"{PORT_API_URL}/blueprints/{blueprint}/entities?upsert=true&merge=true&create_missing_related_entities=true", json=body, headers=headers)
 
+    if not response.ok:
+        print(f"Error creating job, status: {response.status_code}, response: {response.text}")
+
     return response
 
 
