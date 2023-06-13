@@ -152,17 +152,17 @@ def process_data_from_all_groups_from_gitlab():
         else:
             configured_groups = list(group_to_projects.keys())
 
-        print(f"Found groups: {[g['name'] for g in all_groups]}")
+        print(f"Found groups: {[g['full_path'] for g in all_groups]}")
         print(f"Configured groups: {configured_groups}")
 
-        filtered_groups = [group for group in all_groups if group['name'] in configured_groups]
+        filtered_groups = [group for group in all_groups if group['full_path'] in configured_groups]
         print(f"Matching groups: {filtered_groups}")
         for group in filtered_groups:
             # Create webhook for root groups
             if SKIP_WEBHOOK_CREATION != 'true' and group['id'] in root_groups_ids:
                 create_webhook(group['id'])
 
-            get_all_projects_from_gitlab(group['id'], group['name'])
+            get_all_projects_from_gitlab(group['id'], group['full_path'])
 
     except Exception as e:
         print(f"Failed to process data from GitLab. Error: {e}")
