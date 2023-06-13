@@ -152,7 +152,7 @@ def process_data_from_all_groups_from_gitlab():
         else:
             configured_groups = list(group_to_projects.keys())
 
-        print(f"Found groups: {all_groups}")
+        print(f"Found groups: {[g['name'] for g in all_groups]}")
         print(f"Configured groups: {configured_groups}")
 
         filtered_groups = [group for group in all_groups if group['name'] in configured_groups]
