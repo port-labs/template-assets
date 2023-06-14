@@ -225,7 +225,7 @@
               "title": ".Domain",
               "blueprint": "eip",
               "properties": {
-                "arn": ".",
+                "arn": ".Arn",
                 "instance_id": ".InstanceId"
               },
               "relations": {
