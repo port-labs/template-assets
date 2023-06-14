@@ -222,7 +222,7 @@
           "mappings": [
             {
               "identifier": ".InstanceId | gsub(\"|\"; \"-\") // \"unknown\"",
-              "title": ".TransferAddress.PublicIp",
+              "title": ".TransferAddress",
               "blueprint": "eip",
               "properties": {
                 "arn": ".Arn",
