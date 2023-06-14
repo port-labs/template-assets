@@ -222,7 +222,7 @@
           "mappings": [
             {
               "identifier": ".InstanceId",
-              "title": ".Domain",
+              "title": ".TransferAddress.PublicIp",
               "blueprint": "eip",
               "properties": {
                 "arn": ".Arn",
