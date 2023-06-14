@@ -221,7 +221,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".InstanceId // .InstanceId | gsub(\"\\|\"; \"-\")",
+              "identifier": ".InstanceId // .InstanceId | gsub(\"|\"; \"-\")",
               "title": ".TransferAddress.PublicIp",
               "blueprint": "eip",
               "properties": {
