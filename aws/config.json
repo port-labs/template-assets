@@ -221,11 +221,12 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".InstanceId | split(\"|\")[0]",
+              "identifier": ".Domain",
               "title": ".Domain",
               "blueprint": "eip",
               "properties": {
-                "arn": "."
+                "arn": ".",
+                "instance_id": ".InstanceId | split(\"|\")[0]"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
