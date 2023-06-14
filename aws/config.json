@@ -221,7 +221,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".InstanceId",
+              "identifier": ".InstanceId | split(\"|\")[1]",
               "title": ".Domain",
               "blueprint": "eip",
               "properties": {
