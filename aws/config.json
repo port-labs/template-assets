@@ -221,8 +221,8 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".TransferAddress",
-              "title": ".InstanceId | gsub(\"|\"; \"-\") // \"unknown\"",
+              "identifier": ".InstanceId // .InstanceId | gsub(\"|\"; \"-\")",
+              "title": ".TransferAddress",
               "blueprint": "eip",
               "properties": {
                 "arn": ".Arn",
