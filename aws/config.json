@@ -221,7 +221,6 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".Domain",
               "title": ".Domain",
               "blueprint": "eip",
               "properties": {
