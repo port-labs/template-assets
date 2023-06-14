@@ -226,7 +226,8 @@
               "blueprint": "eip",
               "properties": {
                 "arn": ".Arn",
-                "instance_id": ".InstanceId"
+                "instance_id": ".InstanceId",
+                "id": ".InstanceId"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
