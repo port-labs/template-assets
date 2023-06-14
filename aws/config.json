@@ -221,13 +221,12 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".InstanceId | gsub(\"|\"; \"-\") // \"unknown\"",
-              "title": ".TransferAddress",
+              "identifier": ".TransferAddress",
+              "title": ".InstanceId | gsub(\"|\"; \"-\") // \"unknown\"",
               "blueprint": "eip",
               "properties": {
                 "arn": ".Arn",
-                "instance_id": ".InstanceId",
-                "id": ".InstanceId"
+                "instance_id": ".InstanceId"
               },
               "relations": {
                 "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
