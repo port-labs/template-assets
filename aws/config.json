@@ -221,7 +221,7 @@
         "entity": {
           "mappings": [
             {
-              "identifier": "if .InstanceId | select(. != null) then (.InstanceId | split(\"|\"))[1] else \"unknown\" end",
+              "identifier": "try (.InstanceId | split(\"|\")[1]) catch try (.InstanceId) catch \"unknown\"",
               "title": ".TransferAddress.PublicIp",
               "blueprint": "eip",
               "properties": {
