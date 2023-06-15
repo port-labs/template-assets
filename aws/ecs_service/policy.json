@@ -1,5 +1,0 @@
-[
-  "ecs:DescribeServices",
-  "ecs:ListClusters",
-  "ecs:ListServices"
-]

@@ -1,5 +1,0 @@
-[
-  "lambda:ListFunctions",
-  "lambda:GetFunction",
-  "lambda:GetFunctionCodeSigningConfig"
-]
