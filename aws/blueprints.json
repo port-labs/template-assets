@@ -1,0 +1,552 @@
+[{
+  "identifier": "region",
+  "description": "",
+  "title": "Region",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "link": {
+        "type": "string",
+        "title": "Link",
+        "format": "url"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {}
+}, {
+  "identifier": "dynamodb_table",
+  "description": "",
+  "title": "DynamoDB Table",
+  "icon": "SQL",
+  "schema": {
+    "properties": {
+      "arn": {
+        "type": "string",
+        "title": "ARN"
+      },
+      "attributeDefinitions": {
+        "type": "array",
+        "title": "Attribute Definitions"
+      },
+      "billingMode": {
+        "type": "string",
+        "title": "Billing Mode",
+        "enum": [
+          "PAY_PER_REQUEST",
+          "PROVISIONED"
+        ]
+      },
+      "deletionProtectionEnabled": {
+        "type": "boolean",
+        "title": "Deletion Protection Enabled"
+      },
+      "keySchema": {
+        "type": "array",
+        "title": "Key Schema"
+      },
+      "link": {
+        "title": "Link",
+        "type": "string",
+        "format": "url"
+      },
+      "pointInTimeRecoveryEnabled": {
+        "type": "boolean",
+        "title": "Point In Time Recovery Enabled"
+      },
+      "readCapacityUnits": {
+        "type": "number",
+        "title": "Read Capacity Units"
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags"
+      },
+      "ttlAttributeName": {
+        "type": "string",
+        "title": "TTL Attribute Name"
+      },
+      "ttlEnabled": {
+        "type": "boolean",
+        "title": "TTL Enabled"
+      },
+      "writeCapacityUnits": {
+        "type": "number",
+        "title": "Write Capacity Units"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "relations": {
+    "region": {
+      "title": "Region",
+      "target": "region",
+      "required": false,
+      "many": false
+    }
+  }
+},
+  {
+    "identifier": "ecs_service",
+    "description": "",
+    "title": "ECS Service",
+    "icon": "Service",
+    "schema": {
+      "properties": {
+        "arn": {
+          "type": "string",
+          "title": "ARN"
+        },
+        "cluster": {
+          "type": "string",
+          "title": "Cluster"
+        },
+        "desiredCount": {
+          "type": "number",
+          "title": "Desired Count"
+        },
+        "iamRole": {
+          "type": "string",
+          "title": "IAM Role",
+          "icon": "Unlock",
+          "format": "url"
+        },
+        "launchType": {
+          "type": "string",
+          "title": "Launch Type",
+          "enum": [
+            "EC2",
+            "FARGATE",
+            "EXTERNAL"
+          ]
+        },
+        "link": {
+          "type": "string",
+          "title": "Link",
+          "format": "url"
+        },
+        "loadBalancers": {
+          "type": "array",
+          "title": "Load Balancers"
+        },
+        "schedulingStrategy": {
+          "type": "string",
+          "title": "Scheduling Strategy",
+          "enum": [
+            "REPLICA",
+            "DAEMON"
+          ]
+        },
+        "securityGroups": {
+          "type": "array",
+          "title": "Security Groups"
+        },
+        "subnets": {
+          "type": "array",
+          "title": "Subnets"
+        },
+        "taskDefinition": {
+          "type": "string",
+          "title": "Task Definition"
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "region": {
+        "title": "Region",
+        "target": "region",
+        "required": false,
+        "many": false
+      }
+    }
+  },
+  {
+    "identifier": "lambda",
+    "description": "",
+    "title": "Lambda",
+    "icon": "Lambda",
+    "schema": {
+      "properties": {
+        "architectures": {
+          "type": "array",
+          "title": "Architectures"
+        },
+        "arn": {
+          "type": "string",
+          "title": "ARN"
+        },
+        "description": {
+          "type": "string",
+          "title": "Description"
+        },
+        "environment": {
+          "type": "object",
+          "title": "Environment"
+        },
+        "ephemeralStorageSize": {
+          "type": "number",
+          "title": "Ephemeral Storage Size"
+        },
+        "iamRole": {
+          "type": "string",
+          "title": "IAM Role",
+          "icon": "Unlock",
+          "format": "url"
+        },
+        "layers": {
+          "type": "array",
+          "title": "Layers"
+        },
+        "link": {
+          "title": "Link",
+          "type": "string",
+          "format": "url"
+        },
+        "memorySize": {
+          "type": "number",
+          "title": "Memory Size"
+        },
+        "packageType": {
+          "type": "string",
+          "title": "Package Type",
+          "enum": [
+            "Image",
+            "Zip"
+          ]
+        },
+        "runtime": {
+          "type": "string",
+          "title": "Runtime"
+        },
+        "tags": {
+          "type": "array",
+          "title": "Tags"
+        },
+        "timeout": {
+          "type": "number",
+          "title": "Timeout"
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "region": {
+        "title": "Region",
+        "target": "region",
+        "required": false,
+        "many": false
+      }
+    }
+  },
+  {
+    "identifier": "rds_db_instance",
+    "description": "",
+    "title": "RDS DB Instance",
+    "icon": "SQL",
+    "schema": {
+      "properties": {
+        "allocatedStorage": {
+          "type": "string",
+          "title": "Allocated Storage"
+        },
+        "arn": {
+          "type": "string",
+          "title": "ARN"
+        },
+        "autoMinorVersionUpgrade": {
+          "type": "boolean",
+          "title": "Auto Minor Version Upgrade"
+        },
+        "availabilityZone": {
+          "type": "string",
+          "title": "Availability Zone"
+        },
+        "backupRetentionPeriod": {
+          "type": "number",
+          "title": "Backup Retention Period"
+        },
+        "certificateCA": {
+          "type": "string",
+          "title": "Certificate CA"
+        },
+        "certificateValidTill": {
+          "type": "string",
+          "title": "Certificate Valid Till",
+          "format": "date-time"
+        },
+        "dbInstanceClass": {
+          "type": "string",
+          "title": "DB Instance Class"
+        },
+        "dbParameterGroup": {
+          "type": "string",
+          "title": "DB Parameter Group"
+        },
+        "dbSubnetGroup": {
+          "type": "string",
+          "title": "DB Subnet Group"
+        },
+        "deletionProtection": {
+          "type": "boolean",
+          "title": "Deletion Protection"
+        },
+        "enablePerformanceInsights": {
+          "type": "boolean",
+          "title": "Enable Performance Insights"
+        },
+        "endpoint": {
+          "type": "object",
+          "title": "Endpoint"
+        },
+        "engine": {
+          "type": "string",
+          "title": "Engine"
+        },
+        "engineVersion": {
+          "type": "string",
+          "title": "Engine Version"
+        },
+        "link": {
+          "type": "string",
+          "title": "Link",
+          "format": "url"
+        },
+        "masterUsername": {
+          "type": "string",
+          "title": "Master Username"
+        },
+        "maxAllocatedStorage": {
+          "type": "number",
+          "title": "Max Allocated Storage"
+        },
+        "monitoringInterval": {
+          "type": "number",
+          "title": "Monitoring Interval",
+          "enum": [
+            0,
+            1,
+            5,
+            10,
+            15,
+            30,
+            60
+          ]
+        },
+        "multiAZ": {
+          "type": "boolean",
+          "title": "Multi AZ"
+        },
+        "optionGroup": {
+          "type": "string",
+          "title": "Option Group"
+        },
+        "preferredBackupWindow": {
+          "type": "string",
+          "title": "Preferred Backup Window"
+        },
+        "preferredMaintenanceWindow": {
+          "type": "string",
+          "title": "Preferred Maintenance Window"
+        },
+        "publiclyAccessible": {
+          "type": "boolean",
+          "title": "Publicly Accessible"
+        },
+        "storageEncrypted": {
+          "type": "boolean",
+          "title": "Storage Encrypted"
+        },
+        "storageType": {
+          "type": "string",
+          "title": "Storage Type",
+          "enum": [
+            "gp2",
+            "gp3",
+            "io1",
+            "standard",
+            "aurora"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "title": "Tags"
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "region": {
+        "title": "Region",
+        "target": "region",
+        "required": false,
+        "many": false
+      }
+    }
+  },
+  {
+    "identifier": "s3_bucket",
+    "description": "",
+    "title": "S3 Bucket",
+    "icon": "Bucket",
+    "schema": {
+      "properties": {
+        "arn": {
+          "type": "string",
+          "title": "ARN"
+        },
+        "encryption": {
+          "type": "array",
+          "title": "Encryption"
+        },
+        "lifecycleRules": {
+          "type": "array",
+          "title": "Lifecycle Rules"
+        },
+        "link": {
+          "type": "string",
+          "title": "Link",
+          "format": "url"
+        },
+        "publicAccess": {
+          "type": "object",
+          "title": "Public Access"
+        },
+        "regionalDomainName": {
+          "type": "string",
+          "title": "Regional Domain Name"
+        },
+        "tags": {
+          "type": "array",
+          "title": "Tags"
+        },
+        "versioningStatus": {
+          "type": "string",
+          "title": "Versioning Status",
+          "enum": [
+            "Enabled",
+            "Suspended"
+          ]
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {}
+  },  {
+    "identifier": "sqs",
+    "description": "This blueprint represents an AWS SQS service in our software catalog",
+    "title": "SQS",
+    "icon": "AWS",
+    "schema": {
+      "properties": {
+        "link": {
+          "type": "string",
+          "format": "url",
+          "title": "Link"
+        },
+        "fifoQueue": {
+          "type": "boolean",
+          "title": "Fifo Queue"
+        },
+        "visibilityTimeout": {
+          "type": "number",
+          "title": "Visibility Timeout"
+        },
+        "messageRetentionPeriod": {
+          "type": "number",
+          "title": "Message Retention Period"
+        },
+        "maximumMessageSize": {
+          "type": "number",
+          "title": "Maximum Message Size"
+        },
+        "receiveMessageWaitTimeSeconds": {
+          "type": "number",
+          "title": "Receive Message Wait Time Seconds"
+        },
+        "delaySeconds": {
+          "type": "number",
+          "title": "Delay Seconds"
+        },
+        "tags": {
+          "type": "array",
+          "title": "Tags"
+        },
+        "arn": {
+          "type": "string",
+          "title": "ARN"
+        }
+      },
+      "required": []
+    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {
+      "region": {
+        "title": "Region",
+        "target": "region",
+        "required": false,
+        "many": false
+      }
+    }
+  }, {
+      "identifier": "sns",
+      "description": "",
+      "title": "SNS Topic",
+      "icon": "SNS",
+      "schema": {
+        "properties": {
+          "arn": {
+            "type": "string",
+            "title": "ARN"
+          },
+          "fifoTopic": {
+            "type": "boolean",
+            "title": "Fifo Topic"
+          },
+          "link": {
+            "title": "Link",
+            "format": "url",
+            "type": "string"
+          },
+          "subscriptions": {
+            "type": "array",
+            "title": "Subscriptions"
+          },
+          "tags": {
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {},
+      "calculationProperties": {},
+      "relations": {
+        "region": {
+          "title": "Region",
+          "target": "region",
+          "required": false,
+          "many": false
+        },
+        "sqs": {
+          "title": "SQS",
+          "target": "sqs",
+          "required": false,
+          "many": true
+        }
+          }
+      }
+]

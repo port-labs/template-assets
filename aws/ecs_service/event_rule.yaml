@@ -1,0 +1,37 @@
+EcsServiceEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      detail-type:
+        - AWS API Call via CloudTrail
+      source:
+        - aws.ecs
+      detail:
+        eventSource:
+          - ecs.amazonaws.com
+        eventName:
+          - prefix: CreateService
+          - prefix: UpdateService
+          - prefix: DeleteService
+    Name: port-aws-exporter-sync-ecs-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            clusterArn: $.detail.responseElements.service.clusterArn
+            eventName: $.detail.eventName
+            serviceArn: $.detail.responseElements.service.serviceArn
+            serviceName: $.detail.responseElements.service.serviceName
+          InputTemplate: >-
+            {
+              "resource_type": "AWS::ECS::Service",
+              "region": "\"<awsRegion>\"",
+              "identifier": "if \"<eventName>\" | startswith(\"Delete\") then \"<serviceName>\" else \"<serviceArn>|<clusterArn>\" end",
+              "action": "if \"<eventName>\" | startswith(\"Delete\") then \"delete\" else \"upsert\" end"
+            }

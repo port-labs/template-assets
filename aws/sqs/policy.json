@@ -1,0 +1,5 @@
+[
+  "sqs:GetQueueAttributes",
+  "sqs:ListQueueTags",
+  "sqs:ListQueues"
+]

@@ -1,0 +1,28 @@
+{
+  "kind": "AWS::DynamoDB::Table",
+  "port": {
+    "entity": {
+      "mappings": [
+        {
+          "identifier": ".TableName",
+          "title": ".TableName",
+          "blueprint": "dynamodb_table",
+          "properties": {
+            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+            "writeCapacityUnits": ".ProvisionedThroughput.WriteCapacityUnits",
+            "readCapacityUnits": ".ProvisionedThroughput.ReadCapacityUnits",
+            "deletionProtectionEnabled": ".DeletionProtectionEnabled",
+            "pointInTimeRecoveryEnabled": ".PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled",
+            "ttlEnabled": ".TimeToLiveSpecification.Enabled",
+            "ttlAttributeName": ".TimeToLiveSpecification.AttributeName",
+            "billingMode": ".BillingMode",
+            "attributeDefinitions": ".AttributeDefinitions",
+            "keySchema": ".KeySchema",
+            "tags": ".Tags",
+            "arn": ".Arn"
+          }
+        }
+      ]
+    }
+  }
+}
