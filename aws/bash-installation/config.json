@@ -1,199 +1,99 @@
 {
   "resources": [
     {
-  "kind": "AWS::ECS::Service",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".ServiceName",
-          "title": ".ServiceName",
-          "blueprint": "ecs_service",
-          "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
-            "desiredCount": ".DesiredCount",
-            "launchType": ".LaunchType",
-            "cluster": ".Cluster | split(\"/\")[-1]",
-            "schedulingStrategy": ".SchedulingStrategy",
-            "loadBalancers": ".LoadBalancers",
-            "securityGroups": ".NetworkConfiguration.AwsvpcConfiguration.SecurityGroups",
-            "subnets": ".NetworkConfiguration.AwsvpcConfiguration.Subnets",
-            "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
-            "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
-            "arn": ".ServiceArn"
-          }
-        }
-      ]
-    }
-  }
-},{
-  "kind": "AWS::Lambda::Function",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".FunctionName",
-          "title": ".FunctionName",
-          "blueprint": "lambda",
-          "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
-            "description": ".Description",
-            "memorySize": ".MemorySize",
-            "ephemeralStorageSize": ".EphemeralStorage.Size",
-            "timeout": ".Timeout",
-            "runtime": ".Runtime",
-            "packageType": ".PackageType",
-            "environment": ".Environment",
-            "architectures": ".Architectures",
-            "layers": ".Layers",
-            "tags": ".Tags",
-            "iamRole": "\"https://console.aws.amazon.com/go/view?arn=\" + .Role",
-            "arn": ".Arn"
-          }
-        }
-      ]
-    }
-  }
-},    {
-      "kind": "AWS::SNS::Topic",
+      "kind": "AWS::Lambda::Function",
       "port": {
         "entity": {
           "mappings": [
             {
-              "identifier": ".TopicName",
-              "title": ".TopicName",
-              "blueprint": "sns",
+              "identifier": ".FunctionName",
+              "title": ".FunctionName",
+              "blueprint": "lambda",
               "properties": {
-                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .TopicArn",
-                "fifoTopic": ".FifoTopic // false",
-                "subscriptions": ".Subscription",
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+                "description": ".Description",
+                "memorySize": ".MemorySize",
+                "ephemeralStorageSize": ".EphemeralStorage.Size",
+                "timeout": ".Timeout",
+                "runtime": ".Runtime",
+                "packageType": ".PackageType",
+                "environment": ".Environment",
+                "architectures": ".Architectures",
+                "layers": ".Layers",
                 "tags": ".Tags",
-                "arn": ".TopicArn"
+                "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".Arn"
               },
               "relations": {
-                "sqs": ".Subscription // [] | map(select(.Protocol == \"sqs\") | .Endpoint | split(\":\")[-1])"
+                "region": ".Arn | split(\":\")[3]"
               }
             }
           ]
         }
       }
-    },{
-  "kind": "AWS::SQS::Queue",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".QueueName",
-          "title": ".QueueName",
-          "blueprint": "sqs",
-          "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
-            "fifoQueue": ".FifoQueue // false",
-            "visibilityTimeout": ".VisibilityTimeout",
-            "messageRetentionPeriod": ".MessageRetentionPeriod",
-            "maximumMessageSize": ".MaximumMessageSize",
-            "receiveMessageWaitTimeSeconds": ".ReceiveMessageWaitTimeSeconds",
-            "delaySeconds": ".DelaySeconds",
-            "tags": ".Tags",
-            "arn": ".Arn"
-          }
+    },
+    {
+      "kind": "AWS::AppRunner::Service",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceId",
+              "title": ".ServiceName",
+              "blueprint": "apprunner",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
+                "status": ".Status",
+                "memory": ".InstanceConfiguration.Memory",
+                "cpu": ".InstanceConfiguration.Cpu",
+                "egressType": ".NetworkConfiguration.EgressConfiguration.EgressType",
+                "isPubliclyAccessible": ".NetworkConfiguration.IngressConfiguration.IsPubliclyAccessible",
+                "observabilityEnabled": ".ObservabilityConfiguration.ObservabilityEnabled",
+                "autoDeploymentsEnabled": ".SourceConfiguration.AutoDeploymentsEnabled",
+                "healthCheckConfiguration": ".HealthCheckConfiguration",
+                "imageConfiguration": ".SourceConfiguration.ImageRepository.ImageConfiguration",
+                "imageIdentifier": ".SourceConfiguration.ImageRepository.ImageIdentifier",
+                "serviceUrl": "\"https://\" + .ServiceUrl",
+                "iamRole": ".InstanceConfiguration.InstanceRoleArn | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".ServiceArn"
+              },
+              "relations": {
+                "region": ".ServiceArn | split(\":\")[3]"
+              }
+            }
+          ]
         }
-      ]
-    }
-  }
-}
-,{
-  "kind": "AWS::S3::Bucket",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".BucketName",
-          "title": ".BucketName",
-          "blueprint": "s3_bucket",
-          "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
-            "regionalDomainName": ".RegionalDomainName",
-            "versioningStatus": ".VersioningConfiguration.Status",
-            "encryption": ".BucketEncryption.ServerSideEncryptionConfiguration",
-            "lifecycleRules": ".LifecycleConfiguration.Rules",
-            "publicAccess": ".PublicAccessBlockConfiguration",
-            "tags": ".Tags",
-            "arn": ".Arn"
-          }
+      }
+    },
+    {
+      "kind": "AWS::ECS::Service",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceName",
+              "title": ".ServiceName",
+              "blueprint": "ecs",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
+                "desiredCount": ".DesiredCount",
+                "launchType": ".LaunchType",
+                "cluster": ".Cluster | split(\"/\")[-1]",
+                "schedulingStrategy": ".SchedulingStrategy",
+                "loadBalancers": ".LoadBalancers",
+                "securityGroups": ".NetworkConfiguration.AwsvpcConfiguration.SecurityGroups",
+                "subnets": ".NetworkConfiguration.AwsvpcConfiguration.Subnets",
+                "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
+                "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".ServiceArn"
+              },
+              "relations": {
+                "region": ".ServiceArn | split(\":\")[3]"
+              }
+            }
+          ]
         }
-      ]
+      }
     }
-  }
-},{
-  "kind": "AWS::RDS::DBInstance",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".DBInstanceIdentifier",
-          "title": ".DBInstanceIdentifier",
-          "blueprint": "rds_db_instance",
-          "properties": {
-            "link": "if .Engine == \"docdb\" then \"https://console.aws.amazon.com/docdb/home?region=\" + (.DBInstanceIdentifier | split(\":\")[3])  + \"#instance-details/\" + .DBInstanceIdentifier else \"https://console.aws.amazon.com/go/view?arn=\" + .DBInstanceArn end",
-            "engine": ".Engine",
-            "engineVersion": ".EngineVersion",
-            "storageType": ".StorageType",
-            "dbInstanceClass": ".DBInstanceClass",
-            "availabilityZone": ".AvailabilityZone",
-            "dbParameterGroup": ".DBParameterGroupName",
-            "optionGroup": ".OptionGroupName",
-            "dbSubnetGroup": ".DBSubnetGroupName",
-            "masterUsername": ".MasterUsername",
-            "allocatedStorage": ".AllocatedStorage",
-            "maxAllocatedStorage": ".MaxAllocatedStorage",
-            "backupRetentionPeriod": ".BackupRetentionPeriod",
-            "monitoringInterval": ".MonitoringInterval",
-            "multiAZ": ".MultiAZ",
-            "storageEncrypted": ".StorageEncrypted",
-            "enablePerformanceInsights": ".EnablePerformanceInsights",
-            "autoMinorVersionUpgrade": ".AutoMinorVersionUpgrade",
-            "deletionProtection": ".DeletionProtection",
-            "publiclyAccessible": ".PubliclyAccessible",
-            "certificateValidTill": ".CertificateDetails.ValidTill",
-            "certificateCA": ".CertificateDetails.CAIdentifier",
-            "preferredBackupWindow": ".PreferredBackupWindow",
-            "preferredMaintenanceWindow": ".PreferredMaintenanceWindow",
-            "endpoint": ".Endpoint",
-            "tags": ".Tags",
-            "arn": ".DBInstanceArn"
-          }
-        }
-      ]
-    }
-  }
-},{
-  "kind": "AWS::DynamoDB::Table",
-  "port": {
-    "entity": {
-      "mappings": [
-        {
-          "identifier": ".TableName",
-          "title": ".TableName",
-          "blueprint": "dynamodb_table",
-          "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
-            "writeCapacityUnits": ".ProvisionedThroughput.WriteCapacityUnits",
-            "readCapacityUnits": ".ProvisionedThroughput.ReadCapacityUnits",
-            "deletionProtectionEnabled": ".DeletionProtectionEnabled",
-            "pointInTimeRecoveryEnabled": ".PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled",
-            "ttlEnabled": ".TimeToLiveSpecification.Enabled",
-            "ttlAttributeName": ".TimeToLiveSpecification.AttributeName",
-            "billingMode": ".BillingMode",
-            "attributeDefinitions": ".AttributeDefinitions",
-            "keySchema": ".KeySchema",
-            "tags": ".Tags",
-            "arn": ".Arn"
-          }
-        }
-      ]
-    }
-  }
-}
   ]
 }
