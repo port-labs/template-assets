@@ -364,7 +364,7 @@
           "description": "The ReplicaSet managing the pod (if it exists)",
           "target": "replicaSet",
           "required": false,
-          "many": true
+          "many": false
         },
         "Node": {
           "title": "Node",
