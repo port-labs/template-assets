@@ -78,7 +78,8 @@ resource "local_file" "event_rules" {
 
 # Deploy the AWS exporter application
 module "port_aws_exporter" {
-  source = "git::https://github.com/port-labs/terraform-aws-port-exporter.git"
+  source  = "port-labs/port-exporter/aws"
+  version = "0.1.0"
   config_json   = local.combined_config
   lambda_policy = local.combined_policies
   bucket_name = local.bucket_name
