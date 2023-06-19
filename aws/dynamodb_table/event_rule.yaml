@@ -1,0 +1,40 @@
+DynamoDbEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.dynamodb
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - dynamodb.amazonaws.com
+        eventName:
+          - prefix: CreateTable
+          - prefix: UpdateTable
+          - prefix: UpdateTimeToLive
+          - prefix: UpdateContinuousBackups
+          - prefix: TagResource
+          - prefix: UntagResource
+          - prefix: DeleteTable
+    Name: port-aws-exporter-sync-dynamodb-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestResourceArn: $.detail.requestParameters.resourceArn
+            requestTableName: $.detail.requestParameters.tableName
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::DynamoDB::Table",
+              "region": "\"<awsRegion>\"",
+              "identifier": "if \"<requestTableName>\" != \"\" then \"<requestTableName>\" else \"<requestResourceArn>\" | split(\"/\")[-1] end",
+              "action": "if \"<eventName>\" | test(\"DeleteTable[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }

@@ -1,0 +1,24 @@
+{
+  "kind": "AWS::S3::Bucket",
+  "port": {
+    "entity": {
+      "mappings": [
+        {
+          "identifier": ".BucketName",
+          "title": ".BucketName",
+          "blueprint": "s3_bucket",
+          "properties": {
+            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+            "regionalDomainName": ".RegionalDomainName",
+            "versioningStatus": ".VersioningConfiguration.Status",
+            "encryption": ".BucketEncryption.ServerSideEncryptionConfiguration",
+            "lifecycleRules": ".LifecycleConfiguration.Rules",
+            "publicAccess": ".PublicAccessBlockConfiguration",
+            "tags": ".Tags",
+            "arn": ".Arn"
+          }
+        }
+      ]
+    }
+  }
+}
