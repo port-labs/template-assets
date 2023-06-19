@@ -148,13 +148,13 @@ def process_data_from_all_groups_from_gitlab():
         root_groups_ids = [group['id'] for group in root_groups]
 
         print(f"Found groups: {[g['full_path'] for g in all_groups]}")
-        if (group_to_projects == {}):
-            configured_groups = [group['full_path'] for group in all_groups]
+        if group_to_projects == {}:
+            configured_groups = all_groups
         else:
             print(f"Configured groups: {group_to_projects.keys()}")
             configured_groups = [group for group in all_groups if group['full_path'] in group_to_projects.keys()]
 
-        print(f"Matching groups: {configured_groups}")
+        print(f"Matching groups: {[group['full_path'] for group in configured_groups]}")
 
         # Creating webhooks and getting projects for each group
         for group in configured_groups:

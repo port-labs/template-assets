@@ -10,7 +10,7 @@ terraform {
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
-## Create the AWS blueprints
+# Create the AWS blueprints
 module "port_blueprints_creator" {
   source = "./aws_blueprints_template"
   resources = var.resources
@@ -73,23 +73,23 @@ resource "local_file" "event_rules" {
   content  = local.combined_event_rules
   filename = "event_rules.yaml"
 }
-#
-## Deploy the AWS exporter application
-#module "port_aws_exporter" {
-#  source = "git::https://github.com/port-labs/terraform-aws-port-exporter.git"
-#  config_json   = local.combined_config
-#  lambda_policy = local.combined_policies
-#  bucket_name = local.bucket_name
-#}
-#
-## Deploy the event rules for triggering the lambda
-#resource "aws_cloudformation_stack" "port-aws-exporter-event-rules" {
-#  name = "port-aws-exporter-event-rules"
-#
-#  parameters = {
-#    PortAWSExporterStackName = "serverlessrepo-port-aws-exporter"
-#  }
-#
-#  template_body = local.combined_event_rules
-#  depends_on = [module.port_aws_exporter]
-#}
+
+# Deploy the AWS exporter application
+module "port_aws_exporter" {
+  source  = "port-labs/port-exporter/aws"
+  version = "0.1.0"
+  config_json   = local.combined_config
+  lambda_policy = local.combined_policies
+  bucket_name = local.bucket_name
+}
+
+resource "aws_cloudformation_stack" "port-aws-exporter-event-rules" {
+  name = "port-aws-exporter-event-rules"
+
+  parameters = {
+    PortAWSExporterStackName = "serverlessrepo-port-aws-exporter"
+  }
+
+  template_body = local.combined_event_rules
+  depends_on = [module.port_aws_exporter]
+}
