@@ -62,12 +62,3 @@ resource "port-labs_blueprint" "s3_bucket" {
     title      = "ARN"
   }
 }
-
-output "exporter_config" {
-  value = jsondecode(file("${path.module}/config.json"))
-}
-
-output "iam_policy" {
-  value = jsondecode(file("${path.module}/policy.json"))
-}
-

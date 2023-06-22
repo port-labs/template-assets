@@ -91,12 +91,3 @@ resource "port-labs_blueprint" "ecs_service" {
        required   = false
      }
 }
-
-output "exporter_config" {
-  value = jsondecode(file("${path.module}/config.json"))
-}
-
-output "iam_policy" {
-  value = jsondecode(file("${path.module}/policy.json"))
-}
-

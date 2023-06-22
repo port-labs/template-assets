@@ -7,8 +7,14 @@ terraform {
   }
 }
 
-data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
+
+# To deploy the exporter on a region different then the AWS cli region, use this block
+provider "aws" {
+  region = "us-east-1"
+}
+
+data "aws_region" "current" {}
 
 # Create the AWS blueprints
 module "port_blueprints_creator" {
@@ -17,6 +23,8 @@ module "port_blueprints_creator" {
 }
 
 locals {
+  bucket_name = "port-aws-exporter-${data.aws_region.current.name}-${data.aws_caller_identity.current.account_id}"
+
   # Generates the config.json
   combined_config = <<EOF
  {
@@ -55,8 +63,6 @@ ${join("\n", [for resource in var.resources : "  ${indent(2, file("./${resource}
  ]
 }
 EOF
-
-  bucket_name = "port-aws-exporter-${data.aws_region.current.name}-${data.aws_caller_identity.current.account_id}"
 }
 
 resource "local_file" "configuration" {
@@ -76,8 +82,7 @@ resource "local_file" "event_rules" {
 
 # Deploy the AWS exporter application
 module "port_aws_exporter" {
-  source  = "port-labs/port-exporter/aws"
-  version = "0.1.0"
+  source  = "../../terraform-aws-port-exporter"
   config_json   = local.combined_config
   lambda_policy = local.combined_policies
   bucket_name = local.bucket_name
@@ -92,4 +97,11 @@ resource "aws_cloudformation_stack" "port-aws-exporter-event-rules" {
 
   template_body = local.combined_event_rules
   depends_on = [module.port_aws_exporter]
+}
+
+## Invoke the exporter lambda function at the end of the deployment
+resource "aws_lambda_invocation" "first_exporter_invocation" {
+  function_name = module.port_aws_exporter.lambda_function_arn
+  count = var.invoke_function ? 1 : 0
+  input = jsonencode({})
 }

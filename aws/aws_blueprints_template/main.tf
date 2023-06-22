@@ -7,9 +7,11 @@ terraform {
   }
 }
 
+data "aws_region" "current" {}
+
 # Create Blueprints
 resource "port-labs_blueprint" "region" {
-  title      = "AWS Region"
+  title      = "Region"
   icon       = "AWS"
   identifier = "region"
 
@@ -20,6 +22,17 @@ resource "port-labs_blueprint" "region" {
     format = "url"
   }
 }
+
+resource "port-labs_entity" "current_region" {
+  identifier = data.aws_region.current.name
+  title     = data.aws_region.current.name
+  blueprint = port-labs_blueprint.region.identifier
+  properties {
+    name  = "link"
+    value = "https://${data.aws_region.current.name}.console.aws.amazon.com/"
+  }
+}
+
 
 module "port_dynamodb_table" {
   source = "../dynamodb_table"
@@ -51,14 +64,15 @@ module "port_s3_bucket" {
   depends_on = [port-labs_blueprint.region]
 }
 
-module "port_sns" {
-  source = "../sns"
-  count = contains(var.resources, "sns") ? 1 : 0
-  depends_on = [port-labs_blueprint.region]
-}
-
 module "port_sqs" {
   source = "../sqs"
   count = contains(var.resources, "sqs") ? 1 : 0
   depends_on = [port-labs_blueprint.region]
 }
+
+module "port_sns" {
+  source = "../sns"
+  count = contains(var.resources, "sns") ? 1 : 0
+  depends_on = [port-labs_blueprint.region, module.port_sqs]
+}
+

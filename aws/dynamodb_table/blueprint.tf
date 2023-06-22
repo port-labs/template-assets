@@ -94,11 +94,3 @@ resource "port-labs_blueprint" "dynamodb_table" {
      required   = false
    }
 }
-
-output "exporter_config" {
-  value = jsondecode(file("${path.module}/config.json"))
-}
-
-output "iam_policy" {
-  value = jsondecode(file("${path.module}/policy.json"))
-}

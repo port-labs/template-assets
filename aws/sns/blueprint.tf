@@ -45,19 +45,17 @@ resource "port-labs_blueprint" "sns_topic" {
   }
 
   relations {
-       target     = "region"
-       title      = "Region"
-       identifier = "region"
-       many       = false
-       required   = false
-     }
+    target     = "region"
+    title      = "Region"
+    identifier = "region"
+    many       = false
+    required   = false
+ }
+  relations {
+   target     = "sqs"
+   title      = "SQS"
+   identifier = "sqs"
+   many       = true
+   required   = false
+ }
 }
-
-output "exporter_config" {
-  value = jsondecode(file("${path.module}/config.json"))
-}
-
-output "iam_policy" {
-  value = jsondecode(file("${path.module}/policy.json"))
-}
-

@@ -10,7 +10,7 @@ terraform {
 resource "port-labs_blueprint" "sqs_queue" {
   title      = "SQS Queue"
   icon       = "AWS"
-  identifier = "aws_sqs_queue"
+  identifier = "sqs"
 
   properties {
     identifier = "link"
@@ -74,12 +74,4 @@ resource "port-labs_blueprint" "sqs_queue" {
        many       = false
        required   = false
      }
-}
-
-output "exporter_config" {
-  value = jsondecode(file("${path.module}/config.json"))
-}
-
-output "iam_policy" {
-  value = jsondecode(file("${path.module}/policy.json"))
 }
