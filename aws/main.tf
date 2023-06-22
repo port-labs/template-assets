@@ -10,9 +10,9 @@ terraform {
 data "aws_caller_identity" "current" {}
 
 # To deploy the exporter on a region different then the AWS cli region, use this block
-provider "aws" {
-  region = "us-east-1"
-}
+# provider "aws" {
+# region = "us-east-1"
+# }
 
 data "aws_region" "current" {}
 
