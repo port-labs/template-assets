@@ -1,0 +1,4 @@
+[
+    "ec2:DescribeInstances",
+    "ec2:DescribeInstanceStatus"
+]

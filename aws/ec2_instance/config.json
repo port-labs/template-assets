@@ -1,0 +1,26 @@
+{
+    "kind": "AWS::EC2::Instance",
+    "port": {
+      "entity": {
+        "mappings": [
+          {
+            "identifier": ".InstanceId",
+            "title": ".KeyName",
+            "blueprint": "ec2_instance",
+            "properties": {
+              "state": ".State.Name",
+              "type": ".InstanceType",
+              "vpcId": ".VpcId",
+              "publicIP": ".PublicIpAddress",
+              "privateIP": ".PrivateIpAddress",
+              "availabilityZone": ".Placement.AvailabilityZone",
+              "group": ".Placement.GroupName",
+              "platform": ".Platform",
+              "architecture": ".Architecture",
+              "tags": ".Tags"
+            }
+          }
+        ]
+      }
+    }
+  }

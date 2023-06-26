@@ -1,0 +1,37 @@
+EC2InstanceEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.ec2
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - ec2.amazonaws.com
+        eventName:
+          - prefix: CreateInstances
+          - prefix: RunInstances
+          - prefix: StartInstances
+          - prefix: StopInstances
+          - prefix: TerminateInstances
+    Name: port-aws-exporter-sync-ec2-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestInstanceId: $.detail.requestParameters.instancesSet.items[0].instanceId
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::EC2::Instance",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestInstanceId>\"",
+              "action": "if \"<eventName>\" | test(\"TerminateInstances[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
