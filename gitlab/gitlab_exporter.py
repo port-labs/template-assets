@@ -2,6 +2,7 @@ import requests
 import json
 import sys
 import traceback
+from datetime import datetime
 
 PORT_CLIENT_ID = sys.argv[1]
 PORT_CLIENT_SECRET = sys.argv[2]
@@ -29,6 +30,22 @@ group_to_projects = {}
 
 # For entities relations
 projects_ids_to_names = {}
+_token = None
+
+
+class TokenResponse:
+    def __init__(self, access_token: str, expires_in: int):
+        self.access_token = access_token
+        self.expires_in = expires_in
+        self.created_at = datetime.now()
+
+    @property
+    def expired(self) -> bool:
+        return (
+            self.created_at.timestamp() + self.expires_in
+            < datetime.now().timestamp()
+        )
+
 
 def process_group_to_projects_config():
     if (GROUPS_TO_REPOS == '*'):
@@ -56,6 +73,9 @@ def get_port_api_token():
     Get a Port API access token
     This function uses CLIENT_ID and CLIENT_SECRET from config
     """
+    global _token
+    if _token and _token.expired:
+        return _token.access_token
 
     credentials = {'clientId': PORT_CLIENT_ID,
                    'clientSecret': PORT_CLIENT_SECRET}
@@ -64,7 +84,9 @@ def get_port_api_token():
         f"{PORT_API_URL}/auth/access_token", json=credentials)
 
     if token_response.status_code == 200:
-        return token_response.json()['accessToken']
+        payload = token_response.json()
+        _token = TokenResponse(payload['accessToken'], payload['expiresIn'])
+        return _token.access_token
     else:
         print(
             f"Failed to get access token. Status code: {token_response.status_code}, Error: {token_response.json()}")
@@ -170,13 +192,14 @@ def process_data_from_all_groups_from_gitlab():
 
 
 
-def create_entity(blueprint: str, body: json, access_token: str):
+def create_entity(blueprint: str, body: json):
     """
     Create new entity for blueprint in Port
     """
+    token = get_port_api_token()
 
     headers = {
-        'Authorization': f'Bearer {access_token}',
+        'Authorization': f'Bearer {token}',
         'User-Agent': 'gitlab-exporter',
     }
 
@@ -220,7 +243,8 @@ def request_entities_from_gitlab_using_pagination(api_url: str, headers: dict = 
                     request_more_entities = False
             else:
                 print(
-                    f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}")
+                    f"Failed to retrieve entities, Page Number: {current_page}, Status code: {response.status_code}. {len(entities_from_gitlab)} Found")
+                return entities_from_gitlab
         except Exception as e:
             print(
                 f"Failed to retrieve entities, Page Number: {current_page}, Error: {e}")
@@ -276,8 +300,7 @@ def get_all_projects_from_gitlab(group_id: str, group_name: str):
                 }
             }
 
-            response = create_entity(
-                'microservice', entity, access_token=token)
+            response = create_entity('microservice', entity)
 
             if response.status_code == 201:
                 created_projects_in_port += 1
@@ -328,8 +351,7 @@ def get_all_project_merge_requests_from_gitlab(project_id: str):
                 }
             }
 
-            response = create_entity(
-                'mergeRequest', entity, access_token=token)
+            response = create_entity('mergeRequest', entity)
 
             if response.status_code == 201:
                 created_merge_requests_in_port += 1
@@ -348,8 +370,6 @@ def get_all_project_issues_from_gitlab(project_id: str):
 
     # Creates issues in Port
     if len(issues_from_gitlab) > 0:
-        token = get_port_api_token()
-
         for issue in issues_from_gitlab:
             if projects_ids_to_names.get(issue['project_id']) is None:
                 print(
@@ -376,7 +396,7 @@ def get_all_project_issues_from_gitlab(project_id: str):
                 }
             }
 
-            response = create_entity('issue', entity, access_token=token)
+            response = create_entity('issue', entity)
 
             if response.status_code == 201:
                 created_issues_in_port += 1
@@ -411,7 +431,7 @@ def get_all_project_pipelines_from_gitlab(project_id: str):
                 }
             }
 
-            response = create_entity('pipeline', entity, access_token=token)
+            response = create_entity('pipeline', entity)
 
             if response.status_code == 201:
                 created_pipelines_in_port += 1
@@ -449,7 +469,7 @@ def get_all_project_jobs_from_gitlab(project_id: str):
                 }
             }
 
-            response = create_entity('job', entity, access_token=token)
+            response = create_entity('job', entity)
 
             if response.status_code == 201:
                 created_jobs_in_port += 1
