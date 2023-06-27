@@ -5,8 +5,9 @@
         "mappings": [
           {
             "identifier": ".InstanceId",
-            "title": ".KeyName",
+            "title": ".InstanceId",
             "blueprint": "ec2_instance",
+            "filter": ".State.Name | startswith(\"terminated\") | not",
             "properties": {
               "state": ".State.Name",
               "type": ".InstanceType",
