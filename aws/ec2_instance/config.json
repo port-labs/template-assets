@@ -14,7 +14,7 @@
               "vpcId": ".VpcId",
               "link": "\"https://console.aws.amazon.com/ec2/home?region=\" + .Placement.AvailabilityZone[:-1] + \"#InstanceDetails:instanceId=\" + .InstanceId",
               "availabilityZone": ".Placement.AvailabilityZone",
-              "platform": ".Platform",
+              "platform": ".PlatformDetails",
               "architecture": ".Architecture",
               "tags": ".Tags"
             },
