@@ -152,7 +152,6 @@
         "entity": {
           "mappings": [
             {
-              "identifier": ".RepositoryName | split(\"/\",) | join(\"-\")",
               "title": ".RepositoryName",
               "blueprint": "ecr",
               "properties": {
