@@ -13,7 +13,7 @@ EC2InstanceTagsEventRule:
         eventName:
           - prefix: DeleteTags
           - prefix: CreateTags
-    Name: port-aws-exporter-sync-ec2-trails
+    Name: port-aws-exporter-sync-ec2-tags-trails
     State: ENABLED
     Targets:
       - Id: PortAWSExporterEventsQueue

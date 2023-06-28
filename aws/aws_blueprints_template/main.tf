@@ -76,3 +76,9 @@ module "port_sns" {
   depends_on = [port-labs_blueprint.region, module.port_sqs]
 }
 
+module "port_ec2_instance" {
+  source = "../ec2_instance"
+  count = contains(var.resources, "ec2_instance") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}
+
