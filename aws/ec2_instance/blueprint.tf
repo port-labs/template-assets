@@ -34,29 +34,16 @@ resource "port-labs_blueprint" "ec2_instance" {
   }
 
   properties {
-    identifier = "publicIP"
+    identifier = "link"
     type       = "string"
-    title      = "Public IP"
-    format     = "ipv4"
-  }
-
-  properties {
-    identifier = "privateIP"
-    type       = "string"
-    title      = "Private IP"
-    format      = "ipv4"
+    title      = "Link"
+    format     = "url"
   }
 
   properties {
     identifier = "availabilityZone"
     type       = "string"
     title      = "Availability Zone"
-  }
-
-  properties {
-    identifier = "group"
-    type       = "string"
-    title      = "Group Name"
   }
 
   properties {
@@ -83,5 +70,13 @@ resource "port-labs_blueprint" "ec2_instance" {
     type       = "array"
     title      = "Tags"
   }
+  
+  relations {
+      target     = "region"
+      title      = "Region"
+      identifier = "region"
+      many       = false
+      required   = false
+    }
 
 }

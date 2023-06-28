@@ -5,20 +5,21 @@
         "mappings": [
           {
             "identifier": ".InstanceId",
-            "title": ".InstanceId",
+            "title": ".Tags[]? | select(.Key == \"Name\") | .Value",
             "blueprint": "ec2_instance",
             "filter": ".State.Name | startswith(\"terminated\") | not",
             "properties": {
               "state": ".State.Name",
               "type": ".InstanceType",
               "vpcId": ".VpcId",
-              "publicIP": ".PublicIpAddress",
-              "privateIP": ".PrivateIpAddress",
+              "link": "\"https://console.aws.amazon.com/ec2/home?region=\" + .Placement.AvailabilityZone[:-1] + \"#InstanceDetails:instanceId=\" + .InstanceId",
               "availabilityZone": ".Placement.AvailabilityZone",
-              "group": ".Placement.GroupName",
               "platform": ".Platform",
               "architecture": ".Architecture",
               "tags": ".Tags"
+            },
+            "relations":{
+              "region": ".Placement.AvailabilityZone | .[:-1]"
             }
           }
         ]

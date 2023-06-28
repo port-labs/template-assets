@@ -1,4 +1,4 @@
-EC2InstanceEventRule:
+EC2InstanceTagsEventRule:
   Type: AWS::Events::Rule
   Properties:
     EventBusName: default
@@ -11,11 +11,8 @@ EC2InstanceEventRule:
         eventSource:
           - ec2.amazonaws.com
         eventName:
-          - prefix: CreateInstances
-          - prefix: RunInstances
-          - prefix: StartInstances
-          - prefix: StopInstances
-          - prefix: TerminateInstances
+          - prefix: DeleteTags
+          - prefix: CreateTags
     Name: port-aws-exporter-sync-ec2-trails
     State: ENABLED
     Targets:
@@ -27,13 +24,13 @@ EC2InstanceEventRule:
           InputPathsMap:
             awsRegion: $.detail.awsRegion
             eventName: $.detail.eventName
-            requestInstanceId: $.detail.requestParameters.instancesSet.items[0].instanceId
+            requestInstanceId: $.detail.requestParameters.resourcesSet.items[0].resourceId
           InputTemplate: |-
             {
               "resource_type": "AWS::EC2::Instance",
               "region": "\"<awsRegion>\"",
               "identifier": "\"<requestInstanceId>\"",
-              "action": "if \"<eventName>\" | test(\"TerminateInstances[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+              "action": "\"upsert\""
             }
 EC2InstanceStateChangeEventRule:
   Type: AWS::Events::Rule
