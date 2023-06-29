@@ -1,5 +1,8 @@
 {
     "kind": "AWS::EC2::Instance",
+    "selector": {
+      "query": ".State.Name | startswith(\"terminated\") | not"
+    },
     "port": {
       "entity": {
         "mappings": [
@@ -7,7 +10,6 @@
             "identifier": ".InstanceId",
             "title": ".Tags[]? | select(.Key == \"Name\") | .Value",
             "blueprint": "ec2_instance",
-            "filter": ".State.Name | startswith(\"terminated\") | not",
             "properties": {
               "state": ".State.Name",
               "type": ".InstanceType",
