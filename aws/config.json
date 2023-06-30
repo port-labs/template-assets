@@ -159,6 +159,7 @@
                 "arn": ".Arn"
               },
               "relations": {
+                "region": ".Arn | split(\":\")[3]",
                 "app": ".RepositoryName",
                 "cloud_account": ".Arn | split(\":\")[4]"
               }
