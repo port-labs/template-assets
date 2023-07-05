@@ -82,3 +82,8 @@ module "port_ec2_instance" {
   depends_on = [port-labs_blueprint.region]
 }
 
+module "port_load_balancer" {
+  source = "../load_balancer"
+  count = contains(var.resources, "load_balancer") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}
