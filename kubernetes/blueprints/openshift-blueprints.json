@@ -361,6 +361,7 @@
     {
       "identifier": "k8sService",
       "title": "K8s Serivce",
+      "description": "This blueprint represents a k8s Service",
       "icon": "Microservice",
       "schema": {
         "properties": {
@@ -412,6 +413,7 @@
     {
       "identifier": "openshiftRoute",
       "title": "Openshift Route",
+      "description": "This blueprint represents an Openshift route",
       "icon": "EC2",
       "schema": {
         "properties": {
