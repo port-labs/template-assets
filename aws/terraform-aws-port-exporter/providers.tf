@@ -26,6 +26,6 @@ terraform {
 #   # Configuration options
 # }
 
-# provider "port-labs" {
-#   # Configuration options
-# }
+provider "port-labs" {
+  # Configuration options
+}
