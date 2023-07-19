@@ -1,0 +1,92 @@
+{
+  "resources": [
+    {
+      "kind": "AWS::ECS::Service",
+      "selector": {
+        "query": "true",
+        "aws": {
+          "regions": [
+            "us-east-1",
+            "eu-west-1"
+          ]
+        }
+      },
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceName",
+              "title": ".ServiceName",
+              "blueprint": "ecs",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
+                "desiredCount": ".DesiredCount",
+                "launchType": ".LaunchType",
+                "cluster": ".Cluster | split(\"/\")[-1]",
+                "schedulingStrategy": ".SchedulingStrategy",
+                "loadBalancers": ".LoadBalancers",
+                "securityGroups": ".NetworkConfiguration.AwsvpcConfiguration.SecurityGroups",
+                "subnets": ".NetworkConfiguration.AwsvpcConfiguration.Subnets",
+                "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
+                "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".ServiceArn"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::Lambda::Function",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".FunctionName",
+              "title": ".FunctionName",
+              "blueprint": "lambda",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+                "description": ".Description",
+                "memorySize": ".MemorySize",
+                "ephemeralStorageSize": ".EphemeralStorage.Size",
+                "timeout": ".Timeout",
+                "runtime": ".Runtime",
+                "packageType": ".PackageType",
+                "environment": ".Environment",
+                "architectures": ".Architectures",
+                "layers": ".Layers",
+                "tags": ".Tags",
+                "iamRole": "\"https://console.aws.amazon.com/go/view?arn=\" + .Role",
+                "arn": ".Arn"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::CloudFormation::Stack",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".StackName",
+              "title": ".StackName",
+              "blueprint": "cloudFormationStack",
+              "properties": {
+                "lastUpdated": ".LastUpdatedTime",
+                "resources": ".StackResources",
+                "createdAt": ".CreationTime",
+                "status": ".StackStatus",
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .StackId",
+                "template": ".TemplateBody",
+                "tags": ".Tags"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

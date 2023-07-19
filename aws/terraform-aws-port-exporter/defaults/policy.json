@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetFunction",
+        "lambda:GetFunctionCodeSigningConfig",
+        "lambda:ListFunctions",
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListRoles",
+        "apprunner:DescribeService",
+        "apprunner:ListServices",
+        "ecs:DescribeServices",
+        "ecs:DescribeServices",
+        "ecs:ListClusters",
+        "ecs:ListServices",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:ListStacks",
+        "cloudformation:GetTemplate",
+        "cloudformation:ListResources",
+        "cloudformation:GetResource"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
