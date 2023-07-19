@@ -28,6 +28,10 @@ provider "jsonschema" {
   # Configuration options
 }
 
+provider "port-labs" {
+  # Configuration options
+}
+
 data "aws_caller_identity" "current" {}
 
 # To deploy the exporter on a region different then the AWS cli region, use this block
