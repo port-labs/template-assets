@@ -15,5 +15,5 @@ terraform {
   }
 }
 
-provider "env" {
-}
+# provider "env" {
+# }
