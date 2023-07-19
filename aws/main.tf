@@ -1,11 +1,11 @@
-terraform {
-  required_providers {
-    local = {
-      source = "hashicorp/local"
-      version = "2.4.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     local = {
+#       source = "hashicorp/local"
+#       version = "2.4.0"
+#     }
+#   }
+# }
 
 data "aws_caller_identity" "current" {}
 
