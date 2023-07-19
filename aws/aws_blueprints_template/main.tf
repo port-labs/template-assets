@@ -20,7 +20,7 @@ resource "port_blueprint" "region" {
       title      = "Link"
       identifier = "link"
       type       = "string"
-      "format"     = "url"
+      format     = "url"
     }
   }
 
