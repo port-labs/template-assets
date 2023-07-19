@@ -17,9 +17,9 @@ resource "port_blueprint" "region" {
 
   properties = {
     string_props = {
-      title = "Link"
+      title      = "Link"
       identifier = "link"
-      type = "string"
+      type       = "string"
       format     = "url"
     }
   }
