@@ -1,0 +1,169 @@
+LoadBalancerCreateEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticloadbalancing
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticloadbalancing.amazonaws.com
+        eventName:
+          - prefix: CreateLoadBalancer
+    Name: port-aws-exporter-sync-elb-create-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestElbName: $.detail.requestParameters.name
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestElbName>\"",
+              "action": "if \"<eventName>\" | test(\"DeleteLoadBalancer[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
+LoadBalancerUpdateEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticloadbalancing
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticloadbalancing.amazonaws.com
+        eventName:
+          - prefix: DeleteLoadBalancer
+          - prefix: SetSecurityGroups
+          - prefix: ModifyLoadBalancerAttributes
+    Name: port-aws-exporter-sync-elb-update-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestElbArn: $.detail.requestParameters.loadBalancerArn
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestElbArn>\" | split(\"/\") | .[2]",
+              "action": "if \"<eventName>\" | test(\"DeleteLoadBalancer[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
+LoadBalancerTagsEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticloadbalancing
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticloadbalancing.amazonaws.com
+        eventName:
+          - prefix: RemoveTags
+          - prefix: AddTags
+    Name: port-aws-exporter-sync-elb-tags-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestElbArn: $.detail.requestParameters.resourceArns[0]
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestElbArn>\" | split(\"/\") | .[2]",
+              "action": "if \"<eventName>\" | test(\"DeleteLoadBalancer[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
+LoadBalancerUpsertListenersEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticloadbalancing
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticloadbalancing.amazonaws.com
+        eventName:
+          - prefix: CreateListener
+          - prefix: ModifyListener
+    Name: port-aws-exporter-sync-elb-upsert-listener-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            responseElbArn: $.detail.responseElements.listeners[0].loadBalancerArn
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<responseElbArn>\" | split(\"/\") | .[2]",
+              "action": "if \"<eventName>\" | test(\"DeleteLoadBalancer[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
+LoadBalancerDeleteListenersEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticloadbalancing
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticloadbalancing.amazonaws.com
+        eventName:
+          - prefix: DeleteListener
+    Name: port-aws-exporter-sync-elb-delete-listener-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestElbArn: $.detail.requestParameters.listenerArn
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestElbArn>\" | split(\"/\") | .[2]",
+              "action": "if \"<eventName>\" | test(\"DeleteLoadBalancer[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }

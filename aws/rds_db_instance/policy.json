@@ -6,5 +6,12 @@
   "ec2:DescribeSubnets",
   "ec2:DescribeVpcAttribute",
   "ec2:DescribeVpcs",
-  "rds:DescribeDBInstances"
+  "rds:DescribeDBInstances",
+  "rds:DescribeDBClusters",
+  "rds:DescribeDBClusterEndpoints",
+  "rds:DescribeDBClusterParameterGroups",
+  "rds:DescribeDBClusterParameters",
+  "rds:DescribeDBClusterSnapshotAttributes",
+  "rds:DescribeDBClusterSnapshots",
+  "rds:DescribeDBEngineVersions"
 ]
