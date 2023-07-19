@@ -1,11 +1,11 @@
-terraform {
-  required_providers {
-    port-labs = {
-      source  = "port-labs/port-labs"
-      version = "0.10.4"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     port-labs = {
+#       source  = "port-labs/port-labs"
+#       version = "0.10.4"
+#     }
+#   }
+# }
 
 resource "port-labs_blueprint" "dynamodb_table" {
   title      = "DynamoDB Table"
