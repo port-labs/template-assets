@@ -7,6 +7,27 @@
 #   }
 # }
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.1.0"
+    }
+    env = {
+      source  = "tchupp/env"
+      version = "0.0.2"
+    }
+    jsonschema = {
+      source  = "bpedman/jsonschema"
+      version = "0.2.1"
+    }
+  }
+}
+
+provider "jsonschema" {
+  # Configuration options
+}
+
 data "aws_caller_identity" "current" {}
 
 # To deploy the exporter on a region different then the AWS cli region, use this block
@@ -87,6 +108,10 @@ module "port_aws_exporter" {
   config_json   = local.combined_config
   lambda_policy = local.combined_policies
   bucket_name = local.bucket_name
+
+  providers = {
+    jsonschema = jsonschema
+  }
 }
 
 resource "aws_cloudformation_stack" "port-aws-exporter-event-rules" {
