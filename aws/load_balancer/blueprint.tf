@@ -101,4 +101,6 @@ resource "port-labs_blueprint" "loadBalancer" {
       required   = false
     }
 
+
+    provider = port-labs
 }

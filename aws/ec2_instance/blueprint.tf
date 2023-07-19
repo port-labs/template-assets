@@ -79,4 +79,5 @@ resource "port-labs_blueprint" "ec2_instance" {
   #     required   = false
   #   }
 
+  provider = port-labs
 }

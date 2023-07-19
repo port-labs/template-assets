@@ -49,6 +49,10 @@ data "aws_region" "current" {}
 module "port_blueprints_creator" {
   source = "./aws_blueprints_template"
   resources = var.resources
+
+  providers = {
+    port-labs = port-labs
+  }
 }
 
 locals {

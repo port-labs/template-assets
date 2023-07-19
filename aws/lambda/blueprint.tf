@@ -101,4 +101,6 @@ resource "port-labs_blueprint" "lambda_function" {
        many       = false
        required   = false
      }
+
+     provider = port-labs
 }

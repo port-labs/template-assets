@@ -90,4 +90,6 @@ resource "port-labs_blueprint" "ecs_service" {
        many       = false
        required   = false
      }
+
+     provider = port-labs
 }

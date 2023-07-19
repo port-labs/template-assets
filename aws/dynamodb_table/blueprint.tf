@@ -93,4 +93,6 @@ resource "port-labs_blueprint" "dynamodb_table" {
      many       = false
      required   = false
    }
+
+   provider = port-labs
 }

@@ -58,4 +58,6 @@ resource "port-labs_blueprint" "sns_topic" {
    many       = true
    required   = false
  }
+
+ provider = port-labs
 }

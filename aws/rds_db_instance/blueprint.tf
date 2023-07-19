@@ -185,4 +185,6 @@ resource "port-labs_blueprint" "rds_db_instance" {
        many       = false
        required   = false
      }
+
+     provider = port-labs
 }

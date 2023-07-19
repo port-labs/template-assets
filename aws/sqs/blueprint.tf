@@ -74,4 +74,6 @@ resource "port-labs_blueprint" "sqs_queue" {
        many       = false
        required   = false
      }
+
+     provider = port-labs
 }

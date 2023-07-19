@@ -61,4 +61,6 @@ resource "port-labs_blueprint" "s3_bucket" {
     type       = "string"
     title      = "ARN"
   }
+
+  provider = port-labs
 }
