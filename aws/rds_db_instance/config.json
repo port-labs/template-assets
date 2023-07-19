@@ -6,35 +6,18 @@
         {
           "identifier": ".DBInstanceIdentifier",
           "title": ".DBInstanceIdentifier",
-          "blueprint": "rds_db_instance",
+          "blueprint": "database",
           "properties": {
-            "link": "if .Engine == \"docdb\" then \"https://console.aws.amazon.com/docdb/home?region=\" + (.DBInstanceIdentifier | split(\":\")[3])  + \"#instance-details/\" + .DBInstanceIdentifier else \"https://console.aws.amazon.com/go/view?arn=\" + .DBInstanceArn end",
-            "engine": ".Engine",
-            "engineVersion": ".EngineVersion",
-            "storageType": ".StorageType",
-            "dbInstanceClass": ".DBInstanceClass",
-            "availabilityZone": ".AvailabilityZone",
-            "dbParameterGroup": ".DBParameterGroupName",
-            "optionGroup": ".OptionGroupName",
-            "dbSubnetGroup": ".DBSubnetGroupName",
-            "masterUsername": ".MasterUsername",
-            "allocatedStorage": ".AllocatedStorage",
-            "maxAllocatedStorage": ".MaxAllocatedStorage",
-            "backupRetentionPeriod": ".BackupRetentionPeriod",
-            "monitoringInterval": ".MonitoringInterval",
-            "multiAZ": ".MultiAZ",
-            "storageEncrypted": ".StorageEncrypted",
-            "enablePerformanceInsights": ".EnablePerformanceInsights",
-            "autoMinorVersionUpgrade": ".AutoMinorVersionUpgrade",
-            "deletionProtection": ".DeletionProtection",
-            "publiclyAccessible": ".PubliclyAccessible",
-            "certificateValidTill": ".CertificateDetails.ValidTill",
-            "certificateCA": ".CertificateDetails.CAIdentifier",
-            "preferredBackupWindow": ".PreferredBackupWindow",
-            "preferredMaintenanceWindow": ".PreferredMaintenanceWindow",
-            "endpoint": ".Endpoint",
-            "tags": ".Tags",
-            "arn": ".DBInstanceArn"
+            "database": ".DBInstanceIdentifier",
+            "cluster": ".DBClusterIdentifier",
+            "properties": "."
+          },
+          "relations": {
+            "region": ".DBInstanceArn | split(\":\")[3]",
+            "cloudAccount": ".DBInstanceArn | split(\":\")[4]",
+            "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+            "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+            "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
           }
         }
       ]
