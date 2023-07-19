@@ -15,11 +15,13 @@ resource "port_blueprint" "region" {
   icon       = "AWS"
   identifier = "port_aws_region"
 
-  properties {
-    title      = "Link"
-    identifier = "link"
-    type       = "string"
-    format     = "url"
+  properties = {
+    string_props = {
+      title      = "Link"
+      identifier = "link"
+      type       = "string"
+      format     = "url"
+    }
   }
 
   provider = port-labs
@@ -30,9 +32,11 @@ resource "port_entity" "current_region" {
   title      = data.aws_region.current.name
   blueprint  = port_blueprint.region.identifier
 
-  properties {
-    name  = "link"
-    value = "https://${data.aws_region.current.name}.console.aws.amazon.com/"
+  properties = {
+    string_props = {
+      name  = "link"
+      value = "https://${data.aws_region.current.name}.console.aws.amazon.com/"
+    }
   }
 
   provider = port-labs
