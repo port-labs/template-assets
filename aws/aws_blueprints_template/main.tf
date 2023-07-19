@@ -10,37 +10,37 @@ terraform {
 data "aws_region" "current" {}
 
 # Create Blueprints
-resource "port_blueprint" "region" {
-  title      = "Port AWS Region"
-  icon       = "AWS"
-  identifier = "port_aws_region"
+# resource "port_blueprint" "region" {
+#   title      = "Port AWS Region"
+#   icon       = "AWS"
+#   identifier = "port_aws_region"
 
-  properties = {
-    string_props = {
-      title      = "Link"
-      identifier = "link"
-      type       = "string"
-      format     = "url"
-    }
-  }
+#   properties = {
+#     string_props = {
+#       title      = "Link"
+#       identifier = "link"
+#       type       = "string"
+#       format     = "url"
+#     }
+#   }
 
-  provider = port-labs
-}
+#   provider = port-labs
+# }
 
-resource "port_entity" "current_region" {
-  identifier = data.aws_region.current.name
-  title      = data.aws_region.current.name
-  blueprint  = port_blueprint.region.identifier
+# resource "port_entity" "current_region" {
+#   identifier = data.aws_region.current.name
+#   title      = data.aws_region.current.name
+#   blueprint  = port_blueprint.region.identifier
 
-  properties = {
-    string_props = {
-      name  = "link"
-      value = "https://${data.aws_region.current.name}.console.aws.amazon.com/"
-    }
-  }
+#   properties = {
+#     string_props = {
+#       name  = "link"
+#       value = "https://${data.aws_region.current.name}.console.aws.amazon.com/"
+#     }
+#   }
 
-  provider = port-labs
-}
+#   provider = port-labs
+# }
 
 
 module "port_dynamodb_table" {
@@ -116,7 +116,7 @@ module "port_sns" {
 module "port_ec2_instance" {
   source     = "../ec2_instance"
   count      = contains(var.resources, "ec2_instance") ? 1 : 0
-  depends_on = [port_blueprint.region]
+  # depends_on = [port_blueprint.region]
 
   providers = {
     port-labs = port-labs
