@@ -1,0 +1,31 @@
+  - kind: networking.istio.io/v1beta1/virtualservices
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace
+            blueprint: '"virtualServices"'
+            properties:
+              title: .metadata.name
+              hosts: .spec.hosts
+              match: .spec.http[].match
+              labels: .metadata.labels
+            relations:
+              gateways: .spec.gateways[] + "-" + .metadata.namespace 
+              services: .metadata.namespace as $namespace | .spec.http[].route[].destination.host + "-" + $namespace
+
+  - kind: networking.istio.io/v1beta1/gateways
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace
+            blueprint: '"gateways"'
+            properties:
+              title: .metadata.name
+              ports: .spec.servers[].port.number
+              name: .metadata.name
+              labels: .metadata.labels
+              selector: .spec.selector
+            relations:
+              namespace: .metadata.namespace
+              
+              

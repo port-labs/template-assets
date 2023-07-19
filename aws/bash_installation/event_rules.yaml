@@ -15,16 +15,18 @@ Resources:
     Properties:
       EventBusName: default
       EventPattern:
-        source:
-          - aws.lambda
         detail-type:
           - AWS API Call via CloudTrail
+        source:
+          - aws.lambda
         detail:
           eventSource:
             - lambda.amazonaws.com
           eventName:
-            - prefix: UpdateFunctionConfiguration
             - prefix: CreateFunction
+            - prefix: UpdateFunctionConfiguration
+            - prefix: TagResource
+            - prefix: UntagResource
             - prefix: DeleteFunction
       Name: port-aws-exporter-sync-lambda-trails
       State: ENABLED
@@ -38,13 +40,14 @@ Resources:
               awsRegion: $.detail.awsRegion
               eventName: $.detail.eventName
               requestFunctionName: $.detail.requestParameters.functionName
+              requestResource: $.detail.requestParameters.resource
               responseFunctionName: $.detail.responseElements.functionName
-            InputTemplate: >-
+            InputTemplate: |-
               {
                 "resource_type": "AWS::Lambda::Function",
                 "region": "\"<awsRegion>\"",
-                "identifier": "if \"<responseFunctionName>\" != \"\" then \"<responseFunctionName>\" else \"<requestFunctionName>\" end",
-                "action": "if \"<eventName>\" | startswith(\"Delete\") then \"delete\" else \"upsert\" end"
+                "identifier": "if \"<responseFunctionName>\" != \"\" then \"<responseFunctionName>\" elif \"<requestResource>\" != \"\" then \"<requestResource>\" | split(\":\")[-1] else \"<requestFunctionName>\" end",
+                "action": "if \"<eventName>\" | test(\"DeleteFunction[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
               }
   EventRule1:
     Type: AWS::Events::Rule

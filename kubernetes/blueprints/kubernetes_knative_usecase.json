@@ -1,0 +1,544 @@
+[
+    {
+      "identifier": "cluster",
+      "description": "This blueprint represents a Kubernetes Cluster",
+      "title": "Cluster",
+      "icon": "Cluster",
+      "schema": {
+        "properties": {},
+        "required": []
+      },
+      "mirrorProperties": {},
+      "calculationProperties": {},
+      "relations": {}
+    },
+    {
+      "identifier": "node",
+      "description": "This blueprint represents a k8s Node",
+      "title": "Node",
+      "icon": "Node",
+      "schema": {
+        "properties": {
+          "creationTimestamp": {
+            "type": "string",
+            "icon": "DeployedAt",
+            "title": "Created",
+            "format": "date-time",
+            "description": "When the Node was created (added to the cluster)"
+          },
+          "labels": {
+            "type": "object",
+            "title": "Labels",
+            "description": "Labels of the Node"
+          },
+          "ready": {
+            "type": "string",
+            "title": "Node Readiness",
+            "description": "Node ready status",
+            "enum": [
+              "True",
+              "False"
+            ],
+            "enumColors": {
+              "False": "red",
+              "True": "green"
+            }
+          },
+          "totalMemory": {
+            "type": "string",
+            "icon": "GPU",
+            "title": "Total Memory (kibibytes)",
+            "description": "Total memory capacity of the Node"
+          },
+          "kubeletVersion": {
+            "type": "string",
+            "title": "Kubelet Version",
+            "description": "The node's kubelet version"
+          },
+          "totalCPU": {
+            "type": "string",
+            "icon": "CPU",
+            "title": "Total CPU (milli-cores)",
+            "description": "Total CPU capacity of the Node"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {},
+      "calculationProperties": {},
+      "relations": {
+        "Cluster": {
+          "title": "Cluster",
+          "target": "cluster",
+          "required": false,
+          "many": true
+        }
+      }
+    },
+    {
+      "identifier": "namespace",
+      "description": "This blueprint represents a k8s Namespace",
+      "title": "Namespace",
+      "icon": "Environment",
+      "schema": {
+        "properties": {
+          "creationTimestamp": {
+            "type": "string",
+            "title": "Created",
+            "format": "date-time",
+            "description": "When the Namespace was created"
+          },
+          "labels": {
+            "type": "object",
+            "title": "Labels",
+            "description": "Labels of the Namespace"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {},
+      "calculationProperties": {},
+      "relations": {
+        "Cluster": {
+          "title": "Cluster",
+          "description": "The namespace's Kubernetes cluster",
+          "target": "cluster",
+          "required": false,
+          "many": false
+        }
+      }
+    },
+    {
+        "identifier": "knativeService",
+        "description": "This blueprint represents a Knative service",
+        "title": "Knative Service",
+        "icon": "Service",
+        "schema": {
+          "properties": {
+            "creationTimestamp": {
+              "icon": "Clock",
+              "type": "string",
+              "title": "Created",
+              "description": "When the Knative service was created",
+              "format": "date-time"
+            },
+            "labels": {
+              "icon": "BlankPage",
+              "type": "object",
+              "title": "Labels",
+              "description": "Labels of the Knative service"
+            },
+            "containerConcurrency": {
+              "type": "number",
+              "title": "Container Concurrency"
+            },
+            "containers": {
+              "icon": "Docker",
+              "title": "Containers",
+              "type": "array",
+              "description": "The array of containers configured for this service"
+            },
+            "trafficConfiguration": {
+              "icon": "Cloud",
+              "title": "Traffic Configuration",
+              "type": "array",
+              "description": "The traffic configuration of this service"
+            },
+            "url": {
+              "title": "URL",
+              "type": "string",
+              "description": "The knative service's URL",
+              "icon": "RestApi",
+              "format": "url"
+            },
+            "generation": {
+              "title": "Generation",
+              "description": "The Knative service's generation",
+              "type": "number"
+            },
+            "ready": {
+              "title": "Ready",
+              "type": "string",
+              "enum": [
+                "True",
+                "False"
+              ],
+              "enumColors": {
+                "True": "green",
+                "False": "red"
+              }
+            },
+            "serviceTimeout": {
+              "icon": "DefaultProperty",
+              "title": "Service Timeout(s)",
+              "description": "The timeout configured for this service in seconds",
+              "type": "number"
+            }
+          },
+          "required": []
+        },
+        "mirrorProperties": {},
+        "calculationProperties": {},
+        "relations": {
+          "namespace": {
+            "title": "Namespace",
+            "target": "namespace",
+            "required": false,
+            "many": false
+          }
+        }
+    },
+    {
+        "identifier": "knativeConfiguration",
+        "description": "This blueprint represents a Knative Configuration",
+        "title": "Knative Configuration",
+        "icon": "CICD",
+        "schema": {
+          "properties": {
+            "creationTimestamp": {
+              "icon": "Clock",
+              "type": "string",
+              "title": "Created",
+              "description": "When the Knative service was created",
+              "format": "date-time"
+            },
+            "labels": {
+              "icon": "BlankPage",
+              "type": "object",
+              "title": "Labels",
+              "description": "Labels of the Knative service"
+            },
+            "ready": {
+              "title": "Ready",
+              "type": "string",
+              "enum": [
+                "True",
+                "False"
+              ],
+              "enumColors": {
+                "True": "green",
+                "False": "red"
+              }
+            },
+            "containers": {
+              "icon": "Docker",
+              "title": "Containers",
+              "type": "array",
+              "description": "Container specs for this configuration"
+            }
+          },
+          "required": []
+        },
+        "mirrorProperties": {},
+        "calculationProperties": {},
+        "relations": {
+          "knativeService": {
+            "title": "Kative Service",
+            "description": "The service managing this configuration",
+            "target": "knativeService",
+            "required": false,
+            "many": false
+          }
+        }
+    },
+    {
+        "identifier": "knativeRevision",
+        "description": "This blueprint represents a Knative revision",
+        "title": "Knative Revision",
+        "icon": "Docker",
+        "schema": {
+          "properties": {
+            "creationTimestamp": {
+              "icon": "Clock",
+              "type": "string",
+              "title": "Created",
+              "description": "When the Knative service was created",
+              "format": "date-time"
+            },
+            "labels": {
+              "icon": "BlankPage",
+              "type": "object",
+              "title": "Labels",
+              "description": "Labels of the Knative service"
+            },
+            "isActive": {
+              "type": "string",
+              "title": "Is Active",
+              "description": "Is the revision active currently",
+              "enum": [
+                "True",
+                "False"
+              ],
+              "enumColors": {
+                "True": "green",
+                "False": "red"
+              }
+            },
+            "containers": {
+              "icon": "Docker",
+              "title": "Containers",
+              "type": "array",
+              "description": "This revisions container configuration"
+            },
+            "replicaCount": {
+              "title": "Replica Count",
+              "description": "This revision's current replica count",
+              "type": "number"
+            }
+          },
+          "required": []
+        },
+        "mirrorProperties": {},
+        "calculationProperties": {},
+        "relations": {
+          "knativeConfiguration": {
+            "title": "Knative Configuration",
+            "description": "The revisions configuration",
+            "target": "knativeConfiguration",
+            "required": false,
+            "many": false
+          }
+        }
+    },
+    {
+        "identifier": "knativeRoute",
+        "description": "This blueprint represents a Knative Route in our k8s cluster",
+        "title": "Knative Route",
+        "icon": "Cloud",
+        "schema": {
+          "properties": {
+            "creationTimestamp": {
+              "icon": "Clock",
+              "type": "string",
+              "title": "Created",
+              "description": "When the Knative service was created",
+              "format": "date-time"
+            },
+            "labels": {
+              "icon": "DefaultProperty",
+              "type": "object",
+              "title": "Labels",
+              "description": "Labels of the Knative service"
+            },
+            "trafficConfiguration": {
+              "icon": "DefaultProperty",
+              "title": "Traffic Configuration",
+              "type": "array",
+              "description": "The routes traffic configuration"
+            },
+            "url": {
+              "icon": "RestApi",
+              "title": "URL",
+              "type": "string",
+              "description": "The URL of this route",
+              "format": "url"
+            }
+          },
+          "required": []
+        },
+        "mirrorProperties": {},
+        "calculationProperties": {},
+        "relations": {
+          "knativeService": {
+            "title": "Knative Service",
+            "target": "knativeService",
+            "required": false,
+            "many": false
+          },
+          "knativeRevision": {
+            "title": "knativeRevision",
+            "target": "knativeRevision",
+            "required": false,
+            "many": true
+          }
+        }
+    },
+    {
+      "identifier": "workload",
+      "description": "This blueprint represents a k8s Workload. This includes all k8s objects which can create pods (deployments[replicasets], daemonsets, statefulsets...)",
+      "title": "Workload",
+      "icon": "Deployment",
+      "schema": {
+        "properties": {
+          "workloadJson": {
+            "title": "Workload Json",
+            "type": "object",
+            "description": "The workloads json"
+          },
+          "availableReplicas": {
+            "type": "number",
+            "title": "Running Replicas",
+            "description": "Current running replica count"
+          },
+          "containers": {
+            "type": "array",
+            "title": "Containers",
+            "default": [],
+            "description": "The containers for each pod instance of the Workload"
+          },
+          "creationTimestamp": {
+            "type": "string",
+            "title": "Created",
+            "format": "date-time",
+            "description": "When the Workload was created"
+          },
+          "labels": {
+            "type": "object",
+            "title": "Labels",
+            "description": "Labels of the Workload"
+          },
+          "replicas": {
+            "type": "number",
+            "title": "Wanted Replicas",
+            "description": "Wanted replica count"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy",
+            "description": "Rollout Strategy"
+          },
+          "hasPrivileged": {
+            "type": "boolean",
+            "title": "Has Privileged Container"
+          },
+          "hasLatest": {
+            "type": "boolean",
+            "title": "Has 'latest' tag",
+            "description": "Has Container with 'latest' as image tag"
+          },
+          "hasLimits": {
+            "type": "boolean",
+            "title": "All containers have limits"
+          },
+          "isHealthy": {
+            "type": "string",
+            "enum": [
+              "Healthy",
+              "Unhealthy"
+            ],
+            "enumColors": {
+              "Healthy": "green",
+              "Unhealthy": "red"
+            },
+            "title": "Workload Health"
+          },
+          "kind": {
+            "title": "Workload Kind",
+            "description": "The kind of Workload",
+            "type": "string",
+            "enum": [
+              "StatefulSet",
+              "DaemonSet",
+              "Deployment",
+              "ReplicaSet",
+              "Rollout"
+            ]
+          },
+          "strategyConfig": {
+            "type": "object",
+            "title": "Strategy Config",
+            "description": "The workloads rollout strategy"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {
+        "Cluster": {
+          "title": "Cluster",
+          "path": "Namespace.Cluster.$title"
+        },
+        "namespace": {
+          "title": "Namespace",
+          "path": "Namespace.$title"
+        }
+      },
+      "calculationProperties": {},
+      "relations": {
+        "workloadManager": {
+          "title": "Manager",
+          "description": "A replicaset's workload. For example, Workload abc-ReplicaSet is managed by Workload xyz-Depolyment",
+          "target": "workload",
+          "required": false,
+          "many": false
+        },
+        "knativeRevision": {
+            "title": "Knative Revision",
+            "description": "The knative revision which manages this workload",
+            "target": "knativeRevision",
+            "required": false,
+            "many": false
+          },
+        "Namespace": {
+          "title": "Namespace",
+          "target": "namespace",
+          "required": false,
+          "many": false
+        }
+      }
+    },
+    {
+      "identifier": "pod",
+      "description": "This blueprint represents a k8s Pod",
+      "title": "Pod",
+      "icon": "Service",
+      "schema": {
+        "properties": {
+          "conditions": {
+            "type": "array",
+            "title": "Conditions",
+            "default": [],
+            "description": "Pod's conditions"
+          },
+          "labels": {
+            "type": "object",
+            "title": "Labels",
+            "description": "Labels of the Pod"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Pod phase",
+            "description": "Pod's running phase"
+          },
+          "startTime": {
+            "type": "string",
+            "title": "Created",
+            "format": "date-time",
+            "description": "Pod's creation date"
+          }
+        },
+        "required": []
+      },
+      "mirrorProperties": {
+        "containers": {
+          "title": "Containers",
+          "path": "workload.containers"
+        },
+        "cluster": {
+          "title": "Cluster",
+          "path": "workload.Namespace.Cluster.$identifier"
+        },
+        "namespace": {
+          "title": "Namespace",
+          "path": "workload.Namespace.$title"
+        }
+      },
+      "calculationProperties": {},
+      "relations": {
+        "Node": {
+          "title": "Node",
+          "description": "The node the pod is running on",
+          "target": "node",
+          "required": false,
+          "many": false
+        },
+        "workload": {
+          "title": "Workload",
+          "description": "The workload responsible for the pod",
+          "target": "workload",
+          "required": false,
+          "many": false
+        }
+      }
+    }
+]
+  

@@ -1,0 +1,41 @@
+SNSEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.sns
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - sns.amazonaws.com
+        eventName:
+          - prefix: CreateTopic
+          - prefix: Subscribe
+          - prefix: Unsubscribe
+          - prefix: TagResource
+          - prefix: UntagResource
+          - prefix: DeleteTopic
+    Name: port-aws-exporter-sync-sns-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestResourceArn: $.detail.requestParameters.resourceArn
+            requestSubscriptionArn: $.detail.requestParameters.subscriptionArn
+            requestTopicArn: $.detail.requestParameters.topicArn
+            responseTopicArn: $.detail.responseElements.topicArn
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::SNS::Topic",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<eventName>\" | if test(\"CreateTopic[^a-zA-Z]*$\") then \"<responseTopicArn>\" elif test(\"Unsubscribe[^a-zA-Z]*$\") then \"<requestSubscriptionArn>\"[:\"<requestSubscriptionArn>\" | rindex(\":\")] elif test(\"TagResource|UntagResource[^a-zA-Z]*$\") then \"<requestResourceArn>\" elif test(\"DeleteTopic[^a-zA-Z]*$\") then \"<requestTopicArn>\" | split(\":\")[-1] else \"<requestTopicArn>\" end",
+              "action": "if \"<eventName>\" | test(\"DeleteTopic[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }

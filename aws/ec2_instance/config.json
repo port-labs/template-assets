@@ -1,0 +1,30 @@
+{
+    "kind": "AWS::EC2::Instance",
+    "selector": {
+      "query": ".State.Name | startswith(\"terminated\") | not"
+    },
+    "port": {
+      "entity": {
+        "mappings": [
+          {
+            "identifier": ".InstanceId",
+            "title": ".Tags[]? | select(.Key == \"Name\") | .Value",
+            "blueprint": "ec2_instance",
+            "properties": {
+              "state": ".State.Name",
+              "type": ".InstanceType",
+              "vpcId": ".VpcId",
+              "link": "\"https://console.aws.amazon.com/ec2/home?region=\" + .Placement.AvailabilityZone[:-1] + \"#InstanceDetails:instanceId=\" + .InstanceId",
+              "availabilityZone": ".Placement.AvailabilityZone",
+              "platform": ".PlatformDetails",
+              "architecture": ".Architecture",
+              "tags": ".Tags"
+            },
+            "relations":{
+              "region": ".Placement.AvailabilityZone | .[:-1]"
+            }
+          }
+        ]
+      }
+    }
+  }

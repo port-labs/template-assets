@@ -1,0 +1,31 @@
+{
+    "kind":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+    "port":{
+       "entity":{
+          "mappings":[
+             {
+                "identifier":".LoadBalancerName",
+                "title":".LoadBalancerName",
+                "blueprint":"loadBalancer",
+                "properties":{
+                   "link":"\"https://console.aws.amazon.com/go/view?arn=\" + .LoadBalancerArn",
+                   "state":".State.Code",
+                   "type":".Type",
+                   "scheme":".Scheme",
+                   "vpcId":".VpcId",
+                   "availabilityZones":".AvailabilityZones",
+                   "dnsName":".DNSName",
+                   "securityGroup":".SecurityGroups",
+                   "listeners":".Listeners",
+                   "attributes":".Attributes",
+                   "tags":".Tags",
+                   "arn":".LoadBalancerArn"
+                },
+                "relations":{
+                   "region":".LoadBalancerArn | split(\":\") | .[3]"
+                }
+             }
+          ]
+       }
+    }
+ }

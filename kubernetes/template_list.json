@@ -1,0 +1,18 @@
+{
+    "argo": {
+        "name": "ArgoCD",
+        "description": "Contains Argo apps, Argo Projects and  Argo Repositories configuration",
+        "path": "argo_config.tmpl"
+    },
+    "argo_rollouts": {
+        "name": "ArgoCD Rollouts",
+        "description": "Contains Argo Rollouts configuration",
+        "path": "argo_rollouts_config.tmpl",
+        "needs": "argo"
+    },
+    "istio": {
+        "name": "Istio",
+        "description": "Contains Istio gateway and virtualservice",
+        "path": "istio_config.tmpl"
+    }
+}

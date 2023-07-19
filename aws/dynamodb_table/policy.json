@@ -1,0 +1,8 @@
+[
+  "dynamodb:DescribeContinuousBackups",
+  "dynamodb:DescribeContributorInsights",
+  "dynamodb:DescribeTable",
+  "dynamodb:DescribeTimeToLive",
+  "dynamodb:ListTables",
+  "dynamodb:ListTagsOfResource"
+]

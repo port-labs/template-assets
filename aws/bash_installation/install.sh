@@ -29,7 +29,7 @@
 
 # Global variables
 REPO_BRANCH=${REPO_BRANCH:-"main"}
-REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/${REPO_BRANCH}"
+REPO_BASE_URL="https://raw.githubusercontent.com/AutoFi/template-assets/${REPO_BRANCH}"
 REPO_AWS_CONTENT_URL="${REPO_BASE_URL}/aws"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
@@ -91,7 +91,22 @@ if ! aws iam get-policy --policy-arn "${EXPORTER_IAM_POLICY_ARN}" &> /dev/null
 then
     echo "Policy not exists, creating..."
     echo ""
-    aws iam create-policy --policy-name "${EXPORTER_IAM_POLICY_NAME}" --policy-document "file://${temp_dir}/policy.json" || exit
+    aws iam create-policy \
+        --policy-name "${EXPORTER_IAM_POLICY_NAME}" \
+        --policy-document "file://${temp_dir}/policy.json" \
+        || (aws iam list-policy-versions \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --query 'Versions[?IsDefaultVersion!=`true`].VersionId' \
+            --output text | awk '{print $NF}' | \
+            xargs -I {} aws iam delete-policy-version \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --version-id {} \
+        && aws iam create-policy-version \
+            --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${EXPORTER_IAM_POLICY_NAME} \
+            --policy-document "file://${temp_dir}/policy.json" \
+            --set-as-default) \
+        || exit
+
 else
     echo "Policy exists"
 fi
@@ -101,10 +116,10 @@ echo "Preparing parameters json file..."
 echo ""
 
 sed -i.backup \
--e "s/\<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
--e "s/\<EXPORTER_LAMBDA_NAME>/${EXPORTER_LAMBDA_NAME}/" \
--e "s/\<EXPORTER_SECRET_NAME>/${EXPORTER_SECRET_NAME}/" \
--e "s/\<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN//\//\\/}/" \
+-e "s/<EXPORTER_BUCKET_NAME>/${EXPORTER_BUCKET_NAME}/" \
+-e "s/<EXPORTER_LAMBDA_NAME>/${EXPORTER_LAMBDA_NAME}/" \
+-e "s/<EXPORTER_SECRET_NAME>/${EXPORTER_SECRET_NAME}/" \
+-e "s/<EXPORTER_IAM_POLICY_ARN>/${EXPORTER_IAM_POLICY_ARN//\//\\/}/" \
 "${temp_dir}/parameters.json" || exit
 
 cat "${temp_dir}/parameters.json"
@@ -113,6 +128,7 @@ echo ""
 echo ""
 echo "Deploying Port's AWS exporter application..."
 
+# --debug \
 CHANGE_SET_ID=$(aws serverlessrepo create-cloud-formation-change-set \
 --application-id arn:aws:serverlessrepo:eu-west-1:185657066287:applications/port-aws-exporter \
 --stack-name "${EXPORTER_APP_NAME}" --capabilities CAPABILITY_IAM CAPABILITY_RESOURCE_POLICY \
@@ -128,18 +144,31 @@ else
     cloudformation_tail "serverlessrepo-${EXPORTER_APP_NAME}"
 fi
 
+# echo ""
+# echo "deleting port PortAWSExporterPolicy..."
+# echo ""
+
+# aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/PortAWSExporterPolicy || exit
+
+# Always put config.json in case a change was made
 echo ""
-echo "Checking existence of config.json in S3 bucket..."
+echo "Updating config.json in s3..."
 echo ""
 
-if ! aws s3api head-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" &> /dev/null
-then
-    echo "config.json not exists, uploading..."
-    echo ""
-    aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
-else
-    echo "config.json exists"
-fi
+aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
+
+# echo ""
+# echo "Checking existence of config.json in S3 bucket..."
+# echo ""
+
+# if ! aws s3api head-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" &> /dev/null
+# then
+#     echo "config.json not exists, uploading..."
+#     echo ""
+#     aws s3api put-object --bucket "${EXPORTER_BUCKET_NAME}" --key "config.json" --body "${temp_dir}/config.json" || exit
+# else
+#     echo "config.json exists"
+# fi
 
 echo ""
 echo "Updating Port credentials secret..."
@@ -160,3 +189,25 @@ echo "Creating Port entity for region: \"${AWS_REGION}\"..."
 echo ""
 
 upsert_port_entity "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "region" "{\"identifier\": \"${AWS_REGION}\", \"title\": \"${AWS_REGION}\", \"properties\": {}}" || exit
+
+if [ "$1" == "skip_logs" ]; then
+    echo "Skipping manual lambda invocation"
+    exit 0
+fi
+
+echo ""
+echo "Running exporter's lambda manually..."
+echo ""
+
+if ! command -v sam &> /dev/null
+then
+    echo "sam command for live logs does not exists, will print the execution log's tail when done"
+    echo ""
+    aws lambda invoke --function-name "${EXPORTER_LAMBDA_NAME}" --log-type "Tail" --payload "{}" "${temp_dir}/outfile" | jq -r ".LogResult" | base64 --decode
+else
+    aws lambda invoke --function-name "${EXPORTER_LAMBDA_NAME}" --invocation-type "Event" --payload "{}" "${temp_dir}/outfile" || exit
+    echo ""
+    echo "Tail exporter's lambda logs, press CTRL+C to break..."
+    echo ""
+    sam logs --stack-name "serverlessrepo-${EXPORTER_APP_NAME}" --tail
+fi

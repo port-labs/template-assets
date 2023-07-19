@@ -1,0 +1,7 @@
+[
+  "sns:GetDataProtectionPolicy",
+  "sns:GetTopicAttributes",
+  "sns:ListSubscriptionsByTopic",
+  "sns:ListTagsForResource",
+  "sns:ListTopics"
+]
