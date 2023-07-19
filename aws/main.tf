@@ -21,7 +21,7 @@ terraform {
       source  = "bpedman/jsonschema"
       version = "0.2.1"
     }
-    port = {
+    port-labs = {
       source  = "port-labs/port-labs"
       version = "~> 1.0.0"
     }
@@ -119,6 +119,7 @@ module "port_aws_exporter" {
 
   providers = {
     jsonschema = jsonschema
+    # port-labs = port-labs # the port provider is not needed here
   }
 }
 
