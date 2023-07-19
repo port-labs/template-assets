@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "s3_bucket" {
+resource "port_blueprint" "s3_bucket" {
   title      = "S3 Bucket"
   icon       = "Bucket"
   identifier = "s3_bucket"

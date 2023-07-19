@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "rds_db_instance" {
+resource "port_blueprint" "rds_db_instance" {
   title      = "RDS DB Instance"
   icon       = "SQL"
   identifier = "rds_db_instance"

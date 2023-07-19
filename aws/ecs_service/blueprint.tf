@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "ecs_service" {
+resource "port_blueprint" "ecs_service" {
   title      = "ECS Service"
   icon       = "Service"
   identifier = "ecs_service"

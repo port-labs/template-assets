@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "ec2_instance" {
+resource "port_blueprint" "ec2_instance" {
   title      = "EC2 Instance"
   icon       = "EC2"
   identifier = "ec2_instance"

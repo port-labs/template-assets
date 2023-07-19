@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "loadBalancer" {
+resource "port_blueprint" "loadBalancer" {
   title      = "Load Balancer"
   icon       = "AWS"
   identifier = "loadBalancer"

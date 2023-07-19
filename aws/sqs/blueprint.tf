@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "sqs_queue" {
+resource "port_blueprint" "sqs_queue" {
   title      = "SQS Queue"
   icon       = "AWS"
   identifier = "sqs"

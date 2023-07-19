@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "dynamodb_table" {
+resource "port_blueprint" "dynamodb_table" {
   title      = "DynamoDB Table"
   icon       = "SQL"
   identifier = "dynamodb_table"

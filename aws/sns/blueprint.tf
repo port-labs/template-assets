@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "sns_topic" {
+resource "port_blueprint" "sns_topic" {
 
   title      = "SNS Topic"
   icon       = "SNS"

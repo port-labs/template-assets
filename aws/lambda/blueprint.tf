@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "port-labs_blueprint" "lambda_function" {
+resource "port_blueprint" "lambda_function" {
   title      = "Lambda"
   icon       = "Lambda"
   identifier = "lambda"
