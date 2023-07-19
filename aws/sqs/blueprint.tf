@@ -5,7 +5,7 @@
 #       version = "0.10.4"
 #     }
 #   }
-# } 
+# }
 
 resource "port-labs_blueprint" "sqs_queue" {
   title      = "SQS Queue"
