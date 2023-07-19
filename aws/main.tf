@@ -24,9 +24,9 @@ terraform {
   }
 }
 
-provider "jsonschema" {
-  # Configuration options
-}
+# provider "jsonschema" {
+#   # Configuration options
+# }
 
 data "aws_caller_identity" "current" {}
 
