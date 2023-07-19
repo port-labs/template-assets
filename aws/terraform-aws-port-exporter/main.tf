@@ -1,7 +1,8 @@
 
 # Checks whether the policy and config are files or raw json
 locals {
-  policy = can(jsondecode(var.lambda_policy)) ? var.lambda_policy : file(var.lambda_policy)
+  # policy = can(jsondecode(var.lambda_policy)) ? var.lambda_policy : file(var.lambda_policy)
+  policy = ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus"]
   config = can(jsondecode(var.config_json)) ? var.config_json : file(var.config_json)
 }
 
