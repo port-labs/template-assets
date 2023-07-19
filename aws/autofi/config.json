@@ -1,0 +1,243 @@
+{
+  "resources": [
+    {
+      "kind": "AWS::Lambda::Function",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".FunctionName",
+              "title": ".FunctionName",
+              "blueprint": "lambda",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+                "description": ".Description",
+                "memorySize": ".MemorySize",
+                "ephemeralStorageSize": ".EphemeralStorage.Size",
+                "timeout": ".Timeout",
+                "runtime": ".Runtime",
+                "packageType": ".PackageType",
+                "environment": ".Environment",
+                "architectures": ".Architectures",
+                "layers": ".Layers",
+                "tags": ".Tags",
+                "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".Arn"
+              },
+              "relations": {
+                "region": ".Arn | split(\":\")[3]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::AppRunner::Service",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceId",
+              "title": ".ServiceName",
+              "blueprint": "apprunner",
+              "properties": {
+                "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
+                "status": ".Status",
+                "memory": ".InstanceConfiguration.Memory",
+                "cpu": ".InstanceConfiguration.Cpu",
+                "egressType": ".NetworkConfiguration.EgressConfiguration.EgressType",
+                "isPubliclyAccessible": ".NetworkConfiguration.IngressConfiguration.IsPubliclyAccessible",
+                "observabilityEnabled": ".ObservabilityConfiguration.ObservabilityEnabled",
+                "autoDeploymentsEnabled": ".SourceConfiguration.AutoDeploymentsEnabled",
+                "healthCheckConfiguration": ".HealthCheckConfiguration",
+                "imageConfiguration": ".SourceConfiguration.ImageRepository.ImageConfiguration",
+                "imageIdentifier": ".SourceConfiguration.ImageRepository.ImageIdentifier",
+                "serviceUrl": "\"https://\" + .ServiceUrl",
+                "iamRole": ".InstanceConfiguration.InstanceRoleArn | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
+                "arn": ".ServiceArn"
+              },
+              "relations": {
+                "region": ".ServiceArn | split(\":\")[3]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::ECS::Service",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".ServiceName",
+              "title": ".ServiceName",
+              "blueprint": "service",
+              "properties": {
+                "service": ".ServiceName",
+                "cluster": ".Cluster | split(\"/\")[1]",
+                "desiredCount": ".DesiredCount",
+                "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
+                "arn": ".ServiceArn",
+                "binaryVersion": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:binary-version\")) then \"unknown\" else .[] | select(.Key == \"autofi:binary-version\") | .Value end",
+                "cpu": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-cpu\")) then null else .[] | select(.Key == \"autofi:task-cpu\") | .Value end",
+                "memory": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-memory\")) then null else .[] | select(.Key == \"autofi:task-memory\") | .Value end",
+                "elastic_dns": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"a80f9247fafe4086837deb215b45c905\" else \"fe7e74b1a00f4262a7ec8532963d5ce1\" end",
+                "console_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"7b38db90-48f3-11ed-a3e0-4d2200e5ec82\" else \"abcc8690-65e4-11ed-a70c-2dc2eb9b4315\" end",
+                "app_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"be6ccc10-bb02-11e8-b036-cf92dc970185\" else \"71bec050-ce42-11e8-b752-f312020fec08\" end",
+                "legacy_app_name": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app-legacy-name\")) then \"unknown\" else .[] | select(.Key == \"autofi:app-legacy-name\") | .Value end"
+              },
+              "relations": {
+                "region": ".ServiceArn | split(\":\")[3]",
+                "cloudAccount": ".ServiceArn | split(\":\")[4]",
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::RDS::DBInstance",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".DBInstanceIdentifier",
+              "title": ".DBInstanceIdentifier",
+              "blueprint": "database",
+              "properties": {
+                "database": ".DBInstanceIdentifier",
+                "cluster": ".DBClusterIdentifier",
+                "properties": "."
+              },
+              "relations": {
+                "region": ".DBInstanceArn | split(\":\")[3]",
+                "cloudAccount": ".DBInstanceArn | split(\":\")[4]",
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::Route53::HostedZone",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".Name",
+              "title": ".Name",
+              "blueprint": "hosted_zone",
+              "properties": {
+                "arn": ".Arn",
+                "hosted_zone_config": ".HostedZoneConfig"
+              },
+              "relations": {
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::ECR::Repository",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".Arn | split(\"/\") | join(\"-\")",
+              "title": ".RepositoryName",
+              "blueprint": "ecr",
+              "properties": {
+                "arn": ".Arn"
+              },
+              "relations": {
+                "region": ".Arn | split(\":\")[3]",
+                "app": ".RepositoryName",
+                "cloud_account": ".Arn | split(\":\")[4]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".Name",
+              "title": ".Name",
+              "blueprint": "load_balancer_target_group",
+              "properties": {
+                "arn": ".TargetGroupArn"
+              },
+              "relations": {
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
+                "vpc_id": ".VpcId",
+                "region": ".TargetGroupArn | split(\":\")[3]",
+                "cloudAccount": ".TargetGroupArn | split(\":\")[4]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::EC2::VPC",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".VpcId",
+              "title": ".Tags // [] | if isempty(.[] | select(.Key == \"Name\")) then .VpcId else .[] | select(.Key == \"Name\") | .Value end",
+              "blueprint": "vpc",
+              "properties": {
+                "cidr_block": ".CidrBlock",
+                "arn": "."
+              },
+              "relations": {
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+              }  
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "AWS::EC2::EIP",
+      "port": {
+        "entity": {
+          "mappings": [
+            {
+              "identifier": ".InstanceId // .InstanceId | gsub(\"|\"; \"-\")",
+              "title": ".TransferAddress",
+              "blueprint": "eip",
+              "properties": {
+                "arn": ".Arn",
+                "instance_id": ".InstanceId"
+              },
+              "relations": {
+                "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
+              }  
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -7,89 +7,89 @@ terraform {
   }
 }
 
-resource "port_blueprint" "ecs_service" {
-  title      = "ECS Service"
-  icon       = "Service"
-  identifier = "ecs_service"
+# resource "port_blueprint" "ecs_service" {
+#   title      = "ECS Service"
+#   icon       = "Service"
+#   identifier = "ecs_service"
 
-  properties {
-    identifier = "link"
-    type       = "string"
-    format     = "url"
-    title      = "Link"
-  }
+#   properties {
+#     identifier = "link"
+#     type       = "string"
+#     format     = "url"
+#     title      = "Link"
+#   }
 
-  properties {
-    identifier = "desiredCount"
-    type       = "number"
-    title      = "Desired Count"
-  }
+#   properties {
+#     identifier = "desiredCount"
+#     type       = "number"
+#     title      = "Desired Count"
+#   }
 
-  properties {
-    identifier = "cluster"
-    type       = "string"
-    title      = "Cluster"
-  }
+#   properties {
+#     identifier = "cluster"
+#     type       = "string"
+#     title      = "Cluster"
+#   }
 
-  properties {
-    identifier = "taskDefinition"
-    type       = "string"
-    title      = "Task Definition"
-  }
+#   properties {
+#     identifier = "taskDefinition"
+#     type       = "string"
+#     title      = "Task Definition"
+#   }
 
-  properties {
-    identifier = "launchType"
-    type       = "string"
-    enum       = ["EC2", "FARGATE", "EXTERNAL"]
-    title      = "Launch Type"
-  }
+#   properties {
+#     identifier = "launchType"
+#     type       = "string"
+#     enum       = ["EC2", "FARGATE", "EXTERNAL"]
+#     title      = "Launch Type"
+#   }
 
-  properties {
-    identifier = "schedulingStrategy"
-    type       = "string"
-    enum       = ["REPLICA", "DAEMON"]
-    title      = "Scheduling Strategy"
-  }
+#   properties {
+#     identifier = "schedulingStrategy"
+#     type       = "string"
+#     enum       = ["REPLICA", "DAEMON"]
+#     title      = "Scheduling Strategy"
+#   }
 
-  properties {
-    identifier = "loadBalancers"
-    type       = "array"
-    title      = "Load Balancers"
-  }
+#   properties {
+#     identifier = "loadBalancers"
+#     type       = "array"
+#     title      = "Load Balancers"
+#   }
 
-  properties {
-    identifier = "securityGroups"
-    type       = "array"
-    title      = "Security Groups"
-  }
+#   properties {
+#     identifier = "securityGroups"
+#     type       = "array"
+#     title      = "Security Groups"
+#   }
 
-  properties {
-    identifier = "subnets"
-    type       = "array"
-    title      = "Subnets"
-  }
+#   properties {
+#     identifier = "subnets"
+#     type       = "array"
+#     title      = "Subnets"
+#   }
 
-  properties {
-    identifier = "iamRole"
-    type       = "string"
-    format     = "url"
-    title      = "IAM Role"
-    icon       = "Unlock"
-  }
+#   properties {
+#     identifier = "iamRole"
+#     type       = "string"
+#     format     = "url"
+#     title      = "IAM Role"
+#     icon       = "Unlock"
+#   }
 
-  properties {
-    identifier = "arn"
-    type       = "string"
-    title      = "ARN"
-  }
+#   properties {
+#     identifier = "arn"
+#     type       = "string"
+#     title      = "ARN"
+#   }
 
-  relations {
-       target     = "region"
-       title      = "Region"
-       identifier = "region"
-       many       = false
-       required   = false
-     }
+#   relations {
+#        target     = "region"
+#        title      = "Region"
+#        identifier = "region"
+#        many       = false
+#        required   = false
+#      }
 
-     provider = port-labs
-}
+#      provider = port-labs
+# }

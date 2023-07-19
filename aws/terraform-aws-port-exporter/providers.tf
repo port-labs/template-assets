@@ -14,14 +14,3 @@ terraform {
     }
   }
 }
-
-# provider "env" {
-# }
-
-# provider "jsonschema" {
-#   # Configuration options
-# }
-
-# provider "port-labs" {
-#   # Configuration options
-# }

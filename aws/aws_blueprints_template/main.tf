@@ -123,6 +123,17 @@ module "port_ec2_instance" {
   }
 }
 
+# Rob created this module def to ingest the existing port config and policies
+module "port_autofi" {
+  source     = "../autofi"
+  count      = contains(var.resources, "autofi") ? 1 : 0
+  # depends_on = [port_blueprint.region]
+
+  providers = {
+    port-labs = port-labs
+  }
+}
+
 # module "port_load_balancer" {
 #   source     = "../load_balancer"
 #   count      = contains(var.resources, "load_balancer") ? 1 : 0

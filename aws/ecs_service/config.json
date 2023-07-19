@@ -6,19 +6,27 @@
         {
           "identifier": ".ServiceName",
           "title": ".ServiceName",
-          "blueprint": "ecs_service",
+          "blueprint": "service",
           "properties": {
-            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .ServiceArn",
+            "service": ".ServiceName",
+            "cluster": ".Cluster | split(\"/\")[1]",
             "desiredCount": ".DesiredCount",
-            "launchType": ".LaunchType",
-            "cluster": ".Cluster | split(\"/\")[-1]",
-            "schedulingStrategy": ".SchedulingStrategy",
-            "loadBalancers": ".LoadBalancers",
-            "securityGroups": ".NetworkConfiguration.AwsvpcConfiguration.SecurityGroups",
-            "subnets": ".NetworkConfiguration.AwsvpcConfiguration.Subnets",
-            "taskDefinition": ".TaskDefinition | split(\"/\")[-1]",
-            "iamRole": ".Role | if . == null then null else \"https://console.aws.amazon.com/go/view?arn=\" + . end",
-            "arn": ".ServiceArn"
+            "taskDef": ".TaskDefinition | split(\"/\")[-1] | split(\":\")[0]",
+            "arn": ".ServiceArn",
+            "binaryVersion": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:binary-version\")) then \"unknown\" else .[] | select(.Key == \"autofi:binary-version\") | .Value end",
+            "cpu": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-cpu\")) then null else .[] | select(.Key == \"autofi:task-cpu\") | .Value end",
+            "memory": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:task-memory\")) then null else .[] | select(.Key == \"autofi:task-memory\") | .Value end",
+            "elastic_dns": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"a80f9247fafe4086837deb215b45c905\" else \"fe7e74b1a00f4262a7ec8532963d5ce1\" end",
+            "console_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"7b38db90-48f3-11ed-a3e0-4d2200e5ec82\" else \"abcc8690-65e4-11ed-a70c-2dc2eb9b4315\" end",
+            "app_log_index": ".Tags // [] | if (isempty(.[] | select(.Key == \"autofi:env\")) or (.[] | select(.Key == \"autofi:env\") | .Value != \"prod\")) then \"be6ccc10-bb02-11e8-b036-cf92dc970185\" else \"71bec050-ce42-11e8-b752-f312020fec08\" end",
+            "legacy_app_name": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app-legacy-name\")) then \"unknown\" else .[] | select(.Key == \"autofi:app-legacy-name\") | .Value end"
+          },
+          "relations": {
+            "region": ".ServiceArn | split(\":\")[3]",
+            "cloudAccount": ".ServiceArn | split(\":\")[4]",
+            "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+            "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+            "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end"
           }
         }
       ]
