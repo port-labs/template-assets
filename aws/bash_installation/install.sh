@@ -30,7 +30,7 @@
 # Global variables
 REPO_BRANCH=${REPO_BRANCH:-"main"}
 REPO_BASE_URL="https://raw.githubusercontent.com/AutoFi/template-assets/${REPO_BRANCH}"
-REPO_AWS_CONTENT_URL="${REPO_BASE_URL}/aws"
+REPO_AWS_CONTENT_URL="${REPO_BASE_URL}/aws/bash_installation"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
