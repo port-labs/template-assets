@@ -54,6 +54,8 @@ resource "aws_secretsmanager_secret_version" "port_credentials_secret_version" {
 data "jsonschema_validator" "port_config_validation" {
   document = local.config
   schema   = "${path.module}/defaults/config_schema.json"
+
+  provider = jsonschema
 }
 
 resource "aws_s3_object" "config_file_object" {
