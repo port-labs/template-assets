@@ -18,6 +18,6 @@ terraform {
 # provider "env" {
 # }
 
-provider "jsonschema" {
-  # Configuration options
-}
+# provider "jsonschema" {
+#   # Configuration options
+# }
