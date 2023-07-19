@@ -113,15 +113,15 @@ data "aws_region" "current" {}
 #   }
 # }
 
-# module "port_ec2_instance" {
-#   source     = "../ec2_instance"
-#   count      = contains(var.resources, "ec2_instance") ? 1 : 0
-#   depends_on = [port_blueprint.region]
+module "port_ec2_instance" {
+  source     = "../ec2_instance"
+  count      = contains(var.resources, "ec2_instance") ? 1 : 0
+  # depends_on = [port_blueprint.region]
 
-#   providers = {
-#     port-labs = port-labs
-#   }
-# }
+  providers = {
+    port-labs = port-labs
+  }
+}
 
 # module "port_load_balancer" {
 #   source     = "../load_balancer"
