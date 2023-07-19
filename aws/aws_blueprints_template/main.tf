@@ -11,9 +11,9 @@ data "aws_region" "current" {}
 
 # Create Blueprints
 resource "port-labs_blueprint" "region" {
-  title      = "Region"
+  title      = "Port AWS Region"
   icon       = "AWS"
-  identifier = "region"
+  identifier = "port_aws_region"
 
   properties {
     title = "Link"

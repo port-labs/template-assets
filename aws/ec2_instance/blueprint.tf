@@ -72,7 +72,7 @@ resource "port-labs_blueprint" "ec2_instance" {
   }
   
   relations {
-      target     = "region"
+      target     = "port_aws_region"
       title      = "Region"
       identifier = "region"
       many       = false
