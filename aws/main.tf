@@ -21,6 +21,10 @@ terraform {
       source  = "bpedman/jsonschema"
       version = "0.2.1"
     }
+    port = {
+      source  = "port-labs/port-labs"
+      version = "~> 1.0.0"
+    }
   }
 }
 
@@ -28,9 +32,9 @@ provider "jsonschema" {
   # Configuration options
 }
 
-# provider "port-labs" {
-#   # Configuration options
-# }
+provider "port-labs" {
+  # Configuration options
+}
 
 data "aws_caller_identity" "current" {}
 
