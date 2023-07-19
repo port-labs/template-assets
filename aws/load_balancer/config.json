@@ -6,7 +6,7 @@
              {
                 "identifier":".LoadBalancerName",
                 "title":".LoadBalancerName",
-                "blueprint":"loadBalancer",
+                "blueprint":"loadbalancer",
                 "properties":{
                    "link":"\"https://console.aws.amazon.com/go/view?arn=\" + .LoadBalancerArn",
                    "state":".State.Code",
