@@ -91,7 +91,7 @@ module "port_aws_exporter" {
   lambda_policy = local.combined_policies
   bucket_name = local.bucket_name
 
-  schedule_expression = "rate(5 minute)"
+  schedule_expression = "rate(5 minutes)"
   schedule_state    = "ENABLED"
 
   providers = {
