@@ -91,6 +91,9 @@ module "port_aws_exporter" {
   lambda_policy = local.combined_policies
   bucket_name = local.bucket_name
 
+  schedule_expression = "rate(5 minute)"
+  schedule_state    = "ENABLED"
+
   providers = {
     jsonschema = jsonschema
     # port-labs = port-labs # the port provider is not needed here
