@@ -22,7 +22,12 @@
                    "arn":".LoadBalancerArn"
                 },
                 "relations":{
-                   "region":".LoadBalancerArn | split(\":\") | .[3]"
+                  "stack": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:stack\")) then \"unknown\" else .[] | select(.Key == \"autofi:stack\") | .Value end",
+                  "env": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:env\")) then \"unknown\" else .[] | select(.Key == \"autofi:env\") | .Value end",
+                  "app": ".Tags // [] | if isempty(.[] | select(.Key == \"autofi:app\")) then \"unknown\" else .[] | select(.Key == \"autofi:app\") | .Value end",
+                  "vpc_id": ".VpcId",
+                  "region": ".arn | split(\":\")[3]",
+                  "cloudAccount": ".arn | split(\":\")[4]"
                 }
              }
           ]
