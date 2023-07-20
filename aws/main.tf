@@ -96,7 +96,6 @@ module "port_aws_exporter" {
 
   providers = {
     jsonschema = jsonschema
-    # port-labs = port-labs # the port provider is not needed here
   }
 }
 
