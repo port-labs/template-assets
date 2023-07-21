@@ -2,13 +2,29 @@
 
 Template assets is for ingesting cloud resources into port
 
-## Terraform role config
+## Terraform cloud variables
+
+AWS_DEFAULT_REGION = us-east-1
+PORT_CLIENT_ID in port, click on the ... menu at the top right and select credentials
+PORT_CLIENT_SECRET
+resources = ["ecs_service", "rds_db_instance", "load_balancer", "vpc", "hosted_zone", "ecr"] select the HCL option
+TFC_AWS_PROVIDER_AUTH = true
+TFC_AWS_RUN_ROLE_ARN = arn:aws:iam::036438099243:role/TerraformOIDC be sure to update the account number
+
+## Terraform cloud settings
+
+Terraform Working Directory: aws
+branch: main
+
+## Terraform OIDC role config
 
 This project was configured with AWS OIDC.  
 
 https://aws.amazon.com/blogs/apn/simplify-and-secure-terraform-workflows-on-aws-with-dynamic-provider-credentials/  
 
-Trust relationship in role `TerraformOIDC`  
+### Trust relationship in role `TerraformOIDC`  
+
+Be sure to update the account number in this policy.
 
 ```
 {
@@ -33,49 +49,8 @@ Trust relationship in role `TerraformOIDC`
 }
 ```
 
-# Attach policies to `TerraformOIDC` role
+### Attach policies to `TerraformOIDC` role
 
 ```
-AWSCloudFormationFullAccess
-IAMFullAccess 
 AdministratorAccess
 ``` 
-
-Create and attach `PortTemplateAssets`
-
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "CloudControlListActions",
-            "Effect": "Allow",
-            "Action": [
-                "cloudformation:ListResources",
-                "cloudformation:GetResource",
-                "iam:CreatePolicy",
-                "iam:CreatePolicyVersion",
-                "cloudformation:CreateChangeSet",
-                "iam:ListPolicyVersions",
-                "iam:DeletePolicyVersion",
-                "lambda:InvokeFunction",
-                "lambda:PublishLayerVersion",
-                "s3:*",
-                "secretsmanager:PutSecretValue",
-                "serverlessrepo:CreateCloudFormationChangeSet",
-                "serverlessrepo:GetApplication",
-                "cloudformation:GetTemplateSummary",
-                "iam:CreatePolicy",
-                "iam:CreatePolicyVersion",
-                "iam:ListPolicyVersions"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-```
-
-delete
-PortCredentialsSecret
-s3
-Port policy

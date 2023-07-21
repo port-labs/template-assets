@@ -1,7 +1,0 @@
-[
-    "elasticloadbalancing:DescribeLoadBalancers",
-    "elasticloadbalancing:DescribeLoadBalancerAttributes",
-    "elasticloadbalancing:DescribeListeners",
-    "elasticloadbalancing:DescribeTags",
-    "ec2:DescribeSecurityGroups"
-]

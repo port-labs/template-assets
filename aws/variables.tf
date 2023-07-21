@@ -1,6 +1,6 @@
 variable "resources" {
   type = list(string)
-  description = "List of supported resources to deploy in the stack. A resource must have a submodule with config.json, policy.json , event_rule.yaml and blueprint.tf"
+  description = "List of supported resources to deploy in the stack. A resource must have a submodule with config.json, policy.json , event_rule.yaml and blueprint.tf. Must set up in TFC as HCL."
 }
 
 variable "invoke_function" {
