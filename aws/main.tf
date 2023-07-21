@@ -1,10 +1,4 @@
-provider "jsonschema" {
-  # Configuration options
-}
 
-provider "port-labs" {
-  # Configuration options
-}
 
 data "aws_caller_identity" "current" {}
 

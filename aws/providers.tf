@@ -18,3 +18,11 @@ terraform {
     }
   }
 }
+
+provider "jsonschema" {
+  # Configuration options
+}
+
+provider "port-labs" {
+  # Configuration options
+}
