@@ -117,7 +117,7 @@ if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
     exit 1
   fi
 
-  (cat ${temp_dir}/blueprints.json | jq > /dev/null) || (echo "Failed to 'jq' parse the blueprints.json. Is it a valid json? Exiting..." && exit 1)
+  (cat ${temp_dir}/blueprints.json | jq . > /dev/null) || (echo "Failed to 'jq' parse the blueprints.json. Is it a valid json? Exiting..." && exit 1)
   cat ${temp_dir}/blueprints.json | jq -c '.[]' | while read blueprint; do
     post_port_blueprint "${PORT_CLIENT_ID}" "${PORT_CLIENT_SECRET}" "$blueprint" 
   done
