@@ -1,0 +1,41 @@
+SQSEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.iam
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - iam.amazonaws.com
+        eventName:
+          - prefix: CreateUser
+          - prefix: AddUserToGroup
+          - prefix: AttachUserPolicy
+          - prefix: DeleteUser
+          - prefix: DeleteUserPolicy
+          - prefix: DetachUserPolicy
+          - prefix: PutUserPolicy
+          - prefix: RemoveUserFromGroup
+          - prefix: UpdateUser
+    Name: port-aws-exporter-sync-iam-user-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestUserName: $.detail.requestParameters.userName
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::IAM::User",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<userName>\"",
+              "action": "if \"<eventName>\" | test(\"DeleteUser[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }

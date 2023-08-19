@@ -1,0 +1,41 @@
+SQSEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.iam
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - iam.amazonaws.com
+        eventName:
+          - prefix: AddRoleToInstanceProfile
+          - prefix: AttachRolePolicy
+          - prefix: CreateRole
+          - prefix: DeleteRole
+          - prefix: DeleteRolePolicy
+          - prefix: DetachRolePolicy
+          - prefix: PutRolePolicy
+          - prefix: RemoveRoleFromInstanceProfile
+          - prefix: UpdateAssumeRolePolicy
+    Name: port-aws-exporter-sync-iam-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestRoleName: $.detail.requestParameters.roleName
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::IAM::Role",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestRoleName>\"",
+              "action": "if \"<eventName>\" | test(\"DeleteRole[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
