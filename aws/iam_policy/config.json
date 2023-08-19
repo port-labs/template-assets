@@ -1,0 +1,18 @@
+{
+  "kind": "AWS::IAM::Policy",
+  "port": {
+    "entity": {
+      "mappings": [
+        {
+          "identifier": ".PolicyName",
+          "title": ".PolicyName",
+          "blueprint": "iam_policy",
+          "properties": {
+            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+            "arn": ".Arn"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+[
+  "iam:ListInstanceProfilesForRole",
+  "iam:ListRoleTags",
+  "iam:ListAttachedRolePolicies",
+  "iam:ListRoles",
+  "iam:ListRolePolicies",
+  "iam:GetRole",
+  "iam:GetRolePolicy"
+]

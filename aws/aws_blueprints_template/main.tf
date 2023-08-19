@@ -87,3 +87,15 @@ module "port_load_balancer" {
   count = contains(var.resources, "load_balancer") ? 1 : 0
   depends_on = [port-labs_blueprint.region]
 }
+
+module "port_iam_role" {
+  source = "../iam_role"
+  count = contains(var.resources, "iam_role") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}
+
+module "port_iam_policy" {
+  source = "../iam_policy"
+  count = contains(var.resources, "iam_policy") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}

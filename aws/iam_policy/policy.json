@@ -1,0 +1,16 @@
+[
+  "iam:ListPolicies",
+  "iam:GetPolicyVersion",
+  "iam:GetPolicy",
+  "iam:ListGroupPolicies",
+  "iam:ListPoliciesGrantingServiceAccess",
+  "iam:ListEntitiesForPolicy",
+  "iam:ListUserPolicies",
+  "iam:ListPolicyVersions",
+  "iam:GetUserPolicy",
+  "iam:ListAttachedRolePolicies",
+  "iam:ListAttachedUserPolicies",
+  "iam:ListAttachedGroupPolicies",
+  "iam:ListPolicyTags",
+  "iam:ListRolePolicies"
+]

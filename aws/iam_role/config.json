@@ -1,0 +1,19 @@
+{
+  "kind": "AWS::IAM::Role",
+  "port": {
+    "entity": {
+      "mappings": [
+        {
+          "identifier": ".RoleName",
+          "title": ".RoleName",
+          "blueprint": "iam_role",
+          "properties": {
+            "link": "\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+            "arn": ".Arn",
+            "description": ".Description"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+SQSEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.iam
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - iam.amazonaws.com
+        eventName:
+          - prefix: AttachGroupPolicy
+          - prefix: AttachRolePolicy
+          - prefix: AttachUserPolicy
+          - prefix: CreatePolicy
+          - prefix: CreatePolicyVersion
+          - prefix: DeleteGroupPolicy
+          - prefix: DeletePolicy
+          - prefix: DeletePolicyVersion
+          - prefix: DeleteRolePolicy
+          - prefix: DeleteUserPolicy
+          - prefix: DetachGroupPolicy
+          - prefix: DetachRolePolicy
+          - prefix: DetachUserPolicy
+          - prefix: PutGroupPolicy
+          - prefix: PutRolePolicy
+          - prefix: PutUserPolicy
+          - prefix: SetDefaultPolicyVersion
+    Name: port-aws-exporter-sync-iam-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            requestPolicyName: $.detail.requestParameters.policyName
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::IAM::Policy",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<requestPolicyName>\"",
+              "action": "if \"<eventName>\" | test(\"DeletePolicy[^a-zA-Z]*$\") then \"delete\" else \"upsert\" end"
+            }
