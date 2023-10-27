@@ -1,0 +1,4 @@
+[
+  "eks:DescribeCluster",
+  "eks:ListClusters"
+]
