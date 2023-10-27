@@ -87,3 +87,9 @@ module "port_load_balancer" {
   count = contains(var.resources, "load_balancer") ? 1 : 0
   depends_on = [port-labs_blueprint.region]
 }
+
+module "port_eks_cluster" {
+  source = "../eks_cluster"
+  count = contains(var.resources, "eks_cluster") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}
