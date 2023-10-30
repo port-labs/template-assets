@@ -1,0 +1,24 @@
+{
+  "kind": "AWS::EKS::Cluster",
+  "port": {
+    "entity": {
+      "mappings": [
+        {
+          "identifier": ".Name",
+          "title": ".Name",
+          "blueprint": "eks",
+          "properties": {
+            "name": ".Name",
+            "roleArn": ".RoleArn",
+            "version": ".Version",
+            "tags": ".Tags"
+          }
+        }
+      ],
+      "relations":{
+        "region": ".Arn | split(\":\")[3]",
+        "cloudAccount": ".Arn | split(\":\")[4]"
+      }
+    }
+  }
+}
