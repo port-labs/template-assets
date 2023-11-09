@@ -70,11 +70,13 @@
             "description": "Node ready status",
             "enum": [
               "True",
-              "False"
+              "False",
+              "Unknown"
             ],
             "enumColors": {
               "False": "red",
-              "True": "green"
+              "True": "green",
+              "Unknown":"yellow"
             }
           },
           "totalMemory": {

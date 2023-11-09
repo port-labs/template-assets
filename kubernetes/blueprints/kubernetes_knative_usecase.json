@@ -37,11 +37,13 @@
             "description": "Node ready status",
             "enum": [
               "True",
-              "False"
+              "False",
+              "Unknown"
             ],
             "enumColors": {
               "False": "red",
-              "True": "green"
+              "True": "green",
+              "Unknown":"yellow"
             }
           },
           "totalMemory": {
@@ -161,11 +163,13 @@
               "type": "string",
               "enum": [
                 "True",
-                "False"
+                "False",
+                "Unknown"
               ],
               "enumColors": {
                 "True": "green",
-                "False": "red"
+                "False": "red",
+                "Unknown":"yellow"
               }
             },
             "serviceTimeout": {
@@ -213,11 +217,13 @@
               "type": "string",
               "enum": [
                 "True",
-                "False"
+                "False",
+                "Unknown"
               ],
               "enumColors": {
                 "True": "green",
-                "False": "red"
+                "False": "red",
+                "Unknown":"yellow"
               }
             },
             "containers": {
@@ -541,4 +547,3 @@
       }
     }
 ]
-  
