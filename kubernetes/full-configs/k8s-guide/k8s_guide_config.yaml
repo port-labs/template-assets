@@ -1,3 +1,4 @@
+createMissingRelatedEntities: true
 resources:
   - kind: v1/namespaces
     port:
