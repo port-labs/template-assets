@@ -38,7 +38,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"Deployment"'
-              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
@@ -64,7 +63,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"DaemonSet"'
-              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
               strategyConfig: .spec.strategy // {}
@@ -89,7 +87,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             blueprint: '"workload"'
             properties:
               kind: '"StatefulSet"'
-              workloadJson: .
               labels: .metadata.labels
               creationTimestamp: .metadata.creationTimestamp
               strategyConfig: .spec.strategy // {}
@@ -114,7 +111,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
             icon: '"Deployment"'
             blueprint: '"replicaSet"'
             properties:
-              workloadJson: .
               creationTimestamp: .metadata.creationTimestamp
               replicas: .spec.replicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
@@ -249,7 +245,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
               kind: '"Rollout"'
               creationTimestamp: .metadata.creationTimestamp         
               replicas: .spec.replicas
-              workloadJson: .
               strategyConfig: .spec.strategy // null
               availableReplicas: .status.availableReplicas
               hasPrivileged: .spec.template.spec.containers | [.[].securityContext.privileged] | any
