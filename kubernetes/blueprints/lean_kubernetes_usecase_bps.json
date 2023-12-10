@@ -52,11 +52,6 @@
         "icon": "Deployment",
         "schema": {
           "properties": {
-            "workloadJson": {
-              "title": "Workload Json",
-              "type": "object",
-              "description": "The workloads json"
-            },
             "availableReplicas": {
               "type": "number",
               "title": "Running Replicas",

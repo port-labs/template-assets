@@ -48,7 +48,6 @@ resources:
             replicas: .spec.replicas
             strategy: .spec.strategy.type
             strategyConfig: .spec.strategy // {}
-            workloadJson: .
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
           title: .metadata.name
@@ -75,7 +74,6 @@ resources:
             labels: .metadata.labels
             replicas: .spec.replicas
             strategyConfig: .spec.strategy // {}
-            workloadJson: .
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
           title: .metadata.name
@@ -103,7 +101,6 @@ resources:
             labels: .metadata.labels
             replicas: .spec.replicas
             strategyConfig: .spec.strategy // {}
-            workloadJson: .
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
           title: .metadata.name
