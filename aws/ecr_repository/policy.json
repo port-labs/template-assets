@@ -1,0 +1,6 @@
+[
+    "ecr:DescribeRepositories",
+    "ecr:GetLifecyclePolicy",
+    "ecr:GetRepositoryPolicy",
+    "ecr:ListTagsForResource"
+ ]

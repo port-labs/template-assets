@@ -1,0 +1,27 @@
+{
+    "kind":"AWS::ECR::Repository",
+    "port":{
+       "entity":{
+          "mappings":[
+             {
+                "identifier":".RepositoryName",
+                "title":".RepositoryName",
+                "blueprint":"ecr_repository",
+                "properties":{
+                    "imageTagMutability":".ImageTagMutability",
+                    "scanningConfiguration":".ImageScanningConfiguration",
+                    "repositoryArn":".Arn",
+                    "link":"\"https://console.aws.amazon.com/go/view?arn=\" + .Arn",
+                    "repositoryUri":".RepositoryUri",
+                    "encryptionConfiguration":".EncryptionConfiguration",
+                    "lifecyclePolicy":".LifecyclePolicy",
+                    "tags":".Tags"
+                },
+                "relations":{
+                   "region":".Arn | split(\":\") | .[3]"
+                }
+             }
+          ]
+       }
+    }
+ }
