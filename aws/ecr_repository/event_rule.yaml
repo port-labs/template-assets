@@ -1,0 +1,70 @@
+ECRRepositoryEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      detail-type:
+        - AWS API Call via CloudTrail
+      source:
+        - aws.ecr
+      detail:
+        eventSource:
+          - ecr.amazonaws.com
+        eventName:
+          - prefix: CreateRepository
+          - prefix: DeleteRepository
+          - prefix: DeleteLifecyclePolicy
+          - prefix: PutLifecyclePolicy
+    Name: port-aws-exporter-sync-ecr-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            repositoryName: $.detail.requestParameters.repositoryName
+          InputTemplate: >-
+            {
+              "resource_type": "AWS::ECR::Repository",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<repositoryName>\"",
+              "action": "if \"<eventName>\" | startswith(\"DeleteRepository\") then \"delete\" else \"upsert\" end"
+            }
+ECRRepositoryTagRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.ecr
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - ecr.amazonaws.com
+        eventName:
+          - prefix: TagResource
+          - prefix: UntagResource
+    Name: port-aws-exporter-sync-ecr-tags-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            resourceArn: $.detail.requestParameters.resourceArn
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ECR::Repository",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<resourceArn>\" | split(\"/\") | .[-1]",
+              "action": "\"upsert\""
+            }

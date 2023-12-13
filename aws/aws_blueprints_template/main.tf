@@ -93,3 +93,15 @@ module "port_eks_cluster" {
   count = contains(var.resources, "eks_cluster") ? 1 : 0
   depends_on = [port-labs_blueprint.region]
 }
+
+module "port_elasticache_cluster" {
+  source = "../elasticache_cluster"
+  count = contains(var.resources, "elasticache_cluster") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}
+
+module "port_ecr_repository" {
+  source = "../ecr_repository"
+  count = contains(var.resources, "ecr_repository") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}

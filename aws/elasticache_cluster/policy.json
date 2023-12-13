@@ -1,0 +1,4 @@
+[
+    "elasticache:DescribeCacheClusters",
+    "elasticache:ListTagsForResource"
+]

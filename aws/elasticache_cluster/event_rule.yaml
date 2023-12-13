@@ -1,0 +1,69 @@
+ElasticacheEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      detail-type:
+        - AWS API Call via CloudTrail
+      source:
+        - aws.elasticache
+      detail:
+        eventSource:
+          - elasticache.amazonaws.com
+        eventName:
+          - prefix: CreateCacheCluster
+          - prefix: DeleteCacheCluster
+          - prefix: ModifyCacheCluster
+    Name: port-aws-exporter-sync-cache-cluster-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            cacheName: $.detail.responseElements.cacheClusterId
+          InputTemplate: >-
+            {
+              "resource_type": "AWS::ElastiCache::CacheCluster",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<cacheName>\"",
+              "action": "if \"<eventName>\" | startswith(\"DeleteCacheCluster\") then \"delete\" else \"upsert\" end"
+            }
+ElasticacheTagRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.elasticache
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - elasticache.amazonaws.com
+        eventName:
+          - prefix: AddTagsToResource
+          - prefix: RemoveTagsFromResource
+    Name: port-aws-exporter-sync-cache-cluster-tags-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            resourceArn: $.detail.requestParameters.resourceName
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::ElastiCache::CacheCluster",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<resourceArn>\" | split(\":\") | .[-1]",
+              "action": "\"upsert\""
+            }
