@@ -8,7 +8,7 @@ set -e
 # Version: v1.0
 #
 # Description:
-#   This script is responsible for installing Port's Kuberenetes exporter using helm.
+#   This script is responsible for installing Port's Kubernetes exporter using helm.
 #   Documentation: https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/)
 # 
 # Prerequisites(https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/#prerequisites):
@@ -30,7 +30,6 @@ REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/${REP
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-TEMPLATE_NAME=${TEMPLATE_NAME:-}
 BASE_CONFIG_YAML_URL="$REPO_BASE_URL/kubernetes/kubernetes_config.yaml"
 CONFIG_YAML_URL=${CONFIG_YAML_URL:-}
 CUSTOM_BP_PATH=${CUSTOM_BP_PATH:-}
@@ -77,17 +76,8 @@ echo ""
 
 # Download config.yaml file into temporary folder
 if [[ -z ${CONFIG_YAML_URL} ]]; then
-  save_endpoint_to_file ${BASE_CONFIG_YAML_URL} "${temp_dir}/template_config.yaml"
-
-  # Iterate over TEMPLATE_NAMES and download their config.yaml files
-  for template in ${TEMPLATE_NAME}
-  do
-      echo "Downloading config.tmpl file for template '${template}'..."
-      CONFIG_YAML_URL="${REPO_BASE_URL}/kubernetes/${template}_config.tmpl"
-      save_endpoint_to_file ${CONFIG_YAML_URL} "${temp_dir}/${template}_config.tmpl"
-      cat ${temp_dir}/${template}_config.tmpl >> ${temp_dir}/template_config.yaml
-      echo "Added ${template}."
-  done
+  echo "No custom config.yaml file configuration found. Please spciy a custom config.yaml file using the 'CONFIG_YAML_URL' variable."
+  exit 1
 else
   echo "Custom config.yaml file configuration found."
   config_path_type=$(check_path_or_url ${CONFIG_YAML_URL}) # 'local' or 'url'
@@ -100,9 +90,8 @@ else
     exit 1
   fi
 fi
+# Validate config.yaml is a valid yaml
 (cat ${temp_dir}/template_config.yaml | yq > /dev/null) || (echo "Failed to 'yq' parse the config.yaml. Is it a valid yaml? Exiting..." && exit 1)
-# Replace the place holder {CLUSTER_NAME} with passed cluster name in the config.yaml
-sed "s/{CLUSTER_NAME}/${CLUSTER_NAME}/g" "${temp_dir}/template_config.yaml" > "${temp_dir}/config.yaml"
 
 echo ""
 if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
@@ -138,10 +127,11 @@ echo ""
 echo "The exporter will be deployed to namespace: '${TARGET_NAMESPACE}', under the deployment name '${DEPLOYMENT_NAME}'."
 echo ""
 helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAME} \
---create-namespace --namespace ${TARGET_NAMESPACE} \
---set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
---set-file configMap.config=${temp_dir}/config.yaml \
---set stateKey=${CLUSTER_NAME}
+  --create-namespace --namespace ${TARGET_NAMESPACE} \
+  --set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
+  --set extraEnv[0]={"name": "CLUSTER_NAME", "value": "${CLUSTER_NAME}"} \
+  --set extraEnv[1]={"name": "CREATE_DEFAULT_RESOURCES", "value": "false"} \
+  --set stateKey=${CLUSTER_NAME}
 echo ""
 
 echo "Finished installation!"

@@ -5,7 +5,7 @@
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-Rollout-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-Rollout-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"workload"'
             properties:
@@ -21,4 +21,4 @@
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
