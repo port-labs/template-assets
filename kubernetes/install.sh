@@ -26,11 +26,9 @@ set -e
 
 # Global variables
 REPO_BRANCH=${REPO_BRANCH:-"main"}
-REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/${REPO_BRANCH}"
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
 # Exporter installation variables
-BASE_CONFIG_YAML_URL="$REPO_BASE_URL/kubernetes/kubernetes_config.yaml"
 CONFIG_YAML_URL=${CONFIG_YAML_URL:-}
 CUSTOM_BP_PATH=${CUSTOM_BP_PATH:-}
 HELM_REPO_NAME="port-labs"
