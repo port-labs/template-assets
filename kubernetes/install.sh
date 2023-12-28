@@ -127,8 +127,10 @@ echo ""
 helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAME} \
   --create-namespace --namespace ${TARGET_NAMESPACE} \
   --set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
-  --set extraEnv[0]={"name": "CLUSTER_NAME", "value": "${CLUSTER_NAME}"} \
-  --set extraEnv[1]={"name": "CREATE_DEFAULT_RESOURCES", "value": "false"} \
+  --set createDefaultResources=false \
+  --set-file configMap.config=${temp_dir}/template_config.yaml \
+  --set extraEnv[0].name=CLUSTER_NAME \
+  --set extraEnv[0].value=${CLUSTER_NAME} \
   --set stateKey=${CLUSTER_NAME}
 echo ""
 
