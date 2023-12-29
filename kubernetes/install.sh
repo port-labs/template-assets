@@ -73,10 +73,7 @@ echo "Beginning setup..."
 echo ""
 
 # Download config.yaml file into temporary folder
-if [[ -z ${CONFIG_YAML_URL} ]]; then
-  echo "No custom config.yaml file configuration found. Please spciy a custom config.yaml file using the 'CONFIG_YAML_URL' variable."
-  exit 1
-else
+if [[ -n ${CONFIG_YAML_URL} ]]; then
   echo "Custom config.yaml file configuration found."
   config_path_type=$(check_path_or_url ${CONFIG_YAML_URL}) # 'local' or 'url'
   if [[ "${config_path_type}" == 'local' ]]; then
@@ -87,12 +84,14 @@ else
     echo "Failed to retrieve custom \`config.yaml\` ${CONFIG_YAML_URL}. Is the path/URL valid?"
     exit 1
   fi
+else
+  echo "" > "${temp_dir}/template_config.yaml"
 fi
 # Validate config.yaml is a valid yaml
 (cat ${temp_dir}/template_config.yaml | yq > /dev/null) || (echo "Failed to 'yq' parse the config.yaml. Is it a valid yaml? Exiting..." && exit 1)
 
 echo ""
-if [[ ! -z ${CUSTOM_BP_PATH} ]]; then
+if [[ -n ${CUSTOM_BP_PATH} ]]; then
   echo "Found custom a blueprints file configuration. Attempting to create blueprints defined in: ${CUSTOM_BP_PATH}"
   bp_path_type=$(check_path_or_url ${CUSTOM_BP_PATH}) # 'local' or 'url'
   if [[ "${bp_path_type}" == 'local' ]]; then
