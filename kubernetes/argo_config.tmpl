@@ -3,7 +3,7 @@
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             blueprint: '"argocdApp"'
             title: .metadata.name
             properties:
@@ -14,20 +14,20 @@
               gitPath: .spec.source.path // null
               gitRev: .status.sync.revision // null
             relations:
-              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefulSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-{CLUSTER_NAME}") // []'
-              argocdProject: .spec.project + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
-              destinationNamespace: .spec.destination.namespace + "-" + "{CLUSTER_NAME}"
+              workload: '(.spec.destination.namespace as $namespace | .status.resources | map(select(.kind == "Deployment" or .kind == "StatefulSet" or .kind == "DaemonSet" or .kind == "Rollout" )) | .[] | .name + "-" + .kind + "-" + $namespace + "-" + env.CLUSTER_NAME) // []'
+              argocdProject: .spec.project + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+              destinationNamespace: .spec.destination.namespace + "-" + env.CLUSTER_NAME
 
   - kind: argoproj.io/v1alpha1/appproject
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"argocdProject"'
             properties:
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
 
   - kind: v1/secrets
     selector:
@@ -35,11 +35,11 @@
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"argocdRepo"'
             properties:
               repoUrl: .data.url | @base64d
               repoType: .data.type | @base64d
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME

@@ -7,14 +7,14 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings: # Mappings between one K8s object to one or many Port Entities. Each value is a JQ query.
-          - identifier: .metadata.name + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"namespace"'
             properties:
               creationTimestamp: .metadata.creationTimestamp
               labels: .metadata.labels
             relations:
-              Cluster: '"{CLUSTER_NAME}"'
+              Cluster: env.CLUSTER_NAME
 
   - kind: v1/namespaces
     selector:
@@ -22,8 +22,8 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings:
-          - identifier: '"{CLUSTER_NAME}"'
-            title: '"{CLUSTER_NAME}"'
+          - identifier: env.CLUSTER_NAME
+            title: env.CLUSTER_NAME
             blueprint: '"cluster"'
 
   - kind: apps/v1/deployments
@@ -32,7 +32,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             icon: '"Deployment"'
             blueprint: '"workload"'
@@ -50,7 +50,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
 
   - kind: apps/v1/daemonsets 
     selector:
@@ -58,7 +58,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings:
-          - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-DaemonSet-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"workload"'
             properties:
@@ -74,7 +74,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
 
   - kind: apps/v1/statefulsets
     selector:
@@ -82,7 +82,7 @@ resources: # List of K8s resources to list, watch, and export to Port.
     port:
       entity:
         mappings: 
-          - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + "{CLUSTER_NAME}"
+          - identifier: .metadata.name + "-StatefulSet-" + .metadata.namespace + "-" + env.CLUSTER_NAME
             title: .metadata.name
             blueprint: '"workload"'
             properties:
@@ -98,4 +98,4 @@ resources: # List of K8s resources to list, watch, and export to Port.
               containers: (.spec.template.spec.containers | map({name, image, resources}))
               isHealthy: if .spec.replicas == .status.availableReplicas then "Healthy" else "Unhealthy" end
             relations:
-              Namespace: .metadata.namespace + "-" + "{CLUSTER_NAME}"
+              Namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
