@@ -265,7 +265,7 @@
             "id": "bitbucketHasTeamEntitiesPieChart",
             "type": "entities-pie-chart",
             "property": "scorecard-rule#ProductionReadiness#hasTeam",
-            "title": "Has Team",
+            "title": "Has a Team",
             "icon": "Star",
             "dataset": {
               "combinator": "and",
