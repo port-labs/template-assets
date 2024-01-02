@@ -1,0 +1,31 @@
+name: Release integrations
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - integrations/**
+
+jobs:
+  upload-specs:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    needs: release-integration
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials 🔒
+        id: aws-credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Upload specifications to s3
+        run: |
+          # AWS S3 bucket details
+          aws_s3_bucket="advance-templates"
+          
+          aws s3 cp integrations/ "s3://$aws_s3_bucket/integrations" --recursive

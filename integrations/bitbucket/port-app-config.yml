@@ -1,0 +1,14 @@
+resources:
+  - kind: repository
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .name
+          title: .name
+          blueprint: '"service"'
+          properties:
+            readme: file://README.md
+            url: .html_url
+            language: .language
