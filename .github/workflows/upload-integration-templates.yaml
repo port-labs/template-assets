@@ -8,7 +8,7 @@ on:
       - integrations/**
 
 jobs:
-  upload-specs:
+  upload-templates:
     runs-on: ubuntu-latest
     permissions:
       packages: write
