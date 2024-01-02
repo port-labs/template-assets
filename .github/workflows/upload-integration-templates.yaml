@@ -24,7 +24,6 @@ jobs:
     permissions:
       packages: write
       contents: read
-    needs: upload-integrations
     steps:
       - name: Check out code
         uses: actions/checkout@v4
