@@ -13,10 +13,9 @@ on:
       bucket_environment:
         description: 'Environment to deploy to, either stg or prod'
         required: true
-        default: 'stg'
+        default: 'stg-01'
         options:
-          - 'stg'
-          - 'prod'
+          - 'stg-01'
 
 jobs:
   upload-templates:
@@ -37,13 +36,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: resolve the aws s3 bucket name
         id: resolve-bucket-name
-        # if part of push then always prod, if part of workflow_dispatch then use the input
-        # if stg then stg-01 if prod then no need to append
         run: |
-            if [[ "${{ github.event_name }}" == "push" || "${{ github.event.inputs.environment }}" == "prod" ]]; then
+            if [[ "${{ github.event_name }}" == "push"; then
                 echo "bucket_name=advance-templates" >> $GITHUB_OUTPUT
-            elif [[ "${{ github.event.inputs.environment }}" == "stg" ]]; then
-                echo "bucket_name=advance-templates-stg-01" >> $GITHUB_OUTPUT
+            else:
+                echo "bucket_name=advance-templates-${{ github.event.inputs.bucket_environment }}" >> $GITHUB_OUTPUT
             fi
       - name: Upload specifications to s3
         run: aws s3 cp integrations/ "s3://${{ steps.resolve-bucket-name.output.bucket_name }}/integrations" --recursive
