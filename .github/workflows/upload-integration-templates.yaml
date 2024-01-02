@@ -43,4 +43,4 @@ jobs:
                 echo "bucket_name=advance-templates-stg-01" >> $GITHUB_OUTPUT
             fi
       - name: Upload specifications to s3
-        run: aws s3 cp integrations/ "s3://${{ steps.resolve-bucket-name.outputs.bucket_name }}/integrations" --recursive
+        run: aws s3 cp integrations/ s3://${{ steps.resolve-bucket-name.outputs.bucket_name }}/integrations/ --recursive
