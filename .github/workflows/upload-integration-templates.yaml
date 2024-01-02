@@ -7,6 +7,14 @@ on:
       # we only want to run this workflow when changes are made to the integrations folder
       - integrations/**
 
+  # when running the workflow manually upload to stg bucket
+  workflow_dispatch:
+    inputs:
+      bucket_environment:
+        description: 'Environment to deploy to, either stg or prod'
+        required: true
+        default: 'stg'
+
 jobs:
   upload-templates:
     runs-on: ubuntu-latest
@@ -24,9 +32,15 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Upload specifications to s3
+      - name: resolve the aws s3 bucket name
+        id: resolve-bucket-name
+        # if part of push then always prod, if part of workflow_dispatch then use the input
+        # if stg then stg-01 if prod then no need to append
         run: |
-          # AWS S3 bucket details
-          aws_s3_bucket="advance-templates"
-          
-          aws s3 cp integrations/ "s3://$aws_s3_bucket/integrations" --recursive
+            if [[ "${{ github.event_name }}" == "push" || "${{ github.event.inputs.environment }}" == "prod" ]]; then
+                echo "bucket_name=advance-templates" >> $GITHUB_OUTPUT
+            elif [[ "${{ github.event.inputs.environment }}" == "stg" ]]; then
+                echo "bucket_name=advance-templates-stg-01" >> $GITHUB_OUTPUT
+            fi
+      - name: Upload specifications to s3
+        run: aws s3 cp integrations/ "s3://${{ steps.resolve-bucket-name.output.bucket_name }}/integrations" --recursive
