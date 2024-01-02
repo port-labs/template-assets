@@ -1,9 +1,10 @@
-name: Release integrations
+name: Upload integration templates
 on:
   push:
     branches:
       - main
     paths:
+      # we only want to run this workflow when changes are made to the integrations folder
       - integrations/**
 
 jobs:
@@ -12,7 +13,7 @@ jobs:
     permissions:
       packages: write
       contents: read
-    needs: release-integration
+    needs: upload-integrations
     steps:
       - name: Check out code
         uses: actions/checkout@v4
