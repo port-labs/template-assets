@@ -6,7 +6,6 @@ on:
     paths:
       # we only want to run this workflow when changes are made to the integrations folder
       - integrations/**
-  pull_request:
 
   # when running the workflow manually upload to stg bucket
   workflow_dispatch:
