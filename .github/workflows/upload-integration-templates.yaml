@@ -38,9 +38,11 @@ jobs:
         id: resolve-bucket-name
         run: |
             if [[ "${{ github.event_name }}" == "push" ]]; then
-                echo "bucket_name=advance-templates" >> $GITHUB_OUTPUT
+                echo "BUCKET_NAME=advance-templates" >> $GITHUB_OUTPUT
             else:
-                echo "bucket_name=advance-templates-stg-01" >> $GITHUB_OUTPUT
+                echo "BUCKET_NAME=advance-templates-stg-01" >> $GITHUB_OUTPUT
             fi
       - name: Upload specifications to s3
-        run: aws s3 cp integrations/ s3://${{ steps.resolve-bucket-name.outputs.bucket_name }}/integrations/ --recursive
+        env:
+          BUCKET_NAME: ${{ steps.resolve-bucket-name.outputs.BUCKET_NAME }}
+        run: aws s3 cp integrations/ s3://${{ env.BUCKET_NAME }}/integrations/ --recursive
