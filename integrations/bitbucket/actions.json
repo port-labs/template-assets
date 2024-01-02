@@ -20,9 +20,9 @@
     },
     "invocationMethod": {
       "type": "WEBHOOK",
-      "agent": false,
-      "url": "https://<JENKINS_URL>/generic-webhook-trigger/invoke?token=<JOB_TOKEN>",
-      "synchronized": true,
+      "agent": true,
+      "url": "https://example.com",
+      "synchronized": false,
       "method": "POST"
     },
     "trigger": "CREATE",
@@ -40,9 +40,9 @@
     },
     "invocationMethod": {
       "type": "WEBHOOK",
-      "agent": false,
-      "url": "https://<JENKINS_URL>/generic-webhook-trigger/invoke?token=<JOB_TOKEN>",
-      "synchronized": true,
+      "agent": true,
+      "url": "https://example.com",
+      "synchronized": false,
       "method": "POST"
     },
     "trigger": "CREATE",
@@ -143,10 +143,10 @@
     },
     "invocationMethod": {
       "type": "WEBHOOK",
-      "agent": false,
+      "agent": true,
+      "url": "https://example.com",
       "synchronized": false,
-      "method": "POST",
-      "url": "https://<JENKINS_URL>/generic-webhook-trigger/invoke?token=<JOB_TOKEN>"
+      "method": "POST"
     },
     "trigger": "DAY-2",
     "description": "To complete setting up this action, please follow following guide:  [Setup create s3 bucket ->](https://docs.getport.io/guides-and-tutorials/create-cloud-resource-using-iac/)",
