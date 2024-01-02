@@ -40,7 +40,7 @@
       "method": "POST"
     },
     "trigger": "CREATE",
-    "description": "To complete setting up this action, please refer to the following guide - https://docs.getport.io/guides-and-tutorials/scaffold-a-new-service?git-provider=bitbucket",
+    "description": "To complete setting up this action, please refer to the following guide: [Setup scaffold service action ->](https://docs.getport.io/guides-and-tutorials/scaffold-a-new-service?git-provider=bitbucket)",
     "requiredApproval": false,
     "blueprint": "service"
   },
@@ -60,7 +60,7 @@
       "method": "POST"
     },
     "trigger": "CREATE",
-    "description": "To complete setting up this action, please refer to the following guide - https://docs.getport.io/guides-and-tutorials/setup-slack-reminders?git-provider=bitbucket",
+    "description": "To complete setting up this action, please refer to the following guide: [Setup send scorecard reminder action ->](https://docs.getport.io/guides-and-tutorials/setup-slack-reminders?git-provider=bitbucket)",
     "requiredApproval": false,
     "blueprint": "service"
   },
@@ -111,13 +111,13 @@
     },
     "invocationMethod": {
       "type": "WEBHOOK",
-      "agent": false,
-      "url": "https://<JENKINS_URL>/generic-webhook-trigger/invoke?token=<JOB_TOKEN>",
-      "synchronized": true,
+      "agent": true,
+      "url": "https://example.com",
+      "synchronized": false,
       "method": "POST"
     },
     "trigger": "DAY-2",
-    "description": "To complete setting up this action, please refer to the following guide - https://docs.getport.io/guides-and-tutorials/let-developers-enrich-services-using-gitops?git-provider=bitbucket",
+    "description": "To complete setting up this action, please refer to the following guide: [Setup enrich service action ->](https://docs.getport.io/guides-and-tutorials/let-developers-enrich-services-using-gitops?git-provider=bitbucket)",
     "requiredApproval": false,
     "blueprint": "service"
   },
@@ -163,7 +163,7 @@
       "method": "POST"
     },
     "trigger": "DAY-2",
-    "description": "To complete setting up this action, please refer to the following guide - https://docs.getport.io/guides-and-tutorials/create-cloud-resource-using-iac?git-provider=bitbucket",
+    "description": "To complete setting up this action, please refer to the following guide: [Setup create s3 bucket ->](https://docs.getport.io/guides-and-tutorials/create-cloud-resource-using-iac?git-provider=bitbucket)",
     "requiredApproval": false,
     "blueprint": "service"
   }
