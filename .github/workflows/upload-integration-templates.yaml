@@ -1,0 +1,45 @@
+name: Upload integration templates
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # we only want to run this workflow when changes are made to the integrations folder
+      - integrations/**
+
+  # when running the workflow manually upload to stg bucket
+  workflow_dispatch:
+    inputs:
+      bucket_environment:
+        description: 'Environment to deploy to, either stg or prod'
+        required: true
+        default: 'stg-01'
+        options:
+          - 'stg-01'
+
+jobs:
+  upload-templates:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials 🔒
+        id: aws-credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: resolve the aws s3 bucket name
+        id: resolve-bucket-name
+        run: |
+            if [[ "${{ github.event_name }}" == "push" ]]; then
+                echo "BUCKET_NAME=advance-templates" >> $GITHUB_OUTPUT
+            else
+                echo "BUCKET_NAME=advance-templates-stg-01" >> $GITHUB_OUTPUT
+            fi
+      - name: Upload specifications to s3
+        run: aws s3 cp integrations/ s3://${{ steps.resolve-bucket-name.outputs.BUCKET_NAME }}/integrations/ --recursive
