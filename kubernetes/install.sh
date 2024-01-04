@@ -25,6 +25,7 @@ set -e
 ###################################################
 
 # Global variables
+REPO_BASE_URL="https://raw.githubusercontent.com/port-labs/template-assets/main"
 REPO_BRANCH=${REPO_BRANCH:-"main"}
 COMMON_FUNCTIONS_URL="${REPO_BASE_URL}/common.sh"
 
