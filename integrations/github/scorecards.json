@@ -19,7 +19,7 @@
         }
       },
       {
-        "identifier": "usesASupportedLanguage",
+        "identifier": "usesSupportedLang",
         "title": "Uses a supported language",
         "level": "Silver",
         "query": {
