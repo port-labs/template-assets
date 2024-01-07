@@ -41,6 +41,22 @@ TARGET_NAMESPACE=${TARGET_NAMESPACE:-"port-k8s-exporter"}
 DEPLOYMENT_NAME=${DEPLOYMENT_NAME:-"port-k8s-exporter"}
 CLUSTER_NAME=${CLUSTER_NAME:-"my-cluster"}
 
+# Event listener variables
+EVENT_LISTENER_TYPE=${EVENT_LISTENER_TYPE:-"POLLING"}
+
+if [[ "${EVENT_LISTENER_TYPE}" != "POLLING" ]] && [[ "${EVENT_LISTENER_TYPE}" != "KAFKA" ]]; then
+  echo "Invalid event listener type: '${EVENT_LISTENER_TYPE}'. Valid types are: 'POLLING' or 'KAFKA'."
+  exit 1
+fi
+
+# Polling event listener variables
+EVENT_LISTENER_POLLING_RATE=${EVENT_LISTENER_POLLING_RATE:-}
+
+# Kafka event listener variables
+EVENT_LISTENER_KAFKA_BROKERS=${EVENT_LISTENER_KAFKA_BROKERS:-}
+EVENT_LISTENER_KAFKA_SECURITY_PROTOCOL=${EVENT_LISTENER_KAFKA_SECURITY_PROTOCOL:-}
+EVENT_LISTENER_KAFKA_AUTHENTICATION_MECHANISM=${EVENT_LISTENER_KAFKA_AUTHENTICATION_MECHANISM:-}
+
 function cleanup {
   rm -rf "${temp_dir}"
 }
@@ -124,14 +140,33 @@ echo "*** The cluster will be referenced as '${CLUSTER_NAME}' in your Port Envir
 echo ""
 echo "The exporter will be deployed to namespace: '${TARGET_NAMESPACE}', under the deployment name '${DEPLOYMENT_NAME}'."
 echo ""
-helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAME} \
+helm_upgrade_command="helm upgrade --install ${DEPLOYMENT_NAME} ${HELM_REPO_NAME}/${HELM_K8S_CHART_NAME} \
   --create-namespace --namespace ${TARGET_NAMESPACE} \
   --set secret.secrets.portClientId=${PORT_CLIENT_ID} --set secret.secrets.portClientSecret=${PORT_CLIENT_SECRET} \
   --set createDefaultResources=false \
   --set-file configMap.config=${temp_dir}/template_config.yaml \
   --set extraEnv[0].name=CLUSTER_NAME \
   --set extraEnv[0].value=${CLUSTER_NAME} \
-  --set stateKey=${CLUSTER_NAME}
+  --set stateKey=${CLUSTER_NAME} \
+  --set eventListener.type=${EVENT_LISTENER_TYPE}"
+
+if [ -n "${EVENT_LISTENER_KAFKA_BROKERS}" ]; then
+  helm_upgrade_command="${helm_upgrade_command} --set eventListener.brokers=${EVENT_LISTENER_KAFKA_BROKERS}"
+fi
+
+if [ -n "${EVENT_LISTENER_KAFKA_SECURITY_PROTOCOL}" ]; then
+  helm_upgrade_command="${helm_upgrade_command} --set eventListener.securityProtocol=${EVENT_LISTENER_KAFKA_SECURITY_PROTOCOL}"
+fi
+
+if [ -n "${EVENT_LISTENER_KAFKA_AUTHENTICATION_MECHANISM}" ]; then
+  helm_upgrade_command="${helm_upgrade_command} --set eventListener.authenticationMechanism=${EVENT_LISTENER_KAFKA_AUTHENTICATION_MECHANISM}"
+fi
+
+if [ -n "${EVENT_LISTENER_POLLING_RATE}" ]; then
+  helm_upgrade_command="${helm_upgrade_command} --set eventListener.pollingRate=${EVENT_LISTENER_POLLING_RATE}"
+fi
+
+eval "${helm_upgrade_command}"
 echo ""
 
 echo "Finished installation!"
