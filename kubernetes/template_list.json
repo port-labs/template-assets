@@ -14,5 +14,10 @@
         "name": "Istio",
         "description": "Contains Istio gateway and virtualservice",
         "path": "istio_config.tmpl"
+    },
+    "kyverno": {
+        "name": "Kyverno",
+        "description": "Contains Kyverno resources",
+        "path": "kyverno_config.tmpl"
     }
 }
