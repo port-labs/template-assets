@@ -19,5 +19,10 @@
         "name": "Kyverno",
         "description": "Contains Kyverno resources",
         "path": "kyverno_config.tmpl"
+    },
+    "trivy": {
+        "name": "Trivy",
+        "description": "Contains Trivy resources",
+        "path": "trivy_config.tmpl"
     }
 }
