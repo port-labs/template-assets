@@ -8,6 +8,7 @@ on:
         - kubernetes/template_list.json
         - kubernetes/*.tmpl
         - kubernetes/kubernetes_config.yaml
+  workflow_dispatch:
 
 jobs:
   create-matrix:
