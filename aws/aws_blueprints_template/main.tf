@@ -105,3 +105,9 @@ module "port_ecr_repository" {
   count = contains(var.resources, "ecr_repository") ? 1 : 0
   depends_on = [port-labs_blueprint.region]
 }
+
+module "port_autoscaling_group" {
+  source = "../autoscaling_group"
+  count = contains(var.resources, "autoscaling_group") ? 1 : 0
+  depends_on = [port-labs_blueprint.region]
+}

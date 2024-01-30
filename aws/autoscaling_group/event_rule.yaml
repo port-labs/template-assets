@@ -1,0 +1,69 @@
+AutoScalingGroupEventRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      detail-type:
+        - AWS API Call via CloudTrail
+      source:
+        - aws.autoscaling
+      detail:
+        eventSource:
+          - autoscaling.amazonaws.com
+        eventName:
+          - prefix: CreateAutoScalingGroup
+          - prefix: DeleteAutoScalingGroup
+          - prefix: UpdateAutoScalingGroup
+    Name: port-aws-exporter-sync-auto-scaling-group-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            autoScalingGroupName: $.detail.requestParameters.autoScalingGroupName
+          InputTemplate: >-
+            {
+              "resource_type": "AWS::AutoScaling::AutoScalingGroup",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<autoScalingGroupName>\"",
+              "action": "if \"<eventName>\" | startswith(\"DeleteAutoScalingGroup\") then \"delete\" else \"upsert\" end"
+            }
+AutoScalingGroupTagRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: default
+    EventPattern:
+      source:
+        - aws.autoscaling
+      detail-type:
+        - AWS API Call via CloudTrail
+      detail:
+        eventSource:
+          - autoscaling.amazonaws.com
+        eventName:
+          - prefix: CreateOrUpdateTags
+          - prefix: DeleteTags
+    Name: port-aws-exporter-sync-auto-scaling-group-tags-trails
+    State: ENABLED
+    Targets:
+      - Id: PortAWSExporterEventsQueue
+        Arn:
+          Fn::ImportValue:
+            Fn::Sub: ${PortAWSExporterStackName}-EventsQueueARN
+        InputTransformer:
+          InputPathsMap:
+            awsRegion: $.detail.awsRegion
+            eventName: $.detail.eventName
+            resourceId: $.detail.requestParameters.tags[0].resourceId
+          InputTemplate: |-
+            {
+              "resource_type": "AWS::AutoScaling::AutoScalingGroup",
+              "region": "\"<awsRegion>\"",
+              "identifier": "\"<resourceId>\"",
+              "action": "\"upsert\""
+            }

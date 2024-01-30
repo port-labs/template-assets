@@ -1,0 +1,24 @@
+{
+    "kind": "AWS::AutoScaling::AutoScalingGroup",
+    "port": {
+      "entity": {
+        "mappings": [
+          {
+            "identifier": ".AutoScalingGroupName",
+            "title": ".AutoScalingGroupName",
+            "blueprint": "awsAutoScalingGroup",
+            "properties": {
+              "desiredCapacity": ".DesiredCapacity",
+              "minimumCapacity": ".MinSize",
+              "maximumCapacity": ".MaxSize",
+              "availabilityZones": ".AvailabilityZones",
+              "loadBalancerNames": ".LoadBalancerNames",
+              "healthCheckType": ".HealthCheckType",
+              "serviceRoleArn": ".ServiceLinkedRoleARN",
+              "tags": ".Tags"
+            }
+          }
+        ]
+      }
+    }
+  }
