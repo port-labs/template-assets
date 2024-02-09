@@ -442,7 +442,7 @@
               "enumColors": {
                 "True": "green",
                 "False": "red",
-                "Unknown": "lightGray"
+                "Unknown": "yellow"
               }
             },
             "createdAt": {
