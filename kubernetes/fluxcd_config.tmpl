@@ -1,0 +1,73 @@
+  - kind: source.toolkit.fluxcd.io/v1/gitrepositories
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .metadata.name
+            icon: '"Fluxcd"'
+            blueprint: '"fluxSource"'
+            properties:
+              repoURL: .spec.url
+              sourceType: .kind
+              branch: .spec.ref.branch
+              interval: .spec.interval
+              createdAt: .metadata.creationTimestamp
+            relations:
+              namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
+
+  - kind: source.toolkit.fluxcd.io/v1beta2/helmrepositories
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .metadata.name
+            icon: '"Fluxcd"'
+            blueprint: '"fluxSource"'
+            properties:
+              repoURL: .spec.url
+              sourceType: .kind
+              branch: .spec.ref.branch
+              interval: .spec.interval
+              createdAt: .metadata.creationTimestamp
+            relations:
+              namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
+
+  - kind: kustomize.toolkit.fluxcd.io/v1/kustomizations
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .metadata.name
+            icon: '"Fluxcd"'
+            blueprint: '"fluxApplication"'
+            properties:
+              targetNamespace: .spec.targetNamespace
+              namespace: .metadata.namespace
+              ready: .status.conditions[] | select(.type == "Ready") | .status
+              path: .spec.path
+              prune: .spec.prune
+              applicationType: .kind
+              interval: .spec.interval
+              createdAt: .metadata.creationTimestamp
+            relations:
+              source: .spec.sourceRef.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+  
+  - kind: helm.toolkit.fluxcd.io/v2beta2/helmreleases
+    port:
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .metadata.name
+            icon: '"Fluxcd"'
+            blueprint: '"fluxApplication"'
+            properties:
+              targetNamespace: .spec.targetNamespace
+              namespace: .metadata.namespace
+              ready: .status.conditions[] | select(.type == "Ready") | .status
+              path: .spec.path
+              prune: .spec.prune
+              applicationType: .kind
+              interval: .spec.chart.spec.interval
+              createdAt: .metadata.creationTimestamp
+            relations:
+              source: .spec.chart.spec.sourceRef.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME

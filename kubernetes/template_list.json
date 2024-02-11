@@ -24,5 +24,10 @@
         "name": "Trivy",
         "description": "Contains Trivy resources",
         "path": "trivy_config.tmpl"
+    },
+    "fluxcd": {
+        "name": "FluxCD",
+        "description": "Contains FluxCD resources",
+        "path": "fluxcd_config.tmpl"
     }
 }
