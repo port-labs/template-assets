@@ -75,65 +75,6 @@
     "blueprint": "service"
   },
   {
-    "identifier": "github_enrich_service",
-    "title": "Enrich service",
-    "icon": "Git",
-    "userInputs": {
-      "properties": {
-        "type": {
-          "icon": "BlankPage",
-          "title": "Type",
-          "description": "The service's type",
-          "type": "string",
-          "enum": [
-            "backend",
-            "frontend",
-            "integration"
-          ],
-          "enumColors": {
-            "backend": "lightGray",
-            "frontend": "lightGray",
-            "integration": "lightGray"
-          }
-        },
-        "lifecycle": {
-          "icon": "CICD",
-          "title": "Lifecycle",
-          "description": "The service's lifecycle state",
-          "type": "string",
-          "enum": [
-            "Production",
-            "Experimental",
-            "Deprecated"
-          ],
-          "enumColors": {
-            "Production": "green",
-            "Experimental": "orange",
-            "Deprecated": "red"
-          }
-        }
-      },
-      "required": [],
-      "order": [
-        "type",
-        "lifecycle"
-      ]
-    },
-    "invocationMethod": {
-      "type": "GITHUB",
-      "omitPayload": false,
-      "omitUserInputs": false,
-      "reportWorkflowStatus": true,
-      "org": "<GITHUB_ORG_NAME>",
-      "repo": "<GITHUB_REPO_NAME>",
-      "workflow": "port-enrich-service.yaml"
-    },
-    "trigger": "DAY-2",
-    "description": "To complete setting up this action, please refer to the following guide: [Setup enrich service action ->](https://docs.getport.io/guides-and-tutorials/let-developers-enrich-services-using-gitops?git-provider=github)",
-    "requiredApproval": false,
-    "blueprint": "service"
-  },
-  {
     "identifier": "promote_to_production",
     "title": "Promote to Production",
     "icon": "Argo",
@@ -274,6 +215,65 @@
     "description": "To complete setting up this action, please refer to the following guide: [Setup Remind reviewers about PR ->](https://docs.getport.io/create-self-service-experiences/setup-backend/github-workflow/examples/nudge-pr-reviewers)",
     "requiredApproval": false,
     "blueprint": "githubPullRequest"
+  },
+  {
+    "identifier": "github_enrich_service",
+    "title": "Enrich service",
+    "icon": "Git",
+    "userInputs": {
+      "properties": {
+        "type": {
+          "icon": "BlankPage",
+          "title": "Type",
+          "description": "The service's type",
+          "type": "string",
+          "enum": [
+            "backend",
+            "frontend",
+            "integration"
+          ],
+          "enumColors": {
+            "backend": "lightGray",
+            "frontend": "lightGray",
+            "integration": "lightGray"
+          }
+        },
+        "lifecycle": {
+          "icon": "CICD",
+          "title": "Lifecycle",
+          "description": "The service's lifecycle state",
+          "type": "string",
+          "enum": [
+            "Production",
+            "Experimental",
+            "Deprecated"
+          ],
+          "enumColors": {
+            "Production": "green",
+            "Experimental": "orange",
+            "Deprecated": "red"
+          }
+        }
+      },
+      "required": [],
+      "order": [
+        "type",
+        "lifecycle"
+      ]
+    },
+    "invocationMethod": {
+      "type": "GITHUB",
+      "omitPayload": false,
+      "omitUserInputs": false,
+      "reportWorkflowStatus": true,
+      "org": "<GITHUB_ORG_NAME>",
+      "repo": "<GITHUB_REPO_NAME>",
+      "workflow": "port-enrich-service.yaml"
+    },
+    "trigger": "DAY-2",
+    "description": "To complete setting up this action, please refer to the following guide: [Setup enrich service action ->](https://docs.getport.io/guides-and-tutorials/let-developers-enrich-services-using-gitops?git-provider=github)",
+    "requiredApproval": false,
+    "blueprint": "service"
   },
   {
     "identifier": "github_send_scorecard_reminder",
