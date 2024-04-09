@@ -5,17 +5,12 @@
     "title": "Cluster",
     "icon": "Cluster",
     "schema": {
-      "properties": {
-      },
-      "required": [
-      ]
+      "properties": {},
+      "required": []
     },
-    "mirrorProperties": {
-    },
-    "calculationProperties": {
-    },
-    "relations": {
-    }
+    "mirrorProperties": {},
+    "calculationProperties": {},
+    "relations": {}
   },
   {
     "identifier": "node",
@@ -42,7 +37,8 @@
           "description": "Node ready status",
           "enum": [
             "True",
-            "False"
+            "False",
+            "Unknown"
           ],
           "enumColors": {
             "False": "red",
@@ -67,13 +63,10 @@
           "description": "Total CPU capacity of the Node"
         }
       },
-      "required": [
-      ]
+      "required": []
     },
-    "mirrorProperties": {
-    },
-    "calculationProperties": {
-    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
     "relations": {
       "Cluster": {
         "title": "Cluster",
@@ -102,13 +95,10 @@
           "description": "Labels of the Namespace"
         }
       },
-      "required": [
-      ]
+      "required": []
     },
-    "mirrorProperties": {
-    },
-    "calculationProperties": {
-    },
+    "mirrorProperties": {},
+    "calculationProperties": {},
     "relations": {
       "Cluster": {
         "title": "Cluster",
@@ -239,8 +229,7 @@
         "conditions": {
           "type": "array",
           "title": "Conditions",
-          "default": [
-          ],
+          "default": [],
           "description": "Pod's conditions"
         },
         "labels": {
@@ -260,8 +249,7 @@
           "description": "Pod's creation date"
         }
       },
-      "required": [
-      ]
+      "required": []
     },
     "mirrorProperties": {
       "containers": {
@@ -277,8 +265,7 @@
         "path": "workload.Namespace.$title"
       }
     },
-    "calculationProperties": {
-    },
+    "calculationProperties": {},
     "relations": {
       "replicaSet": {
         "title": "ReplicaSet",
