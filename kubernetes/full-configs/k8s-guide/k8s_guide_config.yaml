@@ -50,6 +50,7 @@ resources:
             strategyConfig: .spec.strategy // {}
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
+            service: .metadata.labels.portService
           title: .metadata.name
     selector:
       query: .metadata.namespace | startswith("kube") | not
@@ -76,6 +77,7 @@ resources:
             strategyConfig: .spec.strategy // {}
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
+            service: .metadata.labels.portService
           title: .metadata.name
     selector:
       query: .metadata.namespace | startswith("kube") | not
@@ -113,9 +115,7 @@ resources:
         - blueprint: '"service"'
           icon: '"Deployment"'
           identifier: .metadata.labels.portService
-          properties: {}
-          relations:
-            prod_runtime: .metadata.name + "-Deployment-" + .metadata.namespace + "-" + "my-cluster"
           title: .metadata.name
+          properties: {}
     selector:
       query: .metadata.namespace | startswith("kube") | not
