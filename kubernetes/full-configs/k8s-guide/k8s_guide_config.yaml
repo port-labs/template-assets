@@ -50,7 +50,6 @@ resources:
             strategyConfig: .spec.strategy // {}
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
-            service: .metadata.labels.portService
           title: .metadata.name
     selector:
       query: .metadata.namespace | startswith("kube") | not
@@ -77,7 +76,6 @@ resources:
             strategyConfig: .spec.strategy // {}
           relations:
             Namespace: .metadata.namespace + "-" + "my-cluster"
-            service: .metadata.labels.portService
           title: .metadata.name
     selector:
       query: .metadata.namespace | startswith("kube") | not
