@@ -298,12 +298,6 @@
     "icon": "Service",
     "schema": {
       "properties": {
-        "conditions": {
-          "type": "array",
-          "title": "Conditions",
-          "default": [],
-          "description": "Pod's conditions"
-        },
         "labels": {
           "type": "object",
           "title": "Labels",
