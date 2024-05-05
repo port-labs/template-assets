@@ -143,7 +143,6 @@ resources: # List of K8s resources to list, watch, and export to Port.
               phase: .status.phase
               labels: .metadata.labels
               containers: (.spec.containers | map({image, resources})) + .status.containerStatuses | group_by(.image) | map(add)
-              conditions: .status.conditions
             relations:
               workload: .metadata.ownerReferences[0].name + "-" + .metadata.ownerReferences[0].kind + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
               Node: (.spec.nodeName) | (split(".")|join("_")) + "-" + env.CLUSTER_NAME
