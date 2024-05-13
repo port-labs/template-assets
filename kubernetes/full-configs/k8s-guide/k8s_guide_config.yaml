@@ -113,7 +113,7 @@ resources:
         - blueprint: '"service"'
           icon: '"Deployment"'
           identifier: .metadata.labels.portService
-          title: .metadata.name
           properties: {}
+          title: .metadata.name
     selector:
       query: .metadata.namespace | startswith("kube") | not
