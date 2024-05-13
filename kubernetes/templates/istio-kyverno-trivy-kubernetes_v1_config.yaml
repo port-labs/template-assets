@@ -280,22 +280,53 @@ resources: # List of K8s resources to list, watch, and export to Port.
               createdAt: .metadata.creationTimestamp
 
   - kind: aquasecurity.github.io/v1alpha1/configauditreports
+    selector:
+      query: 'true'
     port:
+      itemsToParse: .report.checks
       entity:
         mappings:
-          - identifier: .metadata.name + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
-            title: .metadata.name
+          - identifier: .metadata.name + "-" + .item.checkID + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .item.title
             icon: '"Trivy"'
-            blueprint: '"trivyVulnerabilities"'
+            blueprint: '"trivyConfigAuditReport"'
             properties:
+              category: .item.category
+              messages: .item.messages
+              description: .item.description
+              severity: .item.severity
+              remediation: .item.remediation
+              success: .item.success
               scanner: .report.scanner.name
-              criticalCount: .report.summary.criticalCount
-              highCount: .report.summary.highCount
-              lowCount: .report.summary.lowCount
-              mediumCount: .report.summary.mediumCount
-              category: .report.checks[0].category
-              message: .report.checks[0].messages
-              severity: .report.checks[0].severity
+              scannerVersion: .report.scanner.version
+              createdAt: .metadata.creationTimestamp
+              updatedAt: .report.updateTimestamp
+            relations:
+              namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
+
+  - kind: aquasecurity.github.io/v1alpha1/vulnerabilityreports
+    selector:
+      query: 'true'
+    port:
+      itemsToParse: .report.vulnerabilities
+      entity:
+        mappings:
+          - identifier: .metadata.name + "-" + .item.vulnerabilityID + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+            title: .item.title
+            icon: '"Trivy"'
+            blueprint: '"trivyVulnerabilityReport"'
+            properties:
+              resource: .item.resource
+              score: .item.score
+              fixedVersion: .item.fixedVersion
+              installedVersion: .item.installedVersion
+              lastModifiedDate: .item.lastModifiedDate
+              links: .item.links
+              primaryLink: .item.primaryLink
+              publishedDate: .item.publishedDate
+              severity: .item.severity
+              target: .item.target
+              scanner: .report.scanner.name
               scannerVersion: .report.scanner.version
               createdAt: .metadata.creationTimestamp
             relations:
