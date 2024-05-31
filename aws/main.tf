@@ -29,7 +29,7 @@ locals {
   combined_config = <<EOF
  {
    "resources": [
-     ${join(",", [for resource in var.resources : file("./${resource}/config.json")])}
+     ${join(",", [for resource in var.resources : file("${path.module}/${resource}/config.json")])}
    ]
  }
  EOF
@@ -47,7 +47,7 @@ Parameters:
     AllowedPattern: ^[a-zA-Z][-a-zA-Z0-9]*$
     Default: serverlessrepo-port-aws-exporter
 Resources:
-${join("\n", [for resource in var.resources : "  ${indent(2, file("./${resource}/event_rule.yaml"))}"])}
+${join("\n", [for resource in var.resources : "  ${indent(2, file("${path.module}/${resource}/event_rule.yaml"))}"])}
   EOF
 
   # Generates the Lambda policy json
@@ -57,7 +57,7 @@ ${join("\n", [for resource in var.resources : "  ${indent(2, file("./${resource}
  "Statement": [
    {
      "Effect": "Allow",
-     "Action": ${jsonencode(flatten([for resource in var.resources : jsondecode(file("./${resource}/policy.json"))]))},
+     "Action": ${jsonencode(flatten([for resource in var.resources : jsondecode(file("${path.module}/${resource}/policy.json"))]))},
      "Resource": "*"
    }
  ]
