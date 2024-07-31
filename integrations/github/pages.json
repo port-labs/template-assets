@@ -40,7 +40,7 @@
             "id": "githubScorecardReadme",
             "title": "Port Dashboards",
             "description": "",
-            "markdown": "[Dashboards](https://docs.getport.io/customize-pages-dashboards-and-plugins/page/dashboard-page) enable you to visualize the data from your catalog. Dashboards contain various widgets that display the data in different ways, such as pie charts, number charts, iframes, and more. You can create pages and dashboards for specific processes and expose them to the relevant people using [page permissions](https://docs.getport.io/customize-pages-dashboards-and-plugins/page/page-permissions). For more inspiration, checkout out our [demo](https://demo.getport.io/) environment.",
+            "markdown": "[Dashboards](https://docs.getport.io/customize-pages-dashboards-and-plugins/page/dashboard-page) enable you to visualize the data from your catalog. Dashboards contain various widgets that display the data in different ways, such as pie charts, number charts, iframes, and more. You can create pages and dashboards for specific processes and expose them to the relevant people using [page permissions](https://docs.getport.io/customize-pages-dashboards-and-plugins/page/page-permissions).\n\nHere are some ideas for dashboards\n- [SVP engineering dashboard](https://demo.getport.io/dashboard_svp_engineering)\n- [Security dashboard](https://demo.getport.io/dashboard_security)\n- [SRE dashboard](https://demo.getport.io/dashboard_sre)",
             "type": "markdown",
             "icon": "port"
           },
