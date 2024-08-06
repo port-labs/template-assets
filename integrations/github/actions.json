@@ -24,7 +24,6 @@
       },
       "blueprintIdentifier": "service"
     },
-
     "invocationMethod": {
       "type": "GITHUB",
       "org": "<GITHUB_ORG_NAME>",
