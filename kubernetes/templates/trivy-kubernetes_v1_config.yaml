@@ -206,7 +206,15 @@ resources: # List of K8s resources to list, watch, and export to Port.
               createdAt: .metadata.creationTimestamp
               updatedAt: .report.updateTimestamp
             relations:
-              namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
+              kubernetes_resource: (
+                if (.metadata.ownerReferences | length > 0) then 
+                     (.metadata.ownerReferences[] | select(.controller == true) |
+                     .name + "-" + .kind + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+                     )
+                  else
+                     empty
+                  end
+                )
 
   - kind: aquasecurity.github.io/v1alpha1/vulnerabilityreports
     selector:
@@ -234,4 +242,12 @@ resources: # List of K8s resources to list, watch, and export to Port.
               scannerVersion: .report.scanner.version
               createdAt: .metadata.creationTimestamp
             relations:
-              namespace: .metadata.namespace + "-" + env.CLUSTER_NAME
+              kubernetes_resource: (
+                if (.metadata.ownerReferences | length > 0) then 
+                     (.metadata.ownerReferences[] | select(.controller == true) |
+                     .name + "-" + .kind + "-" + .metadata.namespace + "-" + env.CLUSTER_NAME
+                     )
+                  else
+                     empty
+                  end
+                )

@@ -441,12 +441,12 @@
         "calculationProperties": {},
         "aggregationProperties": {},
         "relations": {
-          "namespace": {
-            "title": "Namespace",
-            "target": "namespace",
-            "required": false,
-            "many": false
-          }
+            "kubernetes_resource": {
+                "title": "Kubernetes Resource",
+                "target": "workload",
+                "required": false,
+                "many": false
+            }
         }
       },
       {
@@ -537,12 +537,12 @@
         "calculationProperties": {},
         "aggregationProperties": {},
         "relations": {
-          "namespace": {
-            "title": "Namespace",
-            "target": "namespace",
-            "required": false,
-            "many": false
-          }
+            "kubernetes_resource": {
+              "title": "Kubernetes Resource",
+              "target": "workload",
+              "required": false,
+              "many": false
+            }
         }
       }
 ]
