@@ -70,6 +70,44 @@ curl -s ${COMMON_FUNCTIONS_URL} -o "${temp_dir}/common.sh"
 
 source "${temp_dir}/common.sh"
 
+cat << EOF
+
+
+**** Install infromation ****
+Docs Reference for Port's K8s Exporter - https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/
+
+The following script will ensure a connection to the Kubernetes Cluster which is currently
+referenced in your ~/.kubeconfig file.
+
+It will add Port's helm chart ($HELM_REPO_URL) under the name "$HELM_REPO_NAME" locally,
+and then install the chart to your Kubernetes cluster under the namespace: "$TARGET_NAMESPACE", 
+and the Deployment name: "$DEPLOYMENT_NAME".
+
+By default, the exporter is given *read* permissions on all API groups and resources
+using the "$DEPLOYMENT_NAME" Cluster Role:
+
+####
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - get
+  - watch
+  - list
+####
+
+For advanced security configuration - https://docs.getport.io/build-your-software-catalog/sync-data-to-catalog/kubernetes/advanced#security-configuration
+
+
+In Port, the current K8s cluster will be referenced as "$CLUSTER_NAME".
+
+For further information, don't hesitate to reach out using our in-site Intercom system!
+EOF
+
+trigger_continue_prompt
+
 echo "Checking for prerequisites..."
 
 check_commands "helm" "kubectl" "yq" "jq"
