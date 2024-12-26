@@ -66,10 +66,16 @@
         },
         "assignees": {
           "title": "Assignees",
+          "items": {
+            "type": "string"
+          },
           "type": "array"
         },
         "reviewers": {
           "title": "Reviewers",
+          "items": {
+            "type": "string"
+          },
           "type": "array"
         },
         "status": {
